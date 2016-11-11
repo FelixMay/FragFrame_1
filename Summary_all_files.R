@@ -1,0 +1,100 @@
+library(vegan)
+library(SpadeR)
+library(MoBspatial)
+library(xlsx)
+library(iNEXT)
+
+is.error <- function(x) inherits(x, "try-error")
+
+setwd("c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/good_datasets/")
+
+out_path <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/Analysis/"
+
+div_list <- list()
+
+filenames <- list.files(pattern="*.xls*", full.names = F)
+filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
+
+# remove data set with non-integer numbers
+filenames <- filenames[filenames != "Leal_2012_new_.xls"]
+
+for (i in 1:length(filenames)){
+   
+   print(filenames[i])
+   
+   # reading and cleaning the data
+   dat_head <- read.xlsx(filenames[i], sheetIndex = 1, startRow = 1, endRow = 2)
+   dat_head <- dat_head[, -1]
+   #dat_head <- dat_head[, names(dat_head) != "NA."]
+   
+   dat_ranks <- read.xlsx(filenames[i], sheetIndex = 1, startRow = 3, endRow = 4)
+   dat_ranks <- dat_ranks[, -1]
+   #dat_ranks <- dat_ranks[, names(dat_ranks) != "NA."]
+   
+   dat_abund <- read.xlsx(filenames[i], sheetIndex = 1, startRow = 5, header = F)
+   dat_abund <- dat_abund[, -1]
+   
+   names(dat_abund) <- names(dat_head)
+   na_col <- apply(dat_abund, 1, function(x) sum(is.na(x)))
+   na_row <- apply(dat_abund, 2, function(x) sum(is.na(x)))
+   
+   dat_abund <- dat_abund[na_col < dim(dat_abund)[2], na_row < dim(dat_abund)[1]]
+   dat_abund[is.na(dat_abund)] <- 0
+   
+   # prepare output data
+   div_indi <- data.frame(filename   = filenames2[i], 
+                          entitiy.id = names(dat_abund),
+                          entitiy.size.rank = as.numeric(dat_ranks[1, ]))
+   
+   # simple diversity indices
+   div_indi$N <- colSums(dat_abund)
+   div_indi$S <- colSums(dat_abund > 0)
+   
+   div_indi$Shannon <- diversity(t(dat_abund), index = "shannon")
+   div_indi$PIE <- diversity(t(dat_abund), index = "simpson")
+   
+   div_indi$ENS_shannon <- exp(div_indi$Shannon)
+   div_indi$ENS_pie <- diversity(t(dat_abund), index = "invsimpson")
+   
+   # rarefaction curves (=non-spatial accumulation curves )
+   #SAC_list <- lapply(dat_abund, SAC.coleman)
+   
+   # rarefied richness at minimum number of individuals
+   nmin <- min(div_indi$N)
+   #div_indi$S_rare1 <- sapply(SAC_list, "[", nmin)
+   div_indi$S_rare <- rarefy(dat_abund, nmin, MARGIN = 2)
+   
+   # extrapolation
+   chao_list <- lapply(dat_abund, function(x) try(SpadeR::ChaoSpecies(x, datatype = "abundance")))
+   succeeded <- !sapply(chao_list, is.error)
+   
+   chao_mat <- matrix(NA, nrow = 9, ncol = ncol(dat_abund))
+   chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species.Table[,"Estimate"]})
+   
+   chao_mat[, succeeded] <- chao_spec
+   rownames(chao_mat) <- rownames(chao_spec)
+   
+   div_indi <- cbind(div_indi, t(chao_mat))
+   
+   div_list[[filenames2[i]]] <- div_indi
+   
+   # inter- and extrapolation plot
+   inext1 <- iNEXT(dat_abund, q = 0, datatype="abundance")
+   plot1 <- ggiNEXT(inext1, type = 1)
+   #plot2 <- ggiNEXT(inext1, type = 3)
+   
+   # save plot and summary statistics
+   #library(gridExtra)
+   
+   fig_name <- paste(out_path, filenames2[i], ".pdf", sep="")
+   pdf(fig_name, width = 7, height = 7)
+   #grid.arrange(plot1, plot2, ncol = 2)
+   print(plot1)
+   dev.off()
+}
+
+library(dplyr)
+div_df <- bind_rows(div_list)
+
+write.table(div_df, file = paste(out_path, "DiversityData.csv", sep = ""),
+            sep = ";", row.names = F)
