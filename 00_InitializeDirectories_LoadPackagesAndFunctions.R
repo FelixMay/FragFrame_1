@@ -41,6 +41,7 @@ needed_libs <- c("devtools", # download from github
                  "MoBspatial", # simulation of species communities
                  "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
                  "vegan", # for diversity indices
+                 "metafor", # for meta-analysis 
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
                  "dplyr" # for data manipulation
