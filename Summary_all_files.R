@@ -1,15 +1,3 @@
-library(vegan)
-library(SpadeR)
-library(MoBspatial)
-library(xlsx)
-library(iNEXT)
-
-is.error <- function(x) inherits(x, "try-error")
-
-setwd("c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/good_datasets/")
-
-out_path <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/Analysis/"
-
 div_list <- list()
 
 filenames <- list.files(pattern="*.xls*", full.names = F)
@@ -86,7 +74,7 @@ for (i in 1:length(filenames)){
    # save plot and summary statistics
    #library(gridExtra)
    
-   fig_name <- paste(out_path, filenames2[i], ".pdf", sep="")
+   fig_name <- paste(path2temp, filenames2[i], ".pdf", sep="")
    pdf(fig_name, width = 7, height = 7)
    #grid.arrange(plot1, plot2, ncol = 2)
    print(plot1)
@@ -96,5 +84,5 @@ for (i in 1:length(filenames)){
 library(dplyr)
 div_df <- bind_rows(div_list)
 
-write.table(div_df, file = paste(out_path, "DiversityData.csv", sep = ""),
+write.table(div_df, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
