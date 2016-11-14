@@ -47,8 +47,8 @@ for (i in 1:length(filenames)){
    dat_head_unique <- unique(dat_head_t[,c(1,4)])
    
    div_indi <- data.frame(filename   = filenames2[i], 
-                          entitiy.id = dat_head_unique$entity.id,
-                          entitiy.size.rank = dat_head_unique$entity.size.rank)
+                          entity.id = dat_head_unique$entity.id,
+                          entity.size.rank = dat_head_unique$entity.size.rank)
    
    # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
@@ -99,7 +99,7 @@ for (i in 1:length(filenames)){
 
 library(dplyr)
 div_df <- bind_rows(div_list)
-div_df_nomatrix <- filter(div_df, entitiy.size.rank > 0)
+div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
 write.table(div_df, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
