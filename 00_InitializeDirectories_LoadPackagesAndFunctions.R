@@ -10,7 +10,7 @@
    {
       path2wd <- "C:/Users/kg83hyby/Documents/GitHub/FragFrame_1/" 
       path2Dropbox <- "C:/Users/kg83hyby/Dropbox/Habitat loss meta-analysis/"
-      path2temp <- "C:/Users/kg83hyby/Documents/temp/FragFrame_1" 
+      path2temp <- "C:/Users/kg83hyby/Documents/temp/FragFrame_1/" 
    }  
    else {#FM
       path2wd <-"c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/good_datasets/" 
@@ -49,9 +49,11 @@ needed_libs <- c("devtools", # download from github
 )
 
 usePackage <- function(p) {
-   if(p == "MoBspatial")    install_github('MoBiodiv/MoBspatial')    
    #if(p=="iNEXT")   install_github('JohnsonHsieh/iNEXT') # iNEXT is on CRAN !
-   if (!is.element(p, installed.packages()[,1]))    install.packages(p, dep = TRUE)
+   if (!is.element(p, installed.packages()[,1])) {   
+      if(p == "MoBspatial") {install_github('MoBiodiv/MoBspatial')}  
+      install.packages(p, dep = TRUE)
+   }
    require(p, character.only = TRUE)
 }
 

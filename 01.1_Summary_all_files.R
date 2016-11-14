@@ -1,4 +1,4 @@
-setwd(path2wd)
+setwd(path2Dropbox %+% "good_datasets/")
 
 div_list <- list()
 
@@ -88,8 +88,6 @@ for (i in 1:length(filenames)){
    #plot2 <- ggiNEXT(inext1, type = 3)
    
    # save plot and summary statistics
-   #library(gridExtra)
-   
    fig_name <- paste(path2temp, filenames2[i], ".pdf", sep="")
    pdf(fig_name, width = 7, height = 7)
    #grid.arrange(plot1, plot2, ncol = 2)
@@ -97,7 +95,6 @@ for (i in 1:length(filenames)){
    dev.off()
 }
 
-library(dplyr)
 div_df <- bind_rows(div_list)
 div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
