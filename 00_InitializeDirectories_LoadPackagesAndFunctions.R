@@ -15,7 +15,7 @@
    else {#FM
       path2wd <-"c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/good_datasets/" 
       path2Dropbox <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/"
-      path2temp <- ""
+      path2temp <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/Analysis"
    }
    return(list(path2temp,path2Dropbox,path2wd))
 }
@@ -29,7 +29,7 @@ path2wd <- set.list[[3]]
 ### some helper functions
 ############################################################################
 ### helper function to combine strings
-"%+%" <- function(x,y)paste(x,y,sep="")
+"%+%" <- function(x,y) paste(x,y,sep="")
 
 ### helper function to try things out
 is.error <- function(x) inherits(x, "try-error")
@@ -44,15 +44,18 @@ needed_libs <- c("devtools", # download from github
                  "metafor", # for meta-analysis 
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
-                 "dplyr" # for data manipulation
+                 "dplyr", # for data manipulation
+                 "xlsx"  # for reading Excel spreadsheets
 )
+
 usePackage <- function(p) {
    if(p == "MoBspatial")    install_github('MoBiodiv/MoBspatial')    
-   if(p=="iNEXT")   install_github('JohnsonHsieh/iNEXT')
+   #if(p=="iNEXT")   install_github('JohnsonHsieh/iNEXT') # iNEXT is on CRAN !
    if (!is.element(p, installed.packages()[,1]))    install.packages(p, dep = TRUE)
    require(p, character.only = TRUE)
 }
-sapply(needed_libs,usePackage)
+
+sapply(needed_libs, usePackage)
 
 rm(needed_libs, usePackage)
 
