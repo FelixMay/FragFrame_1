@@ -15,7 +15,7 @@
    else {#FM
       path2wd <-"c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/good_datasets/" 
       path2Dropbox <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/"
-      path2temp <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/Analysis"
+      path2temp <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/Analysis/"
    }
    return(list(path2temp,path2Dropbox,path2wd))
 }

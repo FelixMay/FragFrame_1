@@ -3,13 +3,16 @@ setwd(path2Dropbox %+% "good_datasets/")
 div_list <- list()
 
 filenames <- list.files(pattern="*.xls*", full.names = F)
-filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
 # remove data set with non-integer numbers
-filenames <- filenames[filenames != "Leal_2012_new_.xls"]
+# filenames <- filenames[filenames != "De_Lima_1999.xlsx" &
+#                        filenames != "Leal_2012.xls" & 
+#                        filenames != "Gavish_2012.xlsx" &
+#                        filenames != "Gavish_2012_B.xlsx"]
+filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
 for (i in 1:length(filenames)){
-   
+
    print(filenames[i])
    
    # reading and cleaning the data
@@ -70,13 +73,18 @@ for (i in 1:length(filenames)){
    
    # extrapolation
    chao_list <- lapply(dat_abund_pool2, function(x) try(SpadeR::ChaoSpecies(x, datatype = "abundance")))
+   
    succeeded <- !sapply(chao_list, is.error)
-   
    chao_mat <- matrix(NA, nrow = 9, ncol = ncol(dat_abund_pool2))
-   chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species.Table[,"Estimate"]})
+   rownames(chao_mat) <- c("Homogeneous_Model","Homogeneous_MLE", "Chao1",
+                           "Chao1-bc", "iChao1", "ACE", "ACE-1" ,
+                           "1st_order_jackknife","2nd_order_jackknife")   
    
-   chao_mat[, succeeded] <- chao_spec
-   rownames(chao_mat) <- rownames(chao_spec)
+   if (sum(succeeded) > 0){
+      chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species.Table[,"Estimate"]})
+      
+      chao_mat[, succeeded] <- chao_spec
+   }
    
    div_indi <- cbind(div_indi, t(chao_mat))
    
@@ -98,5 +106,5 @@ for (i in 1:length(filenames)){
 div_df <- bind_rows(div_list)
 div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
-write.table(div_df, file = paste(path2temp, "DiversityData.csv", sep = ""),
+write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
