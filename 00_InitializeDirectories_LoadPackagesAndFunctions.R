@@ -45,7 +45,8 @@ needed_libs <- c("devtools", # download from github
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
                  "dplyr", # for data manipulation
-                 "xlsx"  # for reading Excel spreadsheets
+                 "xlsx",  # for reading Excel spreadsheets
+                 "SpadeR"
 )
 
 usePackage <- function(p) {

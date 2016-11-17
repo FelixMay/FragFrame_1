@@ -81,7 +81,7 @@ for (i in 1:length(filenames)){
                            "1st_order_jackknife","2nd_order_jackknife")   
    
    if (sum(succeeded) > 0){
-      chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species.Table[,"Estimate"]})
+      chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species_table[,"Estimate"]})
       
       chao_mat[, succeeded] <- chao_spec
    }
@@ -108,3 +108,6 @@ div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
+
+#write.csv(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""))
+            
