@@ -58,6 +58,39 @@ usePackage <- function(p) {
    require(p, character.only = TRUE)
 }
 
+### document system properties
+version
+# _                           
+# platform       x86_64-w64-mingw32          
+# arch           x86_64                      
+# os             mingw32                     
+# system         x86_64, mingw32             
+# status                                     
+# major          3                           
+# minor          2.5                         
+# year           2016                        
+# month          04                          
+# day            14                          
+# svn rev        70478                       
+# language       R                           
+# version.string R version 3.2.5 (2016-04-14)
+# nickname       Very, Very Secure Dishes    
+
+ip <- as.data.frame(installed.packages()[needed_libs,c(1,3)])
+rownames(ip) <- NULL
+ip
+# Package    Version
+# 1    devtools     1.10.0
+# 2  MoBspatial 0.0.0.9000
+# 3       iNEXT     2.0.12
+# 4       vegan      2.4-1
+# 5     metafor      1.9-8
+# 6     ggplot2      2.1.0
+# 7   gridExtra      2.2.1
+# 8       dplyr      0.5.0
+# 9        xlsx      0.5.7
+# 10     SpadeR      0.1.1
+
 sapply(needed_libs, usePackage)
 
 rm(needed_libs, usePackage)
