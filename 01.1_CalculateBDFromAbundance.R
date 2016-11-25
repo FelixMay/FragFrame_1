@@ -104,6 +104,8 @@ for (i in 1:length(filenames)){
 }
 
 div_df <- bind_rows(div_list)
+
+### get rid of irrelevant data, e.g. matrix, clearcut
 div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
