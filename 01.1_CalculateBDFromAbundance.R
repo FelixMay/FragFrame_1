@@ -11,25 +11,26 @@ filenames <- list.files(pattern="*.xls*", full.names = F)
 #                        filenames != "Gavish_2012_B.xlsx"]
 filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
-for (i in 1:length(filenames)){
-
-   print(filenames[i])
+CalcBDfromAbundance <- function(filename){
+   
+   print(filename)
+   filename2 <- strsplit(filename, split = "[.]")[[1]][1]
    
    # reading and cleaning the data
-   dat_head <- read.xlsx(filenames[i], sheetIndex = 1, startRow = 1, endRow = 3,
+   dat_head <- read.xlsx(filename, sheetIndex = 1, startRow = 1, endRow = 3,
                          header = F)
    dat_head_t <- as.data.frame(t(dat_head[,-1]))
    names(dat_head_t) <- dat_head[,1]
    
    #dat_head <- dat_head[, names(dat_head) != "NA."]
    
-   dat_ranks <- read.xlsx(filenames[i], sheetIndex = 1, startRow = 4, endRow = 5)
+   dat_ranks <- read.xlsx(filename, sheetIndex = 1, startRow = 4, endRow = 5)
    dat_ranks <- dat_ranks[, -1]
    #dat_ranks <- dat_ranks[, names(dat_ranks) != "NA."]
    
    dat_head_t$entity.size.rank <- as.numeric(dat_ranks[1,])
    
-   dat_abund <- read.xlsx(filenames[i], sheetIndex = 1, startRow = 6, header = F)
+   dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 6, header = F)
    dat_abund <- dat_abund[, -1]
    
    na_col <- apply(dat_abund, 1, function(x) sum(is.na(x)))
@@ -49,7 +50,7 @@ for (i in 1:length(filenames)){
    # prepare output data
    dat_head_unique <- unique(dat_head_t[,c(1,4)])
    
-   div_indi <- data.frame(filename   = filenames2[i], 
+   div_indi <- data.frame(filename   = filename2, 
                           entity.id = dat_head_unique$entity.id,
                           entity.size.rank = dat_head_unique$entity.size.rank)
    
@@ -88,7 +89,6 @@ for (i in 1:length(filenames)){
    
    div_indi <- cbind(div_indi, t(chao_mat))
    
-   div_list[[filenames2[i]]] <- div_indi
    
    # inter- and extrapolation plot
    inext1 <- iNEXT(dat_abund_pool2, q = 0, datatype="abundance")
@@ -96,12 +96,22 @@ for (i in 1:length(filenames)){
    #plot2 <- ggiNEXT(inext1, type = 3)
    
    # save plot and summary statistics
-   fig_name <- paste(path2temp, filenames2[i], ".pdf", sep="")
+   fig_name <- paste(path2temp, filename2, ".pdf", sep="")
    pdf(fig_name, width = 7, height = 7)
    #grid.arrange(plot1, plot2, ncol = 2)
    print(plot1)
    dev.off()
-}
+   
+   return(div_indi)
+}      
+
+for (i in 1:length(filenames)){
+   temp <- try(CalcBDfromAbundance(filenames[i]))
+   if (!inherits(temp, "try-error")){
+      div_list[[filenames2[i]]] <- temp
+   }
+}   
+#div_list[[filenames2[i]]] <- div_indi
 
 div_df <- bind_rows(div_list)
 
@@ -110,6 +120,6 @@ div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
-
+# 
 #write.csv(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""))
             
