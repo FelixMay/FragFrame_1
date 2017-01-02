@@ -63,7 +63,13 @@ CalcBDfromAbundance <- function(filename){
    
    div_indi$ENS_shannon <- exp(div_indi$Shannon)
    div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
-   
+
+   # coverage-based indices
+   temp <- estimateD(dat_abund_pool2, "abundance", base="coverage", level=0.99, conf=NULL) # species richness, shannon, simpson standardized by coverage (99 %)
+   div_indi$S_cov <- temp[,"q = 0"]
+   div_indi$Shannon_cov <- temp[,"q = 1"]
+   div_indi$PIE_cov <- temp[,"q = 2"]
+
    # rarefaction curves (=non-spatial accumulation curves )
    #SAC_list <- lapply(dat_abund, SAC.coleman)
    
@@ -120,6 +126,6 @@ div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
-# 
+
 #write.csv(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""))
             
