@@ -13,7 +13,7 @@ for (i in 1:length(filenames)){
    if (!inherits(df, "try-error")){
       if(ncol(df)>1){
          dat_meta <- as.data.frame(matrix(data=NA,ncol=nrow(df),nrow=1))
-         dat_meta[1,] <- t(df[,-1])
+         dat_meta[1,] <- t(df[,2])
          names(dat_meta) <- df[,1]
          
          meta_list[[filenames2[i]]] <- data.frame(Study.ID = filenames2[i],
