@@ -27,6 +27,8 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor=1, ...)
    text(0.5, 0.5, txt, cex = cex.cor)
 }
 
+pairs(ES_df[,"z." %+% names(div_df)[-(1:3)]], labels=names(div_df)[-(1:3)],lower.panel = panel.smooth, upper.panel = panel.cor, cex.labels=0.6)
+
 png(file=path2temp %+% "PairwiseCorPlot.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
 pairs(ES_df[,"z." %+% names(div_df)[-(1:3)]], labels=names(div_df)[-(1:3)],lower.panel = panel.smooth, upper.panel = panel.cor, cex.labels=0.6)
 dev.off()
