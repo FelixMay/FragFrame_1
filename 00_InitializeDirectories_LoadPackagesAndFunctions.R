@@ -44,6 +44,7 @@ needed_libs <- c("devtools", # download from github
                  "metafor", # for meta-analysis 
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
+                 "plot3D", # for multidimensional plotting
                  "dplyr", # for data manipulation
                  "xlsx",  # for reading Excel spreadsheets
                  "SpadeR"
