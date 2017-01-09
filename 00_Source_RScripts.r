@@ -1,4 +1,9 @@
 ############################################################################
+### 00 Initialize Directories & Load Packages And Functions
+############################################################################
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=TRUE)
+
+############################################################################
 ### 01 DATA PREPARATION
 ############################################################################
 # 1. create table with raw data Study.ID-Fragment-Rank-Abundance
@@ -13,9 +18,18 @@ source(path2wd %+% "01.3_CalculateEffectSizes.r")
 ############################################################################
 ###  02 DATA ANALYSIS
 ############################################################################
-# 1. Forest Plots of effect sizes and Pairwise Correlation plot of effect sizes
-source(path2wd %+% "02.1_DescriptiveStats.r") 
+# 1. 
+rm(list=ls())
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+source(path2wd %+% "02.1_DataPrep4Analysis.r") 
 
-############################################################################
-###  03 PLOTTING
-############################################################################
+# 2. 
+rm(list=ls())
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+source(path2wd %+% "02.2_DescriptiveStats.r") 
+
+# 3. 
+rm(list=ls())
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+source(path2wd %+% "02.3_DataAnalysis.r") 
+
