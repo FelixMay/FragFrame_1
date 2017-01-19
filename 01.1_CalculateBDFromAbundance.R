@@ -24,11 +24,21 @@ CalcBDfromAbundance <- function(filename){
    
    #dat_head <- dat_head[, names(dat_head) != "NA."]
    
+   dat_frag_size <- read.xlsx(filename, sheetIndex = 1, startRow = 3, endRow = 4)
+   dat_frag_size <- dat_frag_size[, -1]
+   
+   dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
+   
+   
    dat_ranks <- read.xlsx(filename, sheetIndex = 1, startRow = 4, endRow = 5)
    dat_ranks <- dat_ranks[, -1]
    #dat_ranks <- dat_ranks[, names(dat_ranks) != "NA."]
    
    dat_head_t$entity.size.rank <- as.numeric(dat_ranks[1,])
+   
+   # # just a quick check
+   # plot(entity.size.rank ~ entity.size,
+   #      data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
    
    dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 6, header = F)
    dat_abund <- dat_abund[, -1]
@@ -42,17 +52,21 @@ CalcBDfromAbundance <- function(filename){
    dat_abund_t <- t(dat_abund)
    
    # pool data from the same fragments
-   dat_abund_pool <- aggregate(dat_abund_t, by = list(dat_head_t$entity.id), FUN = sum)
-   dat_abund_pool2 <- as.data.frame(t(dat_abund_pool[,-1]))
-   names(dat_abund_pool2) <- dat_abund_pool[,1]
-   rm(dat_abund_pool)
+   dat_abund_pool <- aggregate(dat_abund_t,
+                               by = list(dat_head_t$entity.id,
+                                         dat_head_t$entity.size.rank),
+                               FUN = sum)
+   dat_abund_pool2 <- as.data.frame(t(dat_abund_pool[,-c(1:2)]))
+   names(dat_abund_pool2) <- dat_abund_pool[ ,1]
    
    # prepare output data
-   dat_head_unique <- unique(dat_head_t[,c(1,4)])
+   #dat_head_unique <- unique(dat_head_t[,c(1,5)])
    
    div_indi <- data.frame(filename   = filename2, 
-                          entity.id = dat_head_unique$entity.id,
-                          entity.size.rank = dat_head_unique$entity.size.rank)
+                          entity.id = dat_abund_pool[ ,1],
+                          entity.size.rank =  dat_abund_pool[ ,2])
+   rm(dat_abund_pool)
+   
    
    # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
@@ -63,50 +77,61 @@ CalcBDfromAbundance <- function(filename){
    
    div_indi$ENS_shannon <- exp(div_indi$Shannon)
    div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
+   
+   # set indices to NA when there are no individuals
+   empty_plots <- div_indi$N == 0 
+   div_indi$Shannon[empty_plots] <- NA
+   div_indi$PIE[empty_plots] <- NA
+   div_indi$ENS_shannon[empty_plots] <- NA
+   div_indi$ENS_pie[empty_plots] <- NA
 
-   # coverage-based indices
-   temp <- estimateD(dat_abund_pool2, "abundance", base="coverage", level=0.99, conf=NULL) # species richness, shannon, simpson standardized by coverage (99 %)
-   div_indi$S_cov <- temp[,"q = 0"]
-   div_indi$Shannon_cov <- temp[,"q = 1"]
-   div_indi$PIE_cov <- temp[,"q = 2"]
+   # # coverage-based indices
+   # temp <- estimateD(dat_abund_pool2, "abundance", base="coverage", level=0.99, conf=NULL) # species richness, shannon, simpson standardized by coverage (99 %)
+   # div_indi$S_cov <- temp[,"q = 0"]
+   # div_indi$Shannon_cov <- temp[,"q = 1"]
+   # div_indi$PIE_cov <- temp[,"q = 2"]
 
-   # rarefaction curves (=non-spatial accumulation curves )
-   #SAC_list <- lapply(dat_abund, SAC.coleman)
+   # # rarefaction curves (=non-spatial accumulation curves )
+   # #SAC_list <- lapply(dat_abund, SAC.coleman)
+   # 
+   # # rarefied richness at minimum number of individuals
+   # n_min <- 10
+   # n_min_sample = max(n_min, min(div_indi$N))
+   # plots_low_n = div_indi$N < n_min
+   # 
+   # 
+   # nmin <- min(div_indi$N)
+   # #div_indi$S_rare1 <- sapply(SAC_list, "[", nmin)
+   # div_indi$S_rare <- rarefy(dat_abund_pool2, nmin, MARGIN = 2)
    
-   # rarefied richness at minimum number of individuals
-   nmin <- min(div_indi$N)
-   #div_indi$S_rare1 <- sapply(SAC_list, "[", nmin)
-   div_indi$S_rare <- rarefy(dat_abund_pool2, nmin, MARGIN = 2)
+   # # extrapolation
+   # chao_list <- lapply(dat_abund_pool2, function(x) try(SpadeR::ChaoSpecies(x, datatype = "abundance")))
+   # 
+   # succeeded <- !sapply(chao_list, is.error)
+   # chao_mat <- matrix(NA, nrow = 9, ncol = ncol(dat_abund_pool2))
+   # rownames(chao_mat) <- c("Homogeneous_Model","Homogeneous_MLE", "Chao1",
+   #                         "Chao1-bc", "iChao1", "ACE", "ACE-1" ,
+   #                         "1st_order_jackknife","2nd_order_jackknife")   
+   # 
+   # if (sum(succeeded) > 0){
+   #    chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species_table[,"Estimate"]})
+   #    
+   #    chao_mat[, succeeded] <- chao_spec
+   # }
+   # 
+   # div_indi <- cbind(div_indi, t(chao_mat))
    
-   # extrapolation
-   chao_list <- lapply(dat_abund_pool2, function(x) try(SpadeR::ChaoSpecies(x, datatype = "abundance")))
-   
-   succeeded <- !sapply(chao_list, is.error)
-   chao_mat <- matrix(NA, nrow = 9, ncol = ncol(dat_abund_pool2))
-   rownames(chao_mat) <- c("Homogeneous_Model","Homogeneous_MLE", "Chao1",
-                           "Chao1-bc", "iChao1", "ACE", "ACE-1" ,
-                           "1st_order_jackknife","2nd_order_jackknife")   
-   
-   if (sum(succeeded) > 0){
-      chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species_table[,"Estimate"]})
-      
-      chao_mat[, succeeded] <- chao_spec
-   }
-   
-   div_indi <- cbind(div_indi, t(chao_mat))
-   
-   
-   # inter- and extrapolation plot
-   inext1 <- iNEXT(dat_abund_pool2, q = 0, datatype="abundance")
-   plot1 <- ggiNEXT(inext1, type = 1)
-   #plot2 <- ggiNEXT(inext1, type = 3)
-   
-   # save plot and summary statistics
-   fig_name <- paste(path2temp, filename2, ".pdf", sep="")
-   pdf(fig_name, width = 7, height = 7)
-   #grid.arrange(plot1, plot2, ncol = 2)
-   print(plot1)
-   dev.off()
+   # # inter- and extrapolation plot
+   # inext1 <- iNEXT(dat_abund_pool2[ ,div_indi$N > 0], q = 0, datatype="abundance")
+   # plot1 <- ggiNEXT(inext1, type = 1)
+   # #plot2 <- ggiNEXT(inext1, type = 3)
+   # 
+   # # save plot and summary statistics
+   # fig_name <- paste(path2temp, filename2, ".pdf", sep="")
+   # pdf(fig_name, width = 7, height = 7)
+   # #grid.arrange(plot1, plot2, ncol = 2)
+   # print(plot1)
+   # dev.off()
    
    return(div_indi)
 }      
