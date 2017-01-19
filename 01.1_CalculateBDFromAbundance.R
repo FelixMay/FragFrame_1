@@ -29,17 +29,16 @@ CalcBDfromAbundance <- function(filename){
    
    dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
    
-   
    dat_ranks <- read.xlsx(filename, sheetIndex = 1, startRow = 4, endRow = 5)
    dat_ranks <- dat_ranks[, -1]
    #dat_ranks <- dat_ranks[, names(dat_ranks) != "NA."]
    
    dat_head_t$entity.size.rank <- as.numeric(dat_ranks[1,])
    
-   # # just a quick check
-   # plot(entity.size.rank ~ entity.size,
-   #      data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
-   
+   # just a quick check
+   plot(entity.size.rank ~ entity.size,
+        data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
+
    dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 6, header = F)
    dat_abund <- dat_abund[, -1]
    
@@ -49,6 +48,7 @@ CalcBDfromAbundance <- function(filename){
    dat_abund <- dat_abund[na_col < dim(dat_abund)[2], na_row < dim(dat_abund)[1]]
    dat_abund[is.na(dat_abund)] <- 0
    
+   dat_abund <- round(dat_abund, digits = 0)
    dat_abund_t <- t(dat_abund)
    
    # pool data from the same fragments
@@ -60,8 +60,6 @@ CalcBDfromAbundance <- function(filename){
    names(dat_abund_pool2) <- dat_abund_pool[ ,1]
    
    # prepare output data
-   #dat_head_unique <- unique(dat_head_t[,c(1,5)])
-   
    div_indi <- data.frame(filename   = filename2, 
                           entity.id = dat_abund_pool[ ,1],
                           entity.size.rank =  dat_abund_pool[ ,2])
