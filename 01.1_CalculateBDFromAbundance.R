@@ -24,7 +24,8 @@ CalcBDfromAbundance <- function(filename){
    
    #dat_head <- dat_head[, names(dat_head) != "NA."]
    
-   dat_frag_size <- read.xlsx(filename, sheetIndex = 1, startRow = 3, endRow = 4)
+   dat_frag_size <- read.xlsx(filename, sheetIndex = 1, startRow = 3, endRow = 4,
+                              stringsAsFactors = F)
    dat_frag_size <- dat_frag_size[, -1]
    
    dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
@@ -35,9 +36,9 @@ CalcBDfromAbundance <- function(filename){
    
    dat_head_t$entity.size.rank <- as.numeric(dat_ranks[1,])
    
-   # just a quick check
-   plot(entity.size.rank ~ entity.size,
-        data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
+   # # just a quick check
+   # plot(entity.size.rank ~ entity.size,
+   #      data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
 
    dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 6, header = F)
    dat_abund <- dat_abund[, -1]
@@ -48,6 +49,7 @@ CalcBDfromAbundance <- function(filename){
    dat_abund <- dat_abund[na_col < dim(dat_abund)[2], na_row < dim(dat_abund)[1]]
    dat_abund[is.na(dat_abund)] <- 0
    
+   # round abundances to integer numbers
    dat_abund <- round(dat_abund, digits = 0)
    dat_abund_t <- t(dat_abund)
    
@@ -76,12 +78,15 @@ CalcBDfromAbundance <- function(filename){
    div_indi$ENS_shannon <- exp(div_indi$Shannon)
    div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
    
+   div_indi$Pielou_even <- div_indi$Shannon / log(div_indi$S)
+   
    # set indices to NA when there are no individuals
    empty_plots <- div_indi$N == 0 
    div_indi$Shannon[empty_plots] <- NA
    div_indi$PIE[empty_plots] <- NA
    div_indi$ENS_shannon[empty_plots] <- NA
    div_indi$ENS_pie[empty_plots] <- NA
+   div_indi$Pielou_even[empty_plots] <- NA
 
    # # coverage-based indices
    # temp <- estimateD(dat_abund_pool2, "abundance", base="coverage", level=0.99, conf=NULL) # species richness, shannon, simpson standardized by coverage (99 %)
