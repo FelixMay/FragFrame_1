@@ -1,15 +1,35 @@
-setwd(path2Dropbox %+% "good_datasets/")
+# source code from iNEXT package
+###############################################
+# Abundance-based sample coverage
+# 
+# \code{Chat.Ind} Estimation of abundance-based sample coverage function
+# 
+# @param x a vector of species abundances
+# @param m a integer vector of rarefaction/extrapolation sample size
+# @return a vector of estimated sample coverage function
+# @export
+Chat.Ind <- function(x, m){
+   x <- x[x>0]
+   n <- sum(x)
+   f1 <- sum(x == 1)
+   f2 <- sum(x == 2)
+   f0.hat <- ifelse(f2 == 0, (n - 1) / n * f1 * (f1 - 1) / 2, (n - 1) / n * f1 ^ 2/ 2 / f2)  #estimation of unseen species via Chao1
+   A <- ifelse(f1>0, n*f0.hat/(n*f0.hat+f1), 1)
+   Sub <- function(m){
+      #if(m < n) out <- 1-sum(x / n * exp(lchoose(n - x, m)-lchoose(n - 1, m)))
+      if(m < n) {
+         xx <- x[(n-x)>=m]
+         out <- 1-sum(xx / n * exp(lgamma(n-xx+1)-lgamma(n-xx-m+1)-lgamma(n)+lgamma(n-m)))
+      }
+      if(m == n) out <- 1-f1/n*A
+      if(m > n) out <- 1-f1/n*A^(m-n+1)
+      out
+   }
+   sapply(m, Sub)		
+}
 
-div_list <- list()
-
-filenames <- list.files(pattern="*.xls*", full.names = F)
-
-# remove data set with non-integer numbers
-# filenames <- filenames[filenames != "De_Lima_1999.xlsx" &
-#                        filenames != "Leal_2012.xls" & 
-#                        filenames != "Gavish_2012.xlsx" &
-#                        filenames != "Gavish_2012_B.xlsx"]
-filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
+############################################
+# Function to calculate biodiversity indices from every patch
 
 CalcBDfromAbundance <- function(filename){
    
@@ -80,6 +100,10 @@ CalcBDfromAbundance <- function(filename){
    
    div_indi$Pielou_even <- div_indi$Shannon / log(div_indi$S)
    
+   apply(dat_abund_pool2, 2, function(x) {Chat.Ind(x, sum(x))} )
+   div_indi$Sample_coverage <- apply(dat_abund_pool2, 2,
+                                     function(x) {Chat.Ind(x, sum(x))} )
+   
    # set indices to NA when there are no individuals
    empty_plots <- div_indi$N == 0 
    div_indi$Shannon[empty_plots] <- NA
@@ -137,7 +161,24 @@ CalcBDfromAbundance <- function(filename){
    # dev.off()
    
    return(div_indi)
-}      
+}    
+
+################################################################################
+# execution of script
+
+setwd(path2Dropbox %+% "good_datasets/")
+
+div_list <- list()
+
+filenames <- list.files(pattern="*.xls*", full.names = F)
+
+# remove data set with non-integer numbers
+# filenames <- filenames[filenames != "De_Lima_1999.xlsx" &
+#                        filenames != "Leal_2012.xls" & 
+#                        filenames != "Gavish_2012.xlsx" &
+#                        filenames != "Gavish_2012_B.xlsx"]
+filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
+
 
 for (i in 1:length(filenames)){
    temp <- try(CalcBDfromAbundance(filenames[i]))
