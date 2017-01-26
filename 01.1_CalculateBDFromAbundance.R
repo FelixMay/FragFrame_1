@@ -28,6 +28,14 @@ Chat.Ind <- function(x, m){
    sapply(m, Sub)		
 }
 
+######
+Inf_to_NA <- function(x)
+{
+   x <- as.numeric(x)
+   x[!is.finite(x)] <- NA
+   return(x)
+}
+
 ############################################
 # Function to calculate biodiversity indices from every patch
 
@@ -87,7 +95,6 @@ CalcBDfromAbundance <- function(filename){
                           entity.size.rank =  dat_abund_pool[ ,2])
    rm(dat_abund_pool)
    
-   
    # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
    div_indi$S <- colSums(dat_abund_pool2 > 0)
@@ -100,9 +107,45 @@ CalcBDfromAbundance <- function(filename){
    
    div_indi$Pielou_even <- div_indi$Shannon / log(div_indi$S)
    
-   apply(dat_abund_pool2, 2, function(x) {Chat.Ind(x, sum(x))} )
-   div_indi$Sample_coverage <- apply(dat_abund_pool2, 2,
-                                     function(x) {Chat.Ind(x, sum(x))} )
+   # sample coverage
+   div_indi$coverage <- apply(dat_abund_pool2, 2,
+                              function(x) {Chat.Ind(x, sum(x))} )
+   
+   # extrapolated coverage with sample size * 2
+   cov_extra <- apply(dat_abund_pool2, 2,
+                      function(x) {Chat.Ind(x, 2*sum(x))})
+   
+   # get base coverage following Chao et al. 2014. Ecol Monographs
+   div_indi$base_cov <- max(max(div_indi$coverage, na.rm = T),
+                            min(cov_extra, na.rm = T))
+   
+   # get more conservative base coverage - at maximum extrapolate to 2*n
+   # div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
+   #                          min(cov_extra, na.rm = T))
+   
+   # calculate standardized coverage
+   div_indi$D0_hat <- rep(NA, nrow(div_indi)) 
+   div_indi$D1_hat <- rep(NA, nrow(div_indi)) 
+   div_indi$D2_hat <- rep(NA, nrow(div_indi)) 
+   
+   D_cov_std <- lapply(dat_abund_pool2,
+                       function(x) try(estimateD(x, datatype = "abundance",
+                                       base = "coverage",
+                                       level = div_indi$base_cov[1],
+                                       conf = NULL)))
+   succeeded <- !sapply(D_cov_std, is.error)
+   
+   if (sum(succeeded) > 0){
+      div_indi$D0_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 0")
+      div_indi$D1_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 1")
+      div_indi$D2_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 2")
+   }
+   
+   cov_eq_1 <- div_indi$coverage >= 1.0 
+   cov_eq_1[is.na(cov_eq_1)] <- FALSE
+   div_indi$D0_hat[cov_eq_1] <- div_indi$S[cov_eq_1]
+   div_indi$D1_hat[cov_eq_1] <- div_indi$ENS_shannon[cov_eq_1]
+   div_indi$D2_hat[cov_eq_1] <- div_indi$ENS_pie[cov_eq_1]
    
    # set indices to NA when there are no individuals
    empty_plots <- div_indi$N == 0 
@@ -111,42 +154,25 @@ CalcBDfromAbundance <- function(filename){
    div_indi$ENS_shannon[empty_plots] <- NA
    div_indi$ENS_pie[empty_plots] <- NA
    div_indi$Pielou_even[empty_plots] <- NA
-
-   # # coverage-based indices
-   # temp <- estimateD(dat_abund_pool2, "abundance", base="coverage", level=0.99, conf=NULL) # species richness, shannon, simpson standardized by coverage (99 %)
-   # div_indi$S_cov <- temp[,"q = 0"]
-   # div_indi$Shannon_cov <- temp[,"q = 1"]
-   # div_indi$PIE_cov <- temp[,"q = 2"]
-
-   # # rarefaction curves (=non-spatial accumulation curves )
-   # #SAC_list <- lapply(dat_abund, SAC.coleman)
-   # 
-   # # rarefied richness at minimum number of individuals
-   # n_min <- 10
-   # n_min_sample = max(n_min, min(div_indi$N))
-   # plots_low_n = div_indi$N < n_min
-   # 
-   # 
-   # nmin <- min(div_indi$N)
-   # #div_indi$S_rare1 <- sapply(SAC_list, "[", nmin)
-   # div_indi$S_rare <- rarefy(dat_abund_pool2, nmin, MARGIN = 2)
    
-   # # extrapolation
-   # chao_list <- lapply(dat_abund_pool2, function(x) try(SpadeR::ChaoSpecies(x, datatype = "abundance")))
-   # 
-   # succeeded <- !sapply(chao_list, is.error)
-   # chao_mat <- matrix(NA, nrow = 9, ncol = ncol(dat_abund_pool2))
-   # rownames(chao_mat) <- c("Homogeneous_Model","Homogeneous_MLE", "Chao1",
-   #                         "Chao1-bc", "iChao1", "ACE", "ACE-1" ,
-   #                         "1st_order_jackknife","2nd_order_jackknife")   
-   # 
-   # if (sum(succeeded) > 0){
-   #    chao_spec <- sapply(chao_list[succeeded], function(chao1){chao1$Species_table[,"Estimate"]})
-   #    
-   #    chao_mat[, succeeded] <- chao_spec
-   # }
-   # 
-   # div_indi <- cbind(div_indi, t(chao_mat))
+   # extrapolation to asymptotic species richness
+   D_asymp_list <- lapply(dat_abund_pool2,
+                          function(x) try(SpadeR::Diversity(x, datatype = "abundance",
+                                                            q = c(0,1,2))))
+   succeeded <- !sapply(D_asymp_list, is.error)
+   D_asymp_mat <- matrix(NA, nrow = ncol(dat_abund_pool2), ncol = 8)
+   colnames(D_asymp_mat) <- c("Chao1", "Chao1-bc", "iChao1", "ACE", "ACE-1",
+                              "D0_asymp","D1_asymp","D2_asymp")   
+
+   if (sum(succeeded) > 0){
+      S_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$SPECIES.RICHNESS[,"Estimate"]})
+      D_asymp_mat[succeeded, 1:5] <- t(S_asymp)
+      
+      Hill_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$HILL.NUMBERS[,"ChaoJost"]})
+      D_asymp_mat[succeeded, 6:8] <- t(Hill_asymp)
+   }
+
+   div_indi <- cbind(div_indi, D_asymp_mat)
    
    # # inter- and extrapolation plot
    # inext1 <- iNEXT(dat_abund_pool2[ ,div_indi$N > 0], q = 0, datatype="abundance")
@@ -159,6 +185,9 @@ CalcBDfromAbundance <- function(filename){
    # #grid.arrange(plot1, plot2, ncol = 2)
    # print(plot1)
    # dev.off()
+   
+   # set indices to NA when they are Inf or NaN
+   div_indi[,9:23] <- lapply(div_indi[,9:23], Inf_to_NA)
    
    return(div_indi)
 }    
@@ -180,13 +209,18 @@ filenames <- list.files(pattern="*.xls*", full.names = F)
 filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
 
+# try if all files really work
 for (i in 1:length(filenames)){
-   temp <- try(CalcBDfromAbundance(filenames[i]))
-   if (!inherits(temp, "try-error")){
-      div_list[[filenames2[i]]] <- temp
-   }
-}   
-#div_list[[filenames2[i]]] <- div_indi
+   temp <- CalcBDfromAbundance(filenames[i])
+   div_list[[filenames2[i]]] <- temp
+}
+
+# for (i in 1:length(filenames)){
+#    temp <- try(CalcBDfromAbundance(filenames[i]))
+#    if (!inherits(temp, "try-error")){
+#       div_list[[filenames2[i]]] <- temp
+#    }
+# }   
 
 div_df <- bind_rows(div_list)
 
@@ -196,5 +230,9 @@ div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ";", row.names = F)
 
-#write.csv(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""))
-            
+# check incomplete cases
+summary(div_df_nomatrix)
+div_df_nomatrix[!complete.cases(div_df_nomatrix), ]
+
+div_df_nomatrix[is.na(div_df_nomatrix$Pielou_even), ]
+div_df_nomatrix[is.na(div_df_nomatrix$D1_hat), ]
