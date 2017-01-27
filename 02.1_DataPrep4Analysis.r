@@ -2,15 +2,14 @@ div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=";")
 ES_df <- read.csv(file=path2temp %+% "ES_df.csv")
 meta_df <- read.csv(file=path2temp %+% "metaData.csv")
 
+BDmetrics <- c("N","S","ENS_pie","Pielou_even")
+
 ############################################################################
 ### 1. subset original dataset
 ############################################################################
 ES_df <- subset(ES_df, n.fragment>3)
 ES_df <- ES_df[,c("Study.ID", "n.fragment",
-                  "z.N", "z.var.N", 
-                  "z.S", "z.var.S",
-                  "z.PIE", "z.var.PIE",
-                  "z.S_cov", "z.var.S_cov")]
+                  sapply(BDmetrics, function(x) paste(c("z.","z.var."),x,sep="")))]
 
 ############################################################################
 ### 2.append meta-data
@@ -29,7 +28,7 @@ ES_df.complete$biome <- factor(ES_df.complete$biome)[drop=T]
 ### 4. restructure ES_df.complete
 ############################################################################
 df.list <- list()
-for(BD in c("N","S","PIE", "S_cov")){
+for(BD in BDmetrics){
    df.list[[BD]] <- ES_df.complete[,c("Study.ID", "n.fragment","z." %+% BD, "z.var." %+% BD, "taxa", "country", "continent", "biome")]
    names(df.list[[BD]]) <- c("Study.ID", "n.fragment","z", "z.var", "taxa", "country", "continent", "biome")
    df.list[[BD]]$BD <- BD
