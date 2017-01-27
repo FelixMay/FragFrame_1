@@ -1,4 +1,4 @@
-div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=";")
+div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
 
 str(div_df)
 ### calculate rank-correlation
