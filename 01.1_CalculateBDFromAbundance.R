@@ -236,3 +236,4 @@ div_df_nomatrix[!complete.cases(div_df_nomatrix), ]
 
 div_df_nomatrix[is.na(div_df_nomatrix$Pielou_even), ]
 div_df_nomatrix[is.na(div_df_nomatrix$D1_hat), ]
+div_df_nomatrix[is.na(div_df_nomatrix$Chao1), ]
