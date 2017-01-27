@@ -116,12 +116,12 @@ CalcBDfromAbundance <- function(filename){
                       function(x) {Chat.Ind(x, 2*sum(x))})
    
    # get base coverage following Chao et al. 2014. Ecol Monographs
-   div_indi$base_cov <- max(max(div_indi$coverage, na.rm = T),
-                            min(cov_extra, na.rm = T))
+   # div_indi$base_cov <- max(max(div_indi$coverage, na.rm = T),
+   #                         min(cov_extra, na.rm = T))
    
    # get more conservative base coverage - at maximum extrapolate to 2*n
-   # div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
-   #                          min(cov_extra, na.rm = T))
+   div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
+                             min(cov_extra, na.rm = T))
    
    # calculate standardized coverage
    div_indi$D0_hat <- rep(NA, nrow(div_indi)) 
@@ -165,10 +165,10 @@ CalcBDfromAbundance <- function(filename){
                               "D0_asymp","D1_asymp","D2_asymp")   
 
    if (sum(succeeded) > 0){
-      S_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$SPECIES.RICHNESS[,"Estimate"]})
+      S_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$Species_richness[,"Estimate"]})
       D_asymp_mat[succeeded, 1:5] <- t(S_asymp)
       
-      Hill_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$HILL.NUMBERS[,"ChaoJost"]})
+      Hill_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$Hill_numbers[,"ChaoJost"]})
       D_asymp_mat[succeeded, 6:8] <- t(Hill_asymp)
    }
 
@@ -228,7 +228,7 @@ div_df <- bind_rows(div_list)
 div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
 
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
-            sep = ";", row.names = F)
+            sep = ",", row.names = F)
 
 # check incomplete cases
 summary(div_df_nomatrix)
