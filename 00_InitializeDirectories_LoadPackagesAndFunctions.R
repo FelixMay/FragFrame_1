@@ -13,7 +13,7 @@
       path2temp <- "C:/Users/kg83hyby/Documents/temp/FragFrame_1/" 
    }  
    else {#FM
-      path2wd <-"c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/good_datasets/" 
+      path2wd <-"c:/FelixMay/Fragmentation_Extinction/FragFrame_1/" 
       path2Dropbox <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/"
       path2temp <- "c:/dropbox/fm28towy/Dropbox/Habitat loss meta-analysis/Analysis/"
    }
