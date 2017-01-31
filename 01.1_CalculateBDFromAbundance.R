@@ -115,13 +115,13 @@ CalcBDfromAbundance <- function(filename){
    cov_extra <- apply(dat_abund_pool2, 2,
                       function(x) {Chat.Ind(x, 2*sum(x))})
    
-   # get base coverage following Chao et al. 2014. Ecol Monographs
-   # div_indi$base_cov <- max(max(div_indi$coverage, na.rm = T),
-   #                         min(cov_extra, na.rm = T))
+   # get base coverage following Chao et al. 2014. Ecol Monographs, box 1, p 60
+   div_indi$base_cov <- max(max(div_indi$coverage, na.rm = T),
+                           min(cov_extra, na.rm = T))
    
    # get more conservative base coverage - at maximum extrapolate to 2*n
-   div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
-                             min(cov_extra, na.rm = T))
+   # div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
+   #                           min(cov_extra, na.rm = T))
    
    # calculate standardized coverage
    div_indi$D0_hat <- rep(NA, nrow(div_indi)) 
