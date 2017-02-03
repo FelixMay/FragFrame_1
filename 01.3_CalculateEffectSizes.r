@@ -11,8 +11,8 @@ for(i in 1:length(ES_df$Study.ID)){
    for(j in names(div_df)[-(1:3)]){
       ES_df[i,"n.fragment"] <- nrow(sub.df)
       r <- ifelse(ES_df[i,"n.fragment"] < 90,
-                  2*sin(pi*cor(sub.df$entity.size.rank,sub.df[,j],method="spearman", use = "everything")/6),
-                  cor(sub.df$entity.size.rank,sub.df[,j],method="spearman", use = "everything")) ### transform rank-correlation into Pearson-correlation, cf. Box 13.3. p 201 in Koricheva et al 2013
+                  2*sin(pi*cor(sub.df$entity.size.rank,sub.df[,j],method="spearman", use = "na.or.complete")/6),
+                  cor(sub.df$entity.size.rank,sub.df[,j],method="spearman", use = "na.or.complete")) ### transform rank-correlation into Pearson-correlation, cf. Box 13.3. p 201 in Koricheva et al 2013
       ES_df[i,"z." %+% j] <- 1/2*log((1+r)/(1-r))
       ES_df[i,"z.var." %+% j] <- ifelse(ES_df[i,"n.fragment"]>3,1/(ES_df[i,"n.fragment"]-3),NA)
    }
@@ -21,8 +21,8 @@ for(i in 1:length(ES_df$Study.ID)){
 write.csv(ES_df, file=path2temp %+% "ES_df.csv")
 
 # # Check studies with no effect size
-# # Not needed for automated execution, just for error checking
-# (check <- ES_df[is.na(ES_df$z.var.N), ])
-# 
-# 
-# div_df[div_df$filename %in% check$Study.ID,  ]
+# Not needed for automated execution, just for error checking
+(check <- ES_df[is.na(ES_df$z.S), ])
+
+
+div_df[div_df$filename %in% check$Study.ID,  ]
