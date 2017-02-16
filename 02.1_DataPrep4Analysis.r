@@ -1,46 +1,62 @@
-div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=";")
+div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
+ES_frag_df <- read.csv(file=path2temp %+% "ES_frag_df.csv")
+ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv")
 ES_df <- read.csv(file=path2temp %+% "ES_df.csv")
 meta_df <- read.csv(file=path2temp %+% "metaData.csv")
 
-BDmetrics <- c("N","S","ENS_pie","Pielou_even")
+BDmetrics <- c("N","S","ENS_pie")
 
 ############################################################################
 ### 1. subset original dataset
 ############################################################################
+ES_frag_df <- ES_frag_df[,c("Case.ID","Study.ID", "n.fragment",
+                            sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))]
+
+ES_frag_group_df <- ES_frag_group_df[,c("Case.ID","Study.ID", "n.fragment",
+                            sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))]
+
 ES_df <- subset(ES_df, n.fragment>3)
-ES_df <- ES_df[,c("Study.ID", "n.fragment",
+ES_df <- ES_df[,c("Case.ID","Study.ID", "n.fragment",
                   sapply(BDmetrics, function(x) paste(c("z.","z.var."),x,sep="")))]
 
 ############################################################################
 ### 2.append meta-data
 ############################################################################
-ES_df.complete <- left_join(ES_df,meta_df[,-1],by="Study.ID")
+ES_frag_df.complete <- left_join(ES_frag_df,meta_df[,-1],by="Case.ID")
+ES_frag_group_df.complete <- left_join(ES_frag_group_df,meta_df[,-1],by="Case.ID")
+ES_df.complete <- left_join(ES_df,meta_df[,-1],by="Case.ID")
+
+# ############################################################################
+# ### 3. drop unused levels
+# ############################################################################
+# ES_df.complete$taxa <- factor(ES_df.complete$taxa)[drop=T]
+# ES_df.complete$country <- factor(ES_df.complete$country)[drop=T]
+# ES_df.complete$continent <- factor(ES_df.complete$continent)[drop=T]
+# ES_df.complete$biome <- factor(ES_df.complete$biome)[drop=T]
 
 ############################################################################
-### 3. drop unused levels
+### 4. restructure datasets _df.complete
 ############################################################################
-ES_df.complete$taxa <- factor(ES_df.complete$taxa)[drop=T]
-ES_df.complete$country <- factor(ES_df.complete$country)[drop=T]
-ES_df.complete$continent <- factor(ES_df.complete$continent)[drop=T]
-ES_df.complete$biome <- factor(ES_df.complete$biome)[drop=T]
+## transform into long dataframes
+ES_frag_df.complete_long <- melt(ES_frag_df.complete,variable.name="logRR",measure.vars=sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))
 
-############################################################################
-### 4. restructure ES_df.complete
-############################################################################
-df.list <- list()
-for(BD in BDmetrics){
-   df.list[[BD]] <- ES_df.complete[,c("Study.ID", "n.fragment","z." %+% BD, "z.var." %+% BD, "taxa", "country", "continent", "biome")]
-   names(df.list[[BD]]) <- c("Study.ID", "n.fragment","z", "z.var", "taxa", "country", "continent", "biome")
-   df.list[[BD]]$BD <- BD
+ES_frag_group_df.complete_long <- melt(ES_frag_group_df.complete,variable.name="logRR",measure.vars=sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))
+
+ES_df.complete_long <- melt(ES_df.complete,variable.name="z",measure.vars=sapply(BDmetrics, function(x) paste("z.",x,sep="")))
+ES_df.complete_long$z.var <- NA
+for (BD in BDmetrics){
+   ES_df.complete_long$z.var[ES_df.complete_long$z=="z." %+% BD] <- ES_df.complete_long[ES_df.complete_long$z=="z." %+% BD,"z.var." %+% BD]
 }
+ES_df.complete_long <- ES_df.complete_long[,-which(names(ES_df.complete_long) %in% c("z.var." %+% BDmetrics))]
 
-df.complete <- bind_rows(df.list)
-df.complete <- df.complete[order(df.complete$Study.ID),]
-df.complete$BD <- as.factor(df.complete$BD)
+############################################################################
+### 5. save output
+############################################################################
 
+write.csv(ES_frag_df.complete, file=path2temp %+% "ES_frag_df.complete.csv")
+write.csv(ES_frag_group_df.complete, file=path2temp %+% "ES_frag_group_df.complete.csv")
 write.csv(ES_df.complete, file=path2temp %+% "ES_df.complete.csv")
-write.csv(df.complete, file=path2temp %+% "df.complete.csv")
 
-save(ES_df.complete,df.complete, file=path2temp %+% "Data4Analysis.Rdata")
+save.image(file=path2temp %+% "Data4Analysis.Rdata")
 
 

@@ -16,7 +16,7 @@ for (i in 1:length(filenames)){
          dat_meta[1,] <- t(df[,2])
          names(dat_meta) <- df[,1]
          
-         meta_list[[filenames2[i]]] <- data.frame(Study.ID = filenames2[i],
+         meta_list[[filenames2[i]]] <- data.frame(Case.ID = filenames2[i],
                                                   taxa=dat_meta$taxa.class,
                                                   country=dat_meta$location.country,
                                                   continent=dat_meta$location.continent,

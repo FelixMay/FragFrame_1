@@ -6,19 +6,19 @@ source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R
 ############################################################################
 ### 01 DATA PREPARATION
 ############################################################################
-# 1. create table with raw data Study.ID-Fragment-Rank-Abundance
+# 1. create table with raw data Case.ID-Fragment-Rank-Abundance
 source(path2wd %+% "01.1_CalculateBDFromAbundance.r") 
 
-# 2. create table with Study.ID - meta-data
+# 2. create table with Case.ID - meta-data
 source(path2wd %+% "01.2_AddMetaData.r") 
 
-# 3. calculate effect sizes per Study.ID and merge with meta-data
+# 3. calculate effect sizes per Case.ID
 source(path2wd %+% "01.3_CalculateEffectSizes.r") 
 
 ############################################################################
 ###  02 DATA ANALYSIS
 ############################################################################
-# 1. 
+# 1. merge dataframes with meta-data
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
 source(path2wd %+% "02.1_DataPrep4Analysis.r") 

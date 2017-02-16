@@ -1,5 +1,5 @@
-load(path2temp %+% "Data4Analysis.Rdata") # ES_df.complete, df.complete
-BDmetrics <- c("N", "S", "ENS_pie", "Pielou_even")
+load(path2temp %+% "Data4Analysis.Rdata") 
+ls()
 
 ############################################################################
 ### 1. Plot effect sizes in a 2-dim space
@@ -17,29 +17,12 @@ ggplot(data=ES_df.complete, aes(x=z.N,y=z.ENS_pie,col=taxa)) +
    geom_errorbarh(aes(xmin=z.N - (1.96*sqrt(z.var.N)),xmax=z.N + (1.96*sqrt(z.var.N)))) +
    geom_abline(intercept=0,slope=1,lty="dotted")
 
-ggplot(data=ES_df.complete, aes(x=z.N,y=z.Pielou_even,col=taxa)) + 
-   geom_point(alpha=.5,size=3) +
-   geom_errorbar(aes(ymin=z.Pielou_even - (1.96*sqrt(z.var.Pielou_even)),ymax=z.Pielou_even + (1.96*sqrt(z.var.Pielou_even)))) +
-   geom_errorbarh(aes(xmin=z.N - (1.96*sqrt(z.var.N)),xmax=z.N + (1.96*sqrt(z.var.N)))) +
-   geom_abline(intercept=0,slope=1,lty="dotted")
-
 ggplot(data=ES_df.complete, aes(x=z.S,y=z.ENS_pie,col=taxa)) + 
    geom_point(alpha=.5,size=3) +
    geom_errorbar(aes(ymin=z.ENS_pie - (1.96*sqrt(z.var.ENS_pie)),ymax=z.ENS_pie + (1.96*sqrt(z.var.ENS_pie)))) +
    geom_errorbarh(aes(xmin=z.S - (1.96*sqrt(z.var.S)),xmax=z.S + (1.96*sqrt(z.var.S)))) +
    geom_abline(intercept=0,slope=1,lty="dotted")
 
-ggplot(data=ES_df.complete, aes(x=z.S,y=z.Pielou_even,col=taxa)) + 
-   geom_point(alpha=.5,size=3) +
-   geom_errorbar(aes(ymin=z.Pielou_even - (1.96*sqrt(z.var.Pielou_even)),ymax=z.Pielou_even + (1.96*sqrt(z.var.Pielou_even)))) +
-   geom_errorbarh(aes(xmin=z.S - (1.96*sqrt(z.var.S)),xmax=z.S + (1.96*sqrt(z.var.S)))) +
-   geom_abline(intercept=0,slope=1,lty="dotted")
-
-ggplot(data=ES_df.complete, aes(x=z.ENS_pie,y=z.Pielou_even,col=taxa)) + 
-   geom_point(alpha=.5,size=3) +
-   geom_errorbar(aes(ymin=z.Pielou_even - (1.96*sqrt(z.var.Pielou_even)),ymax=z.Pielou_even + (1.96*sqrt(z.var.Pielou_even)))) +
-   geom_errorbarh(aes(xmin=z.ENS_pie - (1.96*sqrt(z.var.ENS_pie)),xmax=z.S + (1.96*sqrt(z.var.ENS_pie)))) +
-   geom_abline(intercept=0,slope=1,lty="dotted")
 dev.off()
 
 ############################################################################
@@ -77,7 +60,7 @@ dev.off()
 ############################################################################
 ### 2. forest plots
 ############################################################################
-pdf(file=path2temp %+% "ForestPlots.pdf")
+pdf(file=path2temp %+% "ForestPlots_z.pdf")
 sapply(BDmetrics, function(j) forest(x=ES_df.complete[,"z." %+% j],vi=ES_df.complete[,"z.var." %+% j],slab=ES_df.complete$Study.ID,psize=1,main=paste(j),cex=.6))
 dev.off()       
 
@@ -109,8 +92,13 @@ panel.smooth <- function (x, y, col = par("col"), bg = NA, pch = par("pch"),
             col = col.smooth, ...)
    abline(0,1,lty="dotted")
 }
-pairs(ES_df.complete[,"z." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
 
-png(file=path2temp %+% "PairwiseCorPlot.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
+png(file=path2temp %+% "PairwiseCorPlot_frag.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
+pairs(ES_frag_df.complete[,"logRR." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
+dev.off()
+png(file=path2temp %+% "PairwiseCorPlot_frag_group.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
+pairs(ES_frag_group_df.complete[,"logRR." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
+dev.off()
+png(file=path2temp %+% "PairwiseCorPlot_gradient.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
 pairs(ES_df.complete[,"z." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()

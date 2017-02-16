@@ -92,8 +92,8 @@ CalcBDfromAbundance <- function(filename){
    # prepare output data
    div_indi <- data.frame(filename   = filename2, 
                           entity.id = dat_abund_pool[ ,1],
-                          entity.size = dat_head_t$entity.size[dat_head_t$entity.id==dat_abund_pool[ ,1]],
                           entity.size.rank =  dat_abund_pool[ ,2])
+   div_indi <- join(div_indi,dat_head_t[,c("entity.id","entity.size")],match="first")
    rm(dat_abund_pool)
    
    # simple diversity indices
