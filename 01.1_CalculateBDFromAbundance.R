@@ -44,31 +44,39 @@ CalcBDfromAbundance <- function(filename){
    print(filename)
    filename2 <- strsplit(filename, split = "[.]")[[1]][1]
    
-   # reading and cleaning the data
-   dat_head <- read.xlsx(filename, sheetIndex = 1, startRow = 1, endRow = 3,
+   dat_head <- read.xlsx(filename, sheetIndex = 1, rowIndex = 2:4,
                          header = F)
    dat_head_t <- as.data.frame(t(dat_head[,-1]))
    names(dat_head_t) <- dat_head[,1]
    
    #dat_head <- dat_head[, names(dat_head) != "NA."]
    
-   dat_frag_size <- read.xlsx(filename, sheetIndex = 1, startRow = 3, endRow = 4,
-                              stringsAsFactors = F)
+   dat_frag_size <- read.xlsx(filename, sheetIndex = 1, rowIndex = 5,
+                              stringsAsFactors = F, header = F)
    dat_frag_size <- dat_frag_size[, -1]
    
    dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
    
-   dat_ranks <- read.xlsx(filename, sheetIndex = 1, startRow = 4, endRow = 5)
+   dat_ranks <- read.xlsx(filename, sheetIndex = 1, rowIndex = 6, header = F)
    dat_ranks <- dat_ranks[, -1]
    #dat_ranks <- dat_ranks[, names(dat_ranks) != "NA."]
    
    dat_head_t$entity.size.rank <- as.numeric(dat_ranks[1,])
    
+   dat_sample_eff <- read.xlsx(filename, sheetIndex = 1, rowIndex = 1,
+                               header = F, stringsAsFactors = F)
+   dat_sample_eff <- as.numeric(dat_sample_eff[, -1])
+   dat_sample_eff[is.na(dat_sample_eff)] <- 1
+   
+   if (max(dat_sample_eff) > 1) print(paste("Unequal sampling effort in", filename))
+   
+   dat_head_t$entity.sampling.effort <- dat_sample_eff
+   
    # # just a quick check
    # plot(entity.size.rank ~ entity.size,
    #      data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
 
-   dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 6, header = F)
+   dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 7, header = F)
    dat_abund <- dat_abund[, -1]
    
    na_col <- apply(dat_abund, 1, function(x) sum(is.na(x)))
@@ -81,23 +89,31 @@ CalcBDfromAbundance <- function(filename){
    dat_abund <- round(dat_abund, digits = 0)
    dat_abund_t <- t(dat_abund)
    
+   # standardize number of individuals by sampling effort
+   n_indiv <- colSums(dat_abund)
+   n_indiv_std  <- n_indiv/dat_sample_eff
+   
+   dat_abund_t <- cbind(n_indiv_std, dat_abund_t)
+   
    # pool data from the same fragments
    dat_abund_pool <- aggregate(dat_abund_t,
                                by = list(dat_head_t$entity.id,
                                          dat_head_t$entity.size.rank),
                                FUN = sum)
-   dat_abund_pool2 <- as.data.frame(t(dat_abund_pool[,-c(1:2)]))
+   dat_abund_pool2 <- as.data.frame(t(dat_abund_pool[,-c(1:3)]))
    names(dat_abund_pool2) <- dat_abund_pool[ ,1]
    
    # prepare output data
    div_indi <- data.frame(filename   = filename2, 
                           entity.id = dat_abund_pool[ ,1],
                           entity.size.rank =  dat_abund_pool[ ,2])
-   div_indi <- join(div_indi,dat_head_t[,c("entity.id","entity.size")],match="first")
-   rm(dat_abund_pool)
+   
+   # This row results in a bug when the data for entitiy.size is empty
+   div_indi <- join(div_indi, dat_head_t[,c("entity.id","entity.size")], match="first")
    
    # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
+   div_indi$N_std <- dat_abund_pool[,"n_indiv_std"] 
    div_indi$S <- colSums(dat_abund_pool2 > 0)
    
    div_indi$Shannon <- diversity(t(dat_abund_pool2), index = "shannon")
@@ -118,7 +134,7 @@ CalcBDfromAbundance <- function(filename){
    
    # get base coverage following Chao et al. 2014. Ecol Monographs, box 1, p 60
    div_indi$base_cov <- max(max(div_indi$coverage, na.rm = T),
-                           min(cov_extra, na.rm = T))
+                            min(cov_extra, na.rm = T))
 
    # get more conservative base coverage - at maximum extrapolate to 2*n
    # div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
