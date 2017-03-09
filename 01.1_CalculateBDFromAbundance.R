@@ -70,8 +70,6 @@ CalcBDfromAbundance <- function(filename){
    
    if (max(dat_sample_eff) > 1) print(paste("Unequal sampling effort in", filename))
    
-   dat_head_t$entity.sampling.effort <- dat_sample_eff
-   
    # # just a quick check
    # plot(entity.size.rank ~ entity.size,
    #      data = dat_head_t[order(dat_head_t$entity.size), ], type = "b")
@@ -89,11 +87,7 @@ CalcBDfromAbundance <- function(filename){
    dat_abund <- round(dat_abund, digits = 0)
    dat_abund_t <- t(dat_abund)
    
-   # standardize number of individuals by sampling effort
-   n_indiv <- colSums(dat_abund)
-   n_indiv_std  <- n_indiv/dat_sample_eff
-   
-   dat_abund_t <- cbind(n_indiv_std, dat_abund_t)
+   dat_abund_t <- cbind(dat_sample_eff, dat_abund_t)
    
    # pool data from the same fragments
    dat_abund_pool <- aggregate(dat_abund_t,
@@ -113,7 +107,8 @@ CalcBDfromAbundance <- function(filename){
    
    # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
-   div_indi$N_std <- dat_abund_pool[,"n_indiv_std"] 
+   div_indi$sample_effort <- dat_abund_pool[,"dat_sample_eff"] 
+   div_indi$N_std <-  div_indi$N/div_indi$sample_effort
    div_indi$S <- colSums(dat_abund_pool2 > 0)
    
    div_indi$Shannon <- diversity(t(dat_abund_pool2), index = "shannon")
@@ -227,10 +222,12 @@ filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
 
 # try if all files really work
+system.time({
 for (i in 1:length(filenames)){
    temp <- CalcBDfromAbundance(filenames[i])
    div_list[[filenames2[i]]] <- temp
 }
+})
 
 # for (i in 1:length(filenames)){
 #    temp <- try(CalcBDfromAbundance(filenames[i]))
