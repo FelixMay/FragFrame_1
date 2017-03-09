@@ -45,8 +45,8 @@ needed_libs <- c("devtools", # download from github
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
                  "plot3D", # for multidimensional plotting
-                 "dplyr", # for data manipulation
                  "plyr",
+                 "dplyr", # for data manipulation
                  "reshape2", # for restructuring datasets with melt()
                  "xlsx",  # for reading Excel spreadsheets
                  "SpadeR"
