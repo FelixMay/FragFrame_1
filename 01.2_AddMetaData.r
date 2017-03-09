@@ -20,7 +20,12 @@ for (i in 1:length(filenames)){
                                                   taxa=dat_meta$taxa.class,
                                                   country=dat_meta$location.country,
                                                   continent=dat_meta$location.continent,
-                                                  biome=dat_meta$location.biome)
+                                                  biome=dat_meta$location.biome,
+                                                  fragment.biome = dat_meta$fragment.biome,
+                                                  matrix.biome=dat_meta$matrix.biome,
+                                                  fragment.veg=dat_meta$fragment.vegetation,
+                                                  matrix.veg=dat_meta$matrix.vegetation,
+                                                  sampling.effort = dat_meta$sampling.effort.measure)
          meta_list[[filenames2[i]]] <- sapply(meta_list[[filenames2[i]]],as.character)
       }
    }
