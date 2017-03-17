@@ -57,11 +57,13 @@ CalcBDfromAbundance <- function(filename){
    
    dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
    
-   dat_ranks <- read.xlsx(filename, sheetIndex = 1, rowIndex = 6, header = F)
-   dat_ranks <- dat_ranks[, -1]
-   #dat_ranks <- dat_ranks[, names(dat_ranks) != "NA."]
+   dat_ranks <- read.xlsx(filename, sheetIndex = 1, rowIndex = 6, header = F,
+                          stringsAsFactors = F)
    
-   dat_head_t$entity.size.rank <- as.numeric(dat_ranks[1,])
+   dat_ranks <- as.numeric(dat_ranks[1,-1])
+   dat_ranks[is.na(dat_ranks)] <- 0
+   
+   dat_head_t$entity.size.rank <- dat_ranks
    
    dat_sample_eff <- read.xlsx(filename, sheetIndex = 1, rowIndex = 1,
                                header = F, stringsAsFactors = F)
@@ -97,6 +99,12 @@ CalcBDfromAbundance <- function(filename){
    dat_abund_pool2 <- as.data.frame(t(dat_abund_pool[,-c(1:3)]))
    names(dat_abund_pool2) <- dat_abund_pool[ ,1]
    
+   # get samples per fragments
+   dat_n_sampling_units <- aggregate(dat_head_t$entity.id.plot,
+                                     by = list(dat_head_t$entity.id,
+                                               dat_head_t$entity.size.rank),
+                                     FUN = length)
+   
    # prepare output data
    div_indi <- data.frame(filename   = filename2, 
                           entity.id = dat_abund_pool[ ,1],
@@ -106,8 +114,9 @@ CalcBDfromAbundance <- function(filename){
    div_indi <- join(div_indi, dat_head_t[,c("entity.id","entity.size")], match="first")
    
    # simple diversity indices
-   div_indi$N <- colSums(dat_abund_pool2)
+   div_indi$sampling_units <- dat_n_sampling_units[,3]
    div_indi$sample_effort <- dat_abund_pool[,"dat_sample_eff"] 
+   div_indi$N <- colSums(dat_abund_pool2)
    div_indi$N_std <-  div_indi$N/div_indi$sample_effort
    div_indi$S <- colSums(dat_abund_pool2 > 0)
    
@@ -199,7 +208,7 @@ CalcBDfromAbundance <- function(filename){
    # dev.off()
    
    # set indices to NA when they are Inf or NaN
-   div_indi[,9:23] <- lapply(div_indi[,9:23], Inf_to_NA)
+   div_indi[,9:ncol(div_indi)] <- lapply(div_indi[,9:ncol(div_indi)], Inf_to_NA)
    
    return(div_indi)
 }    
