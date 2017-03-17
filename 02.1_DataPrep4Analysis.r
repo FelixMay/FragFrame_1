@@ -4,20 +4,20 @@ ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv")
 ES_df <- read.csv(file=path2temp %+% "ES_df.csv")
 meta_df <- read.csv(file=path2temp %+% "metaData.csv")
 
-BDmetrics <- c("N","S","ENS_pie")
+BDmetrics <- c("N_std","S","D0_hat","ENS_pie")
 
 ############################################################################
 ### 1. subset original dataset
 ############################################################################
 ES_frag_df <- ES_frag_df[,c("Case.ID","Study.ID", "n.fragment",
-                            sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))]
+                            sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))]
 
 ES_frag_group_df <- ES_frag_group_df[,c("Case.ID","Study.ID", "n.fragment",
-                            sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))]
+                            sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))]
 
 ES_df <- subset(ES_df, n.fragment>3)
 ES_df <- ES_df[,c("Case.ID","Study.ID", "n.fragment",
-                  sapply(BDmetrics, function(x) paste(c("z.","z.var."),x,sep="")))]
+                  sapply(BDmetrics, function(x) paste(c("ES.","ES.var."),x,sep="")))]
 
 ############################################################################
 ### 2.append meta-data
@@ -38,16 +38,16 @@ ES_df.complete <- left_join(ES_df,meta_df[,-1],by="Case.ID")
 ### 4. restructure datasets _df.complete
 ############################################################################
 ## transform into long dataframes
-ES_frag_df.complete_long <- melt(ES_frag_df.complete,variable.name="logRR",measure.vars=sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))
+ES_frag_df.complete_long <- melt(ES_frag_df.complete,variable.name="ES",measure.vars=sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))
 
-ES_frag_group_df.complete_long <- melt(ES_frag_group_df.complete,variable.name="logRR",measure.vars=sapply(BDmetrics, function(x) paste(c("logRR."),x,sep="")))
+ES_frag_group_df.complete_long <- melt(ES_frag_group_df.complete,variable.name="ES",measure.vars=sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))
 
-ES_df.complete_long <- melt(ES_df.complete,variable.name="z",measure.vars=sapply(BDmetrics, function(x) paste("z.",x,sep="")))
-ES_df.complete_long$z.var <- NA
+ES_df.complete_long <- melt(ES_df.complete,variable.name="ES",measure.vars=sapply(BDmetrics, function(x) paste("ES.",x,sep="")))
+ES_df.complete_long$ES.var <- NA
 for (BD in BDmetrics){
-   ES_df.complete_long$z.var[ES_df.complete_long$z=="z." %+% BD] <- ES_df.complete_long[ES_df.complete_long$z=="z." %+% BD,"z.var." %+% BD]
+   ES_df.complete_long$ES.var[ES_df.complete_long$ES=="ES." %+% BD] <- ES_df.complete_long[ES_df.complete_long$ES=="ES." %+% BD,"ES.var." %+% BD]
 }
-ES_df.complete_long <- ES_df.complete_long[,-which(names(ES_df.complete_long) %in% c("z.var." %+% BDmetrics))]
+ES_df.complete_long <- ES_df.complete_long[,-which(names(ES_df.complete_long) %in% c("ES.var." %+% BDmetrics))]
 
 ############################################################################
 ### 5. save output
