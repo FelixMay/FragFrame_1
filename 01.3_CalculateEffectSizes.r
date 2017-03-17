@@ -8,16 +8,20 @@ BDmetrics <- c("N_std","S","D0_hat","ENS_pie")
 ### 1. largest vs smallest fragment incl continuous as fragment using log RR
 ###############################################################
 ES_frag_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("n.fragment",c("ES.") %+% BDmetrics)
+namES_df <- c("n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
 ES_frag_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_df$Case.ID)){
    sub.df <- subset(div_df, filename %in% ES_frag_df$Case.ID[i])
-   small.df <- sub.df[which.min(sub.df$entity.size.rank),]
-   large.df <- sub.df[which.max(sub.df$entity.size.rank),]
+   small.df <- sub.df[which(sub.df$entity.size.rank == min(sub.df$entity.size.rank)),]
+   large.df <- sub.df[which(sub.df$entity.size.rank == max(sub.df$entity.size.rank)),]
    ES_frag_df[i,"n.fragment"] <- nrow(sub.df)
+   ES_frag_df[i,"log.rr.entity.size"] <-
+      log(mean(small.df$entity.size)/mean(large.df$entity.size)) #log-ratio of smallest vs. largest fragment area
+   n.small <- nrow(small.df)
+   n.large <- nrow(large.df) 
    for(j in BDmetrics){
-      ES_frag_df[i,"ES." %+% j] <- log(small.df[,j]/large.df[,j])
+      ES_frag_df[i,"ES." %+% j] <- log(mean(small.df[,j])/mean(large.df[,j]))
    }
 }
 
@@ -25,14 +29,19 @@ for(i in 1:length(ES_frag_df$Case.ID)){
 ### 2. largest (incl. continuous) vs smallest fragment group using log RR
 ###############################################################
 ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("n.fragment",c("ES.") %+% BDmetrics)
+namES_df <- c("n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
 ES_frag_group_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_group_df$Case.ID)){
    sub.df <- subset(div_df, filename %in% ES_frag_group_df$Case.ID[i])
-   small.df <- sub.df[which(sub.df$entity.size.rank<median(sub.df$entity.size.rank)),]
-   large.df <- sub.df[which(sub.df$entity.size.rank>median(sub.df$entity.size.rank)),]
+   small.df <- sub.df[which(sub.df$entity.size.rank < median(unique(sub.df$entity.size.rank))),]
+   large.df <- sub.df[which(sub.df$entity.size.rank > median(unique(sub.df$entity.size.rank))),]
    ES_frag_group_df[i,"n.fragment"] <- nrow(sub.df)
+   ES_frag_group_df[i,"log.rr.entity.size"] <-
+      log(mean(small.df$entity.size)/mean(large.df$entity.size)) #log-ratio of smallest vs. largest fragment area
+   n.small <- nrow(small.df)
+   n.large <- nrow(large.df) 
+   
    for(j in BDmetrics){
       ES_frag_group_df[i,"ES." %+% j] <- log(mean(small.df[,j])/mean(large.df[,j]))
    }
@@ -43,7 +52,7 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
 ###############################################################
 #calculate rank-correlation
 ES_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("n.fragment",c("ES.","ES.var.") %+% rep(BDmetrics,each=2))
+namES_df <- c("sample.design","n.fragment",c("ES.","ES.var.") %+% rep(BDmetrics,each=2))
 ES_df[,namES_df] <- NA
 
 for(i in 1:length(ES_df$Case.ID)){
@@ -56,6 +65,40 @@ for(i in 1:length(ES_df$Case.ID)){
       ES_df[i,"ES." %+% j] <- 1/2*log((1+r)/(1-r))
       ES_df[i,"ES.var." %+% j] <- ifelse(ES_df[i,"n.fragment"]>3,1/(ES_df[i,"n.fragment"]-3),NA)
    }
+   
+   range_sample_eff <- range(sub.df$sample_effort)
+   range_sample_units <- range(sub.df$sampling_units)
+   if (range_sample_eff[2] - range_sample_eff[1] == 0){
+      ES_df[i,"sample.design"] <- "standardized"
+   } else {
+      if (range_sample_units[2] - range_sample_units[1] == 0) {
+         ES_df[i,"sample.design"] <- "pooled"
+      } else {
+         ES_df[i,"sample.design"] <- "subsamples_in_frag"
+      }
+   }
+   
+   fig_name <- path2temp %+% paste(unique(sub.df$filename), ".png", sep = "")
+   png(fig_name, width = 8, height = 6, units = "in", res = 200)
+   op <- par(mfrow = c(2,3), oma = c(0,0,4,0), las = 1)
+   boxplot(N ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "N")
+   boxplot(sample_effort ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "Sampling effort")
+   boxplot(N_std ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "N standardized")
+   boxplot(S ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "S")
+   boxplot(D0_hat ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "Asymptotic S")
+   boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "ENS_PIE")
+   mtext(unique(sub.df$filename), side = 3,
+         line = 2, outer = T, cex = 1.2)
+   mtext(paste(ES_df$n.fragment[i]," Fragments, ", ES_df$sample.design[i], sep = ""),
+               side = 3, line = 0, outer = T)
+   
+   dev.off()
 }
 
 ###############################################################
