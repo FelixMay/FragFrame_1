@@ -42,6 +42,7 @@ needed_libs <- c("devtools", # download from github
                  "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
                  "vegan", # for diversity indices
                  "metafor", # for meta-analysis 
+                 "lme4", # for lmer
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
                  "plot3D", # for multidimensional plotting
