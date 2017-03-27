@@ -33,4 +33,15 @@ for (i in 1:length(filenames)){
 
 meta_df <- as.data.frame(do.call(rbind, meta_list) )
 
+### group taxa levels
+meta_df$taxa <- as.character(meta_df$taxa)
+meta_df$taxa[meta_df$taxa %in% c("amphibians","amphibians, reptiles", "reptiles", "reptiles, molluscs")] <- "amphibians & reptiles"
+meta_df$taxa[meta_df$taxa %in% c("birds")] <- "birds"
+meta_df$taxa[meta_df$taxa %in% c("mammals")] <- "mammals"
+meta_df$taxa[meta_df$taxa %in% c("plants")] <- "plants"
+meta_df$taxa[meta_df$taxa %in% c("arachnids", "insects", "arthropods")] <- "invertebrates"
+
+meta_df$taxa <- factor(meta_df$taxa) 
+
+### save table
 write.csv(meta_df, file = paste(path2temp, "metaData.csv", sep = ""))
