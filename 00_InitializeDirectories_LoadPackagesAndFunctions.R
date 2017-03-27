@@ -45,6 +45,7 @@ needed_libs <- c("devtools", # download from github
                  "lme4", # for lmer
                  "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
+                 "grid", # for extracting legends with grid.draw()
                  "plot3D", # for multidimensional plotting
                  "plyr",
                  "dplyr", # for data manipulation
