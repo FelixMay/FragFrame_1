@@ -36,6 +36,11 @@ Inf_to_NA <- function(x)
    return(x)
 }
 
+
+############################################
+# Function from Legendre 2014 GEB
+source(path2wd %+% "beta_div_comp.R") 
+
 ############################################
 # Function to calculate biodiversity indices from every patch
 
@@ -194,6 +199,29 @@ CalcBDfromAbundance <- function(filename){
    }
 
    div_indi <- cbind(div_indi, D_asymp_mat)
+   
+   #############################################################################
+   # Beta-diversity partitioning
+   
+   # Select fragments with 
+   
+   # Smallest and largest only
+   #sub_ranks <- c(min(dat_ranks), max(dat_ranks))
+   
+   # Lower and upper quartile
+   q_ranks <- quantile(dat_ranks, prob = c(0.25, 0.75))
+   sub_ranks <- sort(dat_ranks[dat_ranks <= q_ranks[1] | dat_ranks >= q_ranks[2]])
+   
+   dat_abund_pool3 <- dat_abund_pool[dat_abund_pool[,2] %in% sub_ranks, ]
+   
+   size_class <- ifelse(dat_abund_pool3$Group.2 <= q_ranks[1], "Small", "Large")
+   
+   #Pool fragments with the same size rank
+   dat_abund_pool3a <- aggregate(dat_abund_pool3[, 4:ncol(dat_abund_pool3)],
+                                 by = list(size_class),
+                                 FUN = sum)
+   
+   beta_comp <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BJ", quant = T)
    
    # # inter- and extrapolation plot
    # inext1 <- iNEXT(dat_abund_pool2[ ,div_indi$N > 0], q = 0, datatype="abundance")
