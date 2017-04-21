@@ -2,6 +2,18 @@ load(path2temp %+% "Data4Analysis.Rdata")
 ls()
 
 BDmetrics <- c("S","D0_hat","N_std","ENS_pie")
+
+############################################################################
+### 1. Histograms of Effect sizes
+############################################################################
+pdf(file=path2temp %+% "Histograms/Hist_EffectSizes.pdf")
+for(BD in BDmetrics){
+   hist(ES_frag_df[,"ES." %+% BD],main=BD,xlab="ES_frag_df")
+   hist(ES_frag_group_df[,"ES." %+% BD],main=BD,xlab="ES_frag_group_df")
+   hist(ES_df[,"ES." %+% BD],main=BD,xlab="ES_df")
+}
+dev.off()
+
 ############################################################################
 ### 1. Forest plots
 ############################################################################
@@ -131,7 +143,7 @@ for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.bi
    ggsave(p, file = path2temp %+% "Histograms/Histogram_meta_df_" %+% col %+% ".png", width = 20, height = 8, type = "cairo-png")
    
 }
-
+## TO DO: Histogram of sampling.effort
 
 #### RESTERAMPE
 ############################################################################

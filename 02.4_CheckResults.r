@@ -119,11 +119,12 @@ asymmetry.test(model_gradient[[5]],1/df_long_sub$ES.var[as.numeric(names(residua
 # an alternative approach from http://people.stern.nyu.edu/jsimonof/classes/2301/pdf/diagnost.pdf
 influence.func <- function(model){
    h <- hatvalues(model)
-   x.seq <- seq(min(rstandard(model$z),max(rstandard(model$z),length.out=100)
-                    y.seq <- seq(min(h),max(h),length.out=100)
-                    D <- (x.seq^2*y.seq)/((length(model$b)+1)*(1-y.seq))
-                    
-                    plot(rstandard(model$z~h,xlab="Leverage",ylab="Standardized Residuals", main="Residuals vs. Leverage")
+   x.seq <- seq(min(rstandard(model$z),max(rstandard(model$z),length.out=100)))
+   y.seq <- seq(min(h),max(h),length.out=100)
+   D <- (x.seq^2*y.seq)/((length(model$b)+1)*(1-y.seq))
+   plot(rstandard(model$z~h,xlab="Leverage",ylab="Standardized Residuals", main="Residuals vs. Leverage"))
                          #contour(x.seq,y.seq,D) # not working
                          
 }
+
+influence.func(model_frag[[1]])

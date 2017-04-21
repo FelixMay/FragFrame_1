@@ -22,6 +22,7 @@ source(path2wd %+% "01.3_CalculateEffectSizes.r")
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
 source(path2wd %+% "02.1_DataPrep4Analysis.r") 
+save.image(file=path2temp %+% "02.1_Data4Analysis_out.Rdata")
 
 # 2. 
 rm(list=ls())
@@ -32,4 +33,13 @@ source(path2wd %+% "02.2_DescriptiveStats.r")
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
 source(path2wd %+% "02.3_DataAnalysis.r") 
+save.image(file=path2temp %+% "02.3_DataAnalysis_out.Rdata")
 
+# 4. 
+rm(list=ls())
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+source(path2wd %+% "02.4_CheckResults.r") 
+
+rm(list=ls())
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+source(path2wd %+% "02.5_VisualizeResults.r") 

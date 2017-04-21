@@ -34,8 +34,8 @@ ES_frag_group_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_group_df$Case.ID)){
    sub.df <- subset(div_df, filename %in% ES_frag_group_df$Case.ID[i])
-   small.df <- sub.df[which(sub.df$entity.size.rank < median(unique(sub.df$entity.size.rank))),]
-   large.df <- sub.df[which(sub.df$entity.size.rank > median(unique(sub.df$entity.size.rank))),]
+   small.df <- sub.df[which(sub.df$entity.size.rank < quantile(unique(sub.df$entity.size.rank),probs=0.25)),]
+   large.df <- sub.df[which(sub.df$entity.size.rank > quantile(unique(sub.df$entity.size.rank),probs=0.75)),]
    ES_frag_group_df[i,"n.fragment"] <- nrow(sub.df)
    ES_frag_group_df[i,"log.rr.entity.size"] <-
       log(mean(small.df$entity.size)/mean(large.df$entity.size)) #log-ratio of smallest vs. largest fragment area
