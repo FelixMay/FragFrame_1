@@ -57,6 +57,5 @@ write.csv(ES_frag_df.complete, file=path2temp %+% "ES_frag_df.complete.csv")
 write.csv(ES_frag_group_df.complete, file=path2temp %+% "ES_frag_group_df.complete.csv")
 write.csv(ES_df.complete, file=path2temp %+% "ES_df.complete.csv")
 
-save.image(file=path2temp %+% "Data4Analysis.Rdata")
 
 

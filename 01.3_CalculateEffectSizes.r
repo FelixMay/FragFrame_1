@@ -78,7 +78,7 @@ for(i in 1:length(ES_df$Case.ID)){
       }
    }
    
-   fig_name <- path2temp %+% paste(unique(sub.df$filename), ".png", sep = "")
+   fig_name <- path2temp %+% "BoxPlots/" %+% paste(unique(sub.df$filename), ".png", sep = "")
    png(fig_name, width = 8, height = 6, units = "in", res = 200)
    op <- par(mfrow = c(2,3), oma = c(0,0,4,0), las = 1)
    boxplot(N ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
