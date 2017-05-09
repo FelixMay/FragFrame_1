@@ -125,13 +125,13 @@ CalcBDfromAbundance <- function(filename){
    div_indi$N_std <-  div_indi$N/div_indi$sample_effort
    div_indi$S <- colSums(dat_abund_pool2 > 0)
    
-   div_indi$Shannon <- diversity(t(dat_abund_pool2), index = "shannon")
-   div_indi$PIE <- diversity(t(dat_abund_pool2), index = "simpson")
+#   div_indi$Shannon <- diversity(t(dat_abund_pool2), index = "shannon")
+#   div_indi$PIE <- diversity(t(dat_abund_pool2), index = "simpson")
    
-   div_indi$ENS_shannon <- exp(div_indi$Shannon)
+#   div_indi$ENS_shannon <- exp(div_indi$Shannon)
    div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
    
-   div_indi$Pielou_even <- div_indi$Shannon / log(div_indi$S)
+#   div_indi$Pielou_even <- div_indi$Shannon / log(div_indi$S)
    
    # sample coverage
    div_indi$coverage <- apply(dat_abund_pool2, 2,
@@ -151,8 +151,8 @@ CalcBDfromAbundance <- function(filename){
    
    # calculate standardized coverage
    div_indi$D0_hat <- rep(NA, nrow(div_indi)) 
-   div_indi$D1_hat <- rep(NA, nrow(div_indi)) 
-   div_indi$D2_hat <- rep(NA, nrow(div_indi)) 
+#   div_indi$D1_hat <- rep(NA, nrow(div_indi)) 
+#   div_indi$D2_hat <- rep(NA, nrow(div_indi)) 
    
    D_cov_std <- lapply(dat_abund_pool2,
                        function(x) try(estimateD(x, datatype = "abundance",
@@ -163,42 +163,42 @@ CalcBDfromAbundance <- function(filename){
    
    if (sum(succeeded) > 0){
       div_indi$D0_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 0")
-      div_indi$D1_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 1")
-      div_indi$D2_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 2")
+#      div_indi$D1_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 1")
+#      div_indi$D2_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 2")
    }
    
    cov_eq_1 <- div_indi$coverage >= 1.0 
    cov_eq_1[is.na(cov_eq_1)] <- FALSE
    div_indi$D0_hat[cov_eq_1] <- div_indi$S[cov_eq_1]
-   div_indi$D1_hat[cov_eq_1] <- div_indi$ENS_shannon[cov_eq_1]
-   div_indi$D2_hat[cov_eq_1] <- div_indi$ENS_pie[cov_eq_1]
+#   div_indi$D1_hat[cov_eq_1] <- div_indi$ENS_shannon[cov_eq_1]
+#   div_indi$D2_hat[cov_eq_1] <- div_indi$ENS_pie[cov_eq_1]
    
    # set indices to NA when there are no individuals
    empty_plots <- div_indi$N == 0 
-   div_indi$Shannon[empty_plots] <- NA
-   div_indi$PIE[empty_plots] <- NA
-   div_indi$ENS_shannon[empty_plots] <- NA
+#   div_indi$Shannon[empty_plots] <- NA
+#   div_indi$PIE[empty_plots] <- NA
+#   div_indi$ENS_shannon[empty_plots] <- NA
    div_indi$ENS_pie[empty_plots] <- NA
-   div_indi$Pielou_even[empty_plots] <- NA
+#   div_indi$Pielou_even[empty_plots] <- NA
    
    # extrapolation to asymptotic species richness
-   D_asymp_list <- lapply(dat_abund_pool2,
-                          function(x) try(SpadeR::Diversity(x, datatype = "abundance",
-                                                            q = c(0,1,2))))
-   succeeded <- !sapply(D_asymp_list, is.error)
-   D_asymp_mat <- matrix(NA, nrow = ncol(dat_abund_pool2), ncol = 8)
-   colnames(D_asymp_mat) <- c("Chao1", "Chao1-bc", "iChao1", "ACE", "ACE-1",
-                              "D0_asymp","D1_asymp","D2_asymp")   
-
-   if (sum(succeeded) > 0){
-      S_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$Species_richness[,"Estimate"]})
-      D_asymp_mat[succeeded, 1:5] <- t(S_asymp)
-      
-      Hill_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$Hill_numbers[,"ChaoJost"]})
-      D_asymp_mat[succeeded, 6:8] <- t(Hill_asymp)
-   }
-
-   div_indi <- cbind(div_indi, D_asymp_mat)
+   # D_asymp_list <- lapply(dat_abund_pool2,
+   #                        function(x) try(SpadeR::Diversity(x, datatype = "abundance",
+   #                                                          q = c(0,1,2))))
+   # succeeded <- !sapply(D_asymp_list, is.error)
+   # D_asymp_mat <- matrix(NA, nrow = ncol(dat_abund_pool2), ncol = 8)
+   # colnames(D_asymp_mat) <- c("Chao1", "Chao1-bc", "iChao1", "ACE", "ACE-1",
+   #                            "D0_asymp","D1_asymp","D2_asymp")   
+   # 
+   # if (sum(succeeded) > 0){
+   #    S_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$Species_richness[,"Estimate"]})
+   #    D_asymp_mat[succeeded, 1:5] <- t(S_asymp)
+   #    
+   #    Hill_asymp <- sapply(D_asymp_list[succeeded], function(div1){div1$Hill_numbers[,"ChaoJost"]})
+   #    D_asymp_mat[succeeded, 6:8] <- t(Hill_asymp)
+   # }
+   # 
+   # div_indi <- cbind(div_indi, D_asymp_mat)
    
    #############################################################################
    # Beta-diversity partitioning
