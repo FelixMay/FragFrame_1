@@ -8,7 +8,7 @@ BDmetrics <- c("N_std","S","D0_hat","ENS_pie")
 ### 1. largest vs smallest fragment incl continuous as fragment using log RR
 ###############################################################
 ES_frag_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
+namES_df <- c("sample.design","n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
 ES_frag_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_df$Case.ID)){
@@ -23,13 +23,25 @@ for(i in 1:length(ES_frag_df$Case.ID)){
    for(j in BDmetrics){
       ES_frag_df[i,"ES." %+% j] <- log(mean(small.df[,j])/mean(large.df[,j]))
    }
+
+   range_sample_eff <- range(c(small.df$sample_effort,large.df$sample.effort))
+   range_sample_units <- range(c(small.df$sampling_units,large.df$sampling_units))
+   if (range_sample_eff[2] - range_sample_eff[1] == 0){
+      ES_frag_df[i,"sample.design"] <- "standardized"
+   } else {
+      if (range_sample_units[2] - range_sample_units[1] == 0) {
+         ES_frag_df[i,"sample.design"] <- "pooled"
+      } else {
+         ES_frag_df[i,"sample.design"] <- "subsamples_in_frag"
+      }
+   }
 }
 
 ###############################################################
 ### 2. largest (incl. continuous) vs smallest fragment group using log RR
 ###############################################################
 ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
+namES_df <- c("sample.design","n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
 ES_frag_group_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_group_df$Case.ID)){
@@ -44,6 +56,18 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
    
    for(j in BDmetrics){
       ES_frag_group_df[i,"ES." %+% j] <- log(mean(small.df[,j])/mean(large.df[,j]))
+   }
+
+   range_sample_eff <- range(c(small.df$sample_effort,large.df$sample.effort))
+   range_sample_units <- range(c(small.df$sampling_units,large.df$sampling_units))
+   if (range_sample_eff[2] - range_sample_eff[1] == 0){
+      ES_frag_group_df[i,"sample.design"] <- "standardized"
+   } else {
+      if (range_sample_units[2] - range_sample_units[1] == 0) {
+         ES_frag_group_df[i,"sample.design"] <- "pooled"
+      } else {
+         ES_frag_group_df[i,"sample.design"] <- "subsamples_in_frag"
+      }
    }
 }
 
