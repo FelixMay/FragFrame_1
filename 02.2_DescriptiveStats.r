@@ -1,5 +1,5 @@
-load(path2temp %+% "Data4Analysis.Rdata") 
-ls()
+load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
+#ls()
 
 BDmetrics <- c("S","D0_hat","N_std","ENS_pie")
 
@@ -103,7 +103,7 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor=1, ...)
    col.vec <- palette.vec[r*10]
    txt <- format(c(r, 0.123456789), digits = digits)[1]
    txt <- paste0(prefix, txt)
-   if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+   if(missing(cex.cor)) cex.cor <- 0.6/strwidth(txt)
    rect(0,0,1,1,col=col.vec)
    text(0.5, 0.5, txt, cex = cex.cor)
 }
@@ -132,18 +132,63 @@ dev.off()
 ### 3. Histograms of predictor variables
 ############################################################################
 
-for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg")){
-   p <- ggplot(data=meta_df) + 
-      geom_histogram(aes(x=meta_df[,col]), size=0.4, binwidth=0.2,stat="count") + 
-      labs(x="",y="") +
-      ggtitle(paste(col)) + 
-      theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
+for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation","ratio.min.max.fragment.size2", "sampling.effort")){
+   print(col)
+   if(is.factor(meta_df[,col])){
+      p <- ggplot(data=meta_df) + 
+         geom_histogram(aes(x=meta_df[,col]), size=0.4,stat="count") + 
+         labs(x="",y="") +
+         ggtitle(paste(col)) + 
+         theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
+      #,axis.ticks.length=unit(.4,"cm")
+   }
+   else{    
+      p <- ggplot(data=meta_df) + 
+         geom_histogram(aes(x=meta_df[,col]), size=0.4,binwidth=0.1) + 
+         labs(x="",y="") +
+         ggtitle(paste(col)) + 
+         theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
    #,axis.ticks.length=unit(.4,"cm")
+   }
    print(p)
    ggsave(p, file = path2temp %+% "Histograms/Histogram_meta_df_" %+% col %+% ".png", width = 20, height = 8, type = "cairo-png")
    
 }
-## TO DO: Histogram of sampling.effort
+
+############################################################################
+### Crosstables
+############################################################################
+# with(meta_df,table(biome,taxa))
+# with(meta_df,table(matrix.category,taxa))
+# with(meta_df,table(time.since.fragmentation,taxa))
+# 
+# with(meta_df,table(matrix.category,biome))
+# with(meta_df,table(time.since.fragmentation,biome))
+# 
+# with(meta_df,table(time.since.fragmentation,matrix.category))
+
+CrosstabViz.func <- function(var1,var2){
+   df <- expand.grid(levels(meta_df[,var1]),levels(meta_df[,var2]))
+   df$value <- c(with(meta_df,table(meta_df[,var1],meta_df[,var2])))
+   g <- ggplot(df, aes(Var1,Var2)) + 
+      geom_point(aes(size = value), colour = "green") + 
+      scale_size_continuous(range=c(8,20)) + 
+      geom_text(aes(label = value)) +
+      ggtitle("Crosstab " %+% var1 %+% " vs. " %+% var2) +
+      theme_bw() + theme(axis.text.x=element_text(angle=45,vjust = 1, hjust=1)) + xlab("") + ylab("")
+   ggsave(path2temp %+% "Histograms/Crosstab_" %+% var1 %+% "_vs_" %+% var2 %+% ".png")
+}
+
+CrosstabViz.func(var1="taxa",var2="biome")
+CrosstabViz.func(var1="taxa",var2="matrix.category")
+CrosstabViz.func(var1="taxa",var2="time.since.fragmentation")
+
+CrosstabViz.func(var1="biome",var2="matrix.category")
+CrosstabViz.func(var1="biome",var2="time.since.fragmentation")
+
+CrosstabViz.func(var1="matrix.category",var2="time.since.fragmentation")
+
+
 
 #### RESTERAMPE
 ############################################################################
