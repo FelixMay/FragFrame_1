@@ -38,7 +38,7 @@ is.error <- function(x) inherits(x, "try-error")
 ### Load and install all needed libraries
 ############################################################################
 needed_libs <- c("devtools", # download from github
-                 "MoBspatial", # simulation of species communities
+                 "mobsim", # simulation of species communities
                  "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
                  "vegan", # for diversity indices
                  "metafor", # for meta-analysis 
@@ -59,7 +59,7 @@ needed_libs <- c("devtools", # download from github
 usePackage <- function(p) {
    #if(p=="iNEXT")   install_github('JohnsonHsieh/iNEXT') # iNEXT is on CRAN !
    if (!is.element(p, installed.packages()[,1])) {   
-      if(p == "MoBspatial") {install_github('MoBiodiv/MoBspatial')}  
+      if(p == "mobsim") {install_github('MoBiodiv/mobsim')}  
       install.packages(p, dep = TRUE)
    }
    require(p, character.only = TRUE)
@@ -88,7 +88,7 @@ rownames(ip) <- NULL
 ip
 # Package    Version
 # 1    devtools     1.10.0
-# 2  MoBspatial 0.0.0.9000
+# 2      mobsim 0.0.0.9000
 # 3       iNEXT     2.0.12
 # 4       vegan      2.4-1
 # 5     metafor      1.9-8
