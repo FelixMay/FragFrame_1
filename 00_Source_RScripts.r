@@ -43,3 +43,8 @@ source(path2wd %+% "02.4_CheckResults.r")
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
 source(path2wd %+% "02.5_VisualizeResults.r") 
+
+rm(list=ls())
+source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+source(path2wd %+% "02.6_SensitivityAnalysis.r") 
+
