@@ -7,30 +7,25 @@ load(path2temp %+% "02.3_DataAnalysis_out.Rdata")
 
 consistency_func <- function(model){
    consistency.tab <- data.frame(model=names(model),
-#                                 logLik=NA, deviance=NA, AIC=NA, BIC=NA, AICc=NA,
+                                 n.samples = unlist(lapply(model, function(x) length(x$not.na[T]))),
+                                 logLik=NA, deviance=NA, AIC=NA, BIC=NA, AICc=NA,
                                  QE=unlist(lapply(model,function(x) x$QE)), QEp=unlist(lapply(model,function(x) x$QEp)),
                                  QM=unlist(lapply(model,function(x) x$QM)),QMp=unlist(lapply(model,function(x) x$QMp)))
-#   consistency.tab[,2:6] <- t(sapply(model,fitstats.rma))
+   consistency.tab[,3:7] <- t(sapply(model,fitstats.rma))
+#   consistency.tab$I2 <- lapply(model, function(x) x$sigma2/(x$sigma2+))
    consistency.tab$R2 <- consistency.tab$QM/(consistency.tab$QM+consistency.tab$QE)
    
    return(consistency.tab)
 }
 
-cons_frag <- consistency_func(model_frag)
-cons_frag_group <- consistency_func(model_frag_group)
-cons_gradient <- consistency_func(model_gradient)
+cons_frag <- bind_rows(lapply(model_frag,consistency_func),.id="Covariate")
+cons_frag_group <- bind_rows(lapply(model_frag_group,consistency_func),.id="Covariate")
+cons_gradient <- bind_rows(lapply(model_gradient,consistency_func),.id="Covariate")
 
-cons_df <- data.frame(data=rep(c("frag","frag_group","gradient"),each=5),bind_rows(list(cons_frag,cons_frag_group,cons_gradient)))
+cons_df <- data.frame(data=rep(c("frag","frag_group","gradient"),each=24),bind_rows(list(cons_frag,cons_frag_group,cons_gradient)))
 
 write.csv(cons_df, file=path2temp %+% "model_consistency.csv")
 
-consTaxa_frag <- consistency_func(modelTaxa_frag)
-consTaxa_frag_group <- consistency_func(modelTaxa_frag_group)
-consTaxa_gradient <- consistency_func(modelTaxa_gradient)
-
-consTaxa_df <- data.frame(data=rep(c("frag","frag_group","gradient"),each=5),bind_rows(list(consTaxa_frag,consTaxa_frag_group,consTaxa_gradient)))
-
-write.csv(consTaxa_df, file=path2temp %+% "modelTaxa_consistency.csv")
 ############################################################################
 ### 3. Publication bias
 ############################################################################
@@ -114,17 +109,21 @@ asymmetry.test(model_gradient[[5]],1/df_long_sub$ES.var[as.numeric(names(residua
 ############################################################################
 ### 4. Sensitivity analysis
 ############################################################################
-### a plot of Cook's distances against leverage/(1-leverage). 
-# influence() is not yet implemented in metafor for rma.mv objects. 
-# an alternative approach from http://people.stern.nyu.edu/jsimonof/classes/2301/pdf/diagnost.pdf
-influence.func <- function(model){
-   h <- hatvalues(model)
-   x.seq <- seq(min(rstandard(model$z),max(rstandard(model$z),length.out=100)))
-   y.seq <- seq(min(h),max(h),length.out=100)
-   D <- (x.seq^2*y.seq)/((length(model$b)+1)*(1-y.seq))
-   plot(rstandard(model$z~h,xlab="Leverage",ylab="Standardized Residuals", main="Residuals vs. Leverage"))
-                         #contour(x.seq,y.seq,D) # not working
-                         
-}
+x <- cooks.distance(model_frag[[4]][[1]])
+plot(x)
 
-influence.func(model_frag[[1]])
+
+# ### a plot of Cook's distances against leverage/(1-leverage). 
+# # influence() is not yet implemented in metafor for rma.mv objects. 
+# # an alternative approach from http://people.stern.nyu.edu/jsimonof/classes/2301/pdf/diagnost.pdf
+# influence.func <- function(model){
+#    h <- hatvalues(model)
+#    x.seq <- seq(min(rstandard(model$z),max(rstandard(model$z),length.out=100)))
+#    y.seq <- seq(min(h),max(h),length.out=100)
+#    D <- (x.seq^2*y.seq)/((length(model$b)+1)*(1-y.seq))
+#    plot(rstandard(model$z~h,xlab="Leverage",ylab="Standardized Residuals", main="Residuals vs. Leverage"))
+#                          #contour(x.seq,y.seq,D) # not working
+#                          
+# }
+# 
+# influence.func(model_frag[[1]])
