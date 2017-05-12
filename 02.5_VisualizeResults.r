@@ -2,32 +2,32 @@ load(path2temp %+% "02.1_Data4Analysis_out.Rdata")
 load(path2temp %+% "02.3_DataAnalysis_out.Rdata") # model_frag, model_frag_group, model_gradient
 
 plot.func <- function(model,ylab,title){
-   pred.se.list <- lapply(model,function(x) lapply(x, function(y) data.frame(b=y$b,se=y$se)))
-#   str(pred.se.list)
+   pred.se.list <- lapply(model,function(x) data.frame(b=x$b,se=x$se))
+   # pred.se.list <- lapply(model,function(x) lapply(x, function(y) data.frame(b=y$b,se=y$se)))
+   #   str(pred.se.list)
    pred.se.df.list <- lapply(pred.se.list, function(x) bind_rows(x,.id="model"))
    pred.se.df <- bind_rows(pred.se.df.list)
-   pred.se.df$levels <- rep(c("frag","frag_group","gradient"),each=4)
-   pred.se.df$variable <- rep(c("S", "D0_hat", "N_std", "ENS_pie"),times=3)
+#   pred.se.df$levels <- rep(c("frag","frag_group","gradient"),each=4)
+   pred.se.df$variable <- c("S", "D0_hat", "N_std", "ENS_pie") # rep(c("S", "D0_hat", "N_std", "ENS_pie"),times=3)
    ylim <- c(floor(10*min(pred.se.df$b-1.96*pred.se.df$se))/10,ceiling(10*max(pred.se.df$b+1.96*pred.se.df$se))/10)
    
    pd <- position_dodge(width=0.4)
-   coul = brewer.pal(length(levels(pred.se.df$levels)), "Accent")    # Classic palette, with n.study colors
-   plot1 <- ggplot(pred.se.df, aes(color=levels)) +
+#   coul = brewer.pal(length(levels(pred.se.df$levels)), "Accent")    # Classic palette, with n.study colors
+   plot1 <- ggplot(pred.se.df) + #, aes(color=levels)) +
       geom_point(position=pd,aes(x=variable, y=b),size=4) +
       geom_errorbar(position=pd,aes(x=variable, ymin=b-1.96*se,ymax=b+1.96*se),width=0.2,size=1.2) +
       geom_hline(yintercept=0,linetype="twodash", size=0.6) +
       scale_x_discrete("",limits=c("S", "D0_hat", "N_std", "ENS_pie")) +
       xlab("") + ylab(ylab) + ylim(ylim) +
       ggtitle(title) +
-      scale_color_manual("", values=coul,
-                         guide=guide_legend(title="", direction="horizontal",nrow=1)) +
+      # scale_color_manual("", values=coul,
+      #                    guide=guide_legend(title="", direction="horizontal",nrow=1)) +
       theme_bw() +
       theme(legend.position="bottom")
    print(plot1)
-   
 }
 
-model <- list(model_frag[["GrandMean"]],model_frag_group[["GrandMean"]],model_gradient[["GrandMean"]])
+#model <- list(model_frag[["GrandMean"]],model_frag_group[["GrandMean"]],model_gradient[["GrandMean"]])
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_GrandMean.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
 plot.func(model=model_frag[["GrandMean"]],ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
@@ -52,7 +52,7 @@ plot.func.levels <- function(model,cov,levels,ylab,title){
    ylim <- c(floor(10*min(pred.se.df$b-1.96*pred.se.df$se))/10,ceiling(10*max(pred.se.df$b+1.96*pred.se.df$se))/10)
    
    pd <- position_dodge(width=0.6)
-   coul = brewer.pal(length(levels), "Accent")    # Classic palette, with n.study colors
+   coul = brewer.pal(ifelse(length(levels)>3, length(levels), 3), "Accent")    # Classic palette, with n.study colors
    
    plot1 <- ggplot(pred.se.df, aes(color=levels)) +
       geom_point(position=pd,aes(x=variable, y=b),size=4) +
@@ -165,3 +165,64 @@ png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_SizeRatio.png", wi
 plot.func.continuous(model_gradient[["SizeRatio"]], newmods=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.05), ylab="Fishers' z",title="Gradient of fragmentation")
 dev.off()
 
+#-----------------
+png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_sample.design.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+plot.func.levels(model_sample.design[["frag"]],cov="sample.design", levels=c("standardized","subsamples_in_frag"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
+dev.off()
+
+png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_group_sample.design.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+plot.func.levels(model_sample.design[["frag_group"]],cov="sample.design", levels=c("standardized","pooled","subsamples_in_frag"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
+dev.off()
+
+png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_gradient_sample.design.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+plot.func.levels(model_sample.design[["gradient"]],cov="sample.design", levels=c("standardized","pooled","subsamples_in_frag"), ylab="Fishers' z",title="Gradient of fragmentation")
+dev.off()
+
+# setRefToMostCommonLevel <- function(f) {
+#    f <- as.factor(f)
+#    t <- table(f)
+#    f.new <- relevel(f,ref=as.integer(which(t>=max(t))[[1]]))
+#    return(f.new)
+# }
+# ES_frag_df.complete$matrix.category <- setRefToMostCommonLevel(ES_frag_df.complete$matrix.category)
+# 
+# # Matrix:SizeRatio
+# model <- model_frag[["Matrix:SizeRatio"]][[1]]
+# newdat <- expand.grid(matrix.category=levels(ES_frag_df.complete$matrix.category),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
+# mm <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
+# preds <- predict(model,newmods=cbind("harsh filter",seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T)),by=0.1))
+# pred.se.list <- lapply(model,function(x) predict(x,newmods=cbind(mm),intercept=F,addx=T))
+# 
+# X <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
+# newdat <- expand.grid(matrix.category=levels(setRefToMostCommonLevel(ES_frag_df.complete$matrix.category)),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
+# X_new <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
+# 
+# preds <- X_new %*% model$b
+# fits <- X %*% model$b
+# 
+# sh2 <- fitted(res)
+# 
+# # Matrix+SizeRatio
+# model <- model_frag[["Matrix+SizeRatio"]][[1]]
+# newdat <- expand.grid(matrix.category=levels(ES_frag_df.complete$matrix.category),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
+# mm <- model.matrix(~matrix.category+ratio.min.max.fragment.size2, data=newdat)
+# preds <- predict(model,newmods=cbind(levels(ES_frag_df.complete$matrix.category),c(0.1,0.2,0.3,0.4,0.5)))
+# pred.se.list <- lapply(model,function(x) predict(x,newmods=cbind(mm),intercept=F,addx=T))
+# preds <- predict(model,newmods=c(1,0,0),addx=T)
+# 
+# 
+# # Time:Taxa
+# ES_frag_df.complete$time.since.fragmentation <- setRefToMostCommonLevel(ES_frag_df.complete$time.since.fragmentation)
+# ES_frag_df.complete$taxa <- setRefToMostCommonLevel(ES_frag_df.complete$taxa)
+# 
+# model <- model_frag[["Time:Taxa"]][[1]]
+# newdat <- expand.grid(time.since.fragmentation=levels(ES_frag_df.complete$time.since.fragmentation),taxa=levels(ES_frag_df.complete$taxa))
+# mm <- model.matrix(~time.since.fragmentation+taxa+time.since.fragmentation:taxa, data=newdat)
+# preds <- predict(model,newmods=mm)
+# 
+# dat.bcg$alloc <- factor(dat.bcg$alloc)
+# res <- rma(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, mods = ~ ablat + alloc + ablat:alloc, data=dat.bcg)
+# newdat <- expand.grid(ablat=c(10,20,30,40),alloc=levels(dat.bcg$alloc))
+# mm <- model.matrix(~ablat + alloc + ablat:alloc, data=newdat)
+# preds <- predict(model,newmods=cbind(rep(c(10,20,30,40),times=3),c(rep(0,4),rep(1,4),rep(0,4)),c(rep(0,8),rep(1,4)),rep(c(10,20,30,40),times=3)*c(rep(0,4),rep(1,4),rep(0,4)),rep(c(10,20,30,40),times=3)*c(rep(0,8),rep(1,4))),addx=T)
+# predict(res, addx=TRUE)
