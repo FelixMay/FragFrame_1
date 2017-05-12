@@ -81,6 +81,29 @@ model_frag_group[["SizeRatio"]] <- analysis_func(df=ES_frag_group_df.complete, m
 model_gradient[["SizeRatio"]] <- analysis_func(df=ES_df.complete, mods.formula="~ratio.min.max.fragment.size2", method="REML")
 
 #--------------------------------------------------------
+# Additive Effects
+# Matrix:Time
+model_frag[["Matrix+Time"]] <- analysis_func(df=ES_frag_df.complete, mods.formula="~matrix.category+time.since.fragmentation", method="REML")
+model_frag_group[["Matrix+Time"]] <- analysis_func(df=ES_frag_group_df.complete,mods.formula="~matrix.category+time.since.fragmentation", method="REML")
+model_gradient[["Matrix+Time"]] <- analysis_func(df=ES_df.complete, mods.formula="~matrix.category+time.since.fragmentation", method="REML")
+
+# Matrix+Taxa
+model_frag[["Matrix+Taxa"]] <- analysis_func(df=ES_frag_df.complete, mods.formula="~matrix.category+taxa", method="REML")
+model_frag_group[["Matrix+Taxa"]] <- analysis_func(df=ES_frag_group_df.complete,mods.formula="~matrix.category+taxa", method="REML")
+model_gradient[["Matrix+Taxa"]] <- analysis_func(df=ES_df.complete, mods.formula="~matrix.category+taxa", method="REML")
+
+# Matrix+SizeRatio
+model_frag[["Matrix+SizeRatio"]] <- analysis_func(df=ES_frag_df.complete, mods.formula="~matrix.category+ratio.min.max.fragment.size2", method="REML")
+model_frag_group[["Matrix+SizeRatio"]] <- analysis_func(df=ES_frag_group_df.complete,mods.formula="~matrix.category+ratio.min.max.fragment.size2", method="REML")
+model_gradient[["Matrix+SizeRatio"]] <- analysis_func(df=ES_df.complete, mods.formula="~matrix.category+ratio.min.max.fragment.size2", method="REML")
+
+# Time+Taxa
+model_frag[["Time+Taxa"]] <- analysis_func(df=ES_frag_df.complete, mods.formula="~time.since.fragmentation+taxa", method="REML")
+model_frag_group[["Time+Taxa"]] <- analysis_func(df=ES_frag_group_df.complete,mods.formula="~time.since.fragmentation+taxa", method="REML")
+model_gradient[["Time+Taxa"]] <- analysis_func(df=ES_df.complete, mods.formula="~time.since.fragmentation+taxa", method="REML")
+# 
+
+#--------------------------------------------------------
 # Interactions
 # Matrix:Time
 model_frag[["Matrix:Time"]] <- analysis_func(df=ES_frag_df.complete, mods.formula="~matrix.category+time.since.fragmentation+matrix.category:time.since.fragmentation", method="REML")
@@ -102,6 +125,13 @@ model_frag[["Time:Taxa"]] <- analysis_func(df=ES_frag_df.complete, mods.formula=
 model_frag_group[["Time:Taxa"]] <- analysis_func(df=ES_frag_group_df.complete,mods.formula="~time.since.fragmentation+taxa+time.since.fragmentation:taxa", method="REML")
 model_gradient[["Time:Taxa"]] <- analysis_func(df=ES_df.complete, mods.formula="~time.since.fragmentation+taxa+time.since.fragmentation:taxa", method="REML")
 # 
+
+#-----
+model_sample.design <- list()
+model_sample.design[["frag"]] <- analysis_func(df=ES_frag_df.complete, covar="sample.design", method="REML")
+model_sample.design[["frag_group"]] <- analysis_func(df=ES_frag_group_df.complete,covar="sample.design", method="REML")
+model_sample.design[["gradient"]] <- analysis_func(df=ES_df.complete,covar="sample.design", method="REML")
+
 
 #--------------------------------------------------------
 ## Model selection for models with interactions
