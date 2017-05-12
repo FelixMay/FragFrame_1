@@ -7,8 +7,17 @@ BDmetrics <- c("N_std","S","D0_hat","ENS_pie")
 ###############################################################
 ### 1. largest vs smallest fragment incl continuous as fragment using log RR
 ###############################################################
-ES_frag_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("sample.design","n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
+#ES_frag_df <- data.frame(Case.ID = unique(div_df$filename))
+ES_frag_df <- unique(dplyr::select(div_df, filename, sample_design,
+                                   repl_part_S_qF, repl_part_J_qF,
+                                   repl_part_BS_qF, repl_part_BJ_qF,
+                                   repl_part_S_qT, repl_part_J_qT,
+                                   repl_part_BS_qT, repl_part_BJ_qT
+                                   )
+                     )
+
+names(ES_frag_df)[1] <- "Case.ID"
+namES_df <- c("n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
 ES_frag_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_df$Case.ID)){
@@ -28,8 +37,17 @@ for(i in 1:length(ES_frag_df$Case.ID)){
 ###############################################################
 ### 2. largest (incl. continuous) vs smallest fragment group using log RR
 ###############################################################
-ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("sample.design","n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
+#ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
+ES_frag_group_df <- unique(dplyr::select(div_df, filename, sample_design,
+                                         repl_part_S_qF, repl_part_J_qF,
+                                         repl_part_BS_qF, repl_part_BJ_qF,
+                                         repl_part_S_qT, repl_part_J_qT,
+                                         repl_part_BS_qT, repl_part_BJ_qT
+                                        )
+                          )
+
+names(ES_frag_group_df)[1] <- "Case.ID"
+namES_df <- c("n.fragment","log.rr.entity.size",c("ES.") %+% BDmetrics)
 ES_frag_group_df[,namES_df] <- NA
 
 for(i in 1:length(ES_frag_group_df$Case.ID)){
@@ -51,8 +69,17 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
 ### 3. Gradient of habitat fragmentation using Fishers' z
 ###############################################################
 #calculate rank-correlation
-ES_df <- data.frame(Case.ID=unique(div_df$filename))
-namES_df <- c("sample.design","n.fragment",c("ES.","ES.var.") %+% rep(BDmetrics,each=2))
+#ES_df <- data.frame(Case.ID=unique(div_df$filename))
+ES_df <- unique(dplyr::select(div_df, filename, sample_design,
+                              repl_part_S_qF, repl_part_J_qF,
+                              repl_part_BS_qF, repl_part_BJ_qF,
+                              repl_part_S_qT, repl_part_J_qT,
+                              repl_part_BS_qT, repl_part_BJ_qT
+                             )
+               )
+
+names(ES_df)[1] <- "Case.ID"
+namES_df <- c("n.fragment",c("ES.","ES.var.") %+% rep(BDmetrics,each=2))
 ES_df[,namES_df] <- NA
 
 for(i in 1:length(ES_df$Case.ID)){
@@ -105,4 +132,6 @@ write.csv(ES_df, file=path2temp %+% "ES_df.csv")
 # (check <- ES_df[is.na(ES_df$ES.S), ])
 # div_df[div_df$filename %in% check$Case.ID,  ]
 
-
+# Check correlation among turnover indices
+pairs(ES_frag_group_df[, 3:10])
+cor(ES_frag_group_df[, 3:10], use = "pairwise.complete.obs")
