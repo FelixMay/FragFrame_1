@@ -51,7 +51,9 @@ needed_libs <- c("devtools", # download from github
                  "dplyr", # for data manipulation
                  "reshape2", # for restructuring datasets with melt()
                  "xlsx",  # for reading Excel spreadsheets
-                 "SpadeR"
+                 "SpadeR",
+                 "RColorBrewer",
+                 "raster"# for trim()
 )
 
 usePackage <- function(p) {

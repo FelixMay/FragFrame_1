@@ -1,5 +1,7 @@
 setwd(path2Dropbox %+% "good_datasets/")
 
+# ---------------------------------------------------
+### extract meta data from xls-sheets
 filenames <- list.files(pattern="*.xls*", full.names = F)
 filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
@@ -9,7 +11,7 @@ for (i in 1:length(filenames)){
    
    print(filenames[i])
    
-   df <- try(read.xlsx(filenames[i], sheetIndex = 2, startRow = 1,  header = F))
+   df <- try(read.xlsx(filenames[i], sheetIndex = 2, rowIndex=1:23, colIndex=1:2,  header = F)) # specify row and column indices to avoid reading empty cols and rows which would produce errors
    if (!inherits(df, "try-error")){
       if(ncol(df)>1){
          dat_meta <- as.data.frame(matrix(data=NA,ncol=nrow(df),nrow=1))
@@ -33,6 +35,7 @@ for (i in 1:length(filenames)){
 
 meta_df <- as.data.frame(do.call(rbind, meta_list) )
 
+# ---------------------------------------------------
 ### group taxa levels
 meta_df$taxa <- as.character(meta_df$taxa)
 meta_df$taxa[meta_df$taxa %in% c("amphibians","amphibians, reptiles", "reptiles", "reptiles, molluscs")] <- "amphibians & reptiles"
@@ -43,5 +46,26 @@ meta_df$taxa[meta_df$taxa %in% c("arachnids", "insects", "arthropods")] <- "inve
 
 meta_df$taxa <- factor(meta_df$taxa) 
 
+# ---------------------------------------------------
+### join meta data extracted from files with manual extensions
+meta_manual <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean matrix_based on the tk sheet_kg.xlsx", sheetIndex = 2, startRow = 1,  header = T)
+meta_total <- join(meta_df, meta_manual, type="right")
+meta_df <- meta_total
+
+# ---------------------------------------------------
+### make levels consistent
+## relevel matrix category
+meta_df$matrix.category <- as.character(meta_df$matrix.category)
+meta_df$matrix.category[meta_df$matrix.category == "intermediate"] <- "medium filter"
+meta_df$matrix.category <- factor(meta_df$matrix.category, levels=c("light filter", "medium filter", "harsh filter")) 
+
+## relevel time.since.fragmentation
+meta_df$time.since.fragmentation <- as.character(meta_df$time.since.fragmentation)
+meta_df$time.since.fragmentation[meta_df$time.since.fragmentation == "Intermediate (20-100 years)"] <- "intermediate (20-100 years)"
+meta_df$time.since.fragmentation[meta_df$time.since.fragmentation == "Recent (less than 20 years)"] <- "recent (less than 20 years)"
+meta_df$time.since.fragmentation <- factor(meta_df$time.since.fragmentation, levels=c("recent (less than 20 years)", "intermediate (20-100 years)", "long (100+ years)")) 
+
+# ---------------------------------------------------
 ### save table
 write.csv(meta_df, file = paste(path2temp, "metaData.csv", sep = ""))
+
