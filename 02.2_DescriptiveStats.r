@@ -132,7 +132,7 @@ dev.off()
 ### 3. Histograms of predictor variables
 ############################################################################
 
-for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation","ratio.min.max.fragment.size2", "sampling.effort")){
+for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation","ratio.min.max.fragment.size2")){
    print(col)
    if(is.factor(meta_df[,col])){
       p <- ggplot(data=meta_df) + 
@@ -155,6 +155,26 @@ for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.bi
    
 }
 
+#----- 
+# Histograms of sample.design
+hist.sample.design <- function(df){
+   p <- ggplot(data=df) + 
+      geom_histogram(aes(x=df$sample.design), size=0.4,stat="count") + 
+      labs(x="",y="") +
+      ggtitle("sample.design") + 
+      theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
+   #,axis.ticks.length=unit(.4,"cm")
+   return(p)
+}
+
+p <- hist.sample.design(df=ES_frag_df.complete)
+ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_frag_df_sample.design.png", width = 20, height = 8, type = "cairo-png")
+
+p <- hist.sample.design(df=ES_frag_group_df.complete)
+ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_frag_group_df_sample.design.png", width = 20, height = 8, type = "cairo-png")
+
+p <- hist.sample.design(df=ES_df.complete)
+ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_df_sample.design.png", width = 20, height = 8, type = "cairo-png")
 ############################################################################
 ### Crosstables
 ############################################################################
