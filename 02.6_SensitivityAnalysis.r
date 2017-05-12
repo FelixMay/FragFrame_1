@@ -1,6 +1,10 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 load(path2temp %+% "02.3_DataAnalysis_out.Rdata") # model_frag, model_frag_group, model_gradient
 
+#---------------------------------------------------------------------------
+# Use same datasets for all analyses, i.e. reduced frag, frag group analysis to 67 studies with more than 3 fragments
+#---------------------------------------------------------------------------
+
 ############################################################################
 ### 1. set reference levels to the most common levels
 ############################################################################
@@ -17,7 +21,7 @@ setRefToMostCommonLevel <- function(f) {
 analysis_func <- function(df, covar="intercept.only", method){
    
    ### set reference levels
-   for(col in c("taxa","biome","matrix.category","time.since.fragmentation")){
+   for(col in c("taxa","biome","matrix.category","time.since.fragmentation","sample.design")){
       df[,col] <- setRefToMostCommonLevel(df[,col])
    }
    
@@ -26,7 +30,7 @@ analysis_func <- function(df, covar="intercept.only", method){
    if(covar=="intercept.only"){
       mods.formula <- "~1"
    }
-   if(covar %in% c("taxa","biome","matrix.category","time.since.fragmentation")){
+   if(covar %in% c("taxa","biome","matrix.category","time.since.fragmentation","sample.design")){
       mods.formula <- "~" %+% covar %+% "-1"
    }
    if(covar == "ratio.min.max.fragment.size2"){
@@ -58,6 +62,7 @@ analysis_func <- function(df, covar="intercept.only", method){
    return(model)
 }
 
+#-----
 ## Repeat analysis for the 58 studies used in the gradient analysis 
 ES_frag_df.complete <- subset(ES_frag_df.complete, n.fragment > 3)
 ES_frag_group_df.complete <- subset(ES_frag_group_df.complete, n.fragment > 3)
@@ -89,6 +94,7 @@ model_frag_group_sub[["Time"]] <- analysis_func(df=ES_frag_group_df.complete,cov
 model_frag_sub[["SizeRatio"]] <- analysis_func(df=ES_frag_df.complete, covar="ratio.min.max.fragment.size2", method="REML")
 model_frag_group_sub[["SizeRatio"]] <- analysis_func(df=ES_frag_group_df.complete,covar="ratio.min.max.fragment.size2", method="REML")
 
+### plot results
 plot.func <- function(model,model_sub,ylab,title){
    pred.se.list <- lapply(model,function(x) data.frame(b=x$b,se=x$se))
    pred.se.list_sub <- lapply(model_sub,function(x) data.frame(b=x$b,se=x$se))
@@ -241,3 +247,26 @@ dev.off()
 #    print(plot1)
 # }
 
+#---------------------------------------------------------------------------
+# Influence diagnostics
+#---------------------------------------------------------------------------
+cooks.distance.func <- function(model){
+   x <- cooks.distance(model)
+   plot(x, ylab="Cook's distance", xlab="Study")#, main=names(model))
+   abline(h=0,lty="dashed")
+   segments(x0=1:length(x), y0=0, x1 = 1:length(x), y1 = x)
+   return(x)
+}
+
+# TO DO: Title for the plots
+png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+model_frag_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
+dev.off()
+
+png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag_group.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+model_frag_group_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
+dev.off()
+
+png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_gradient.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+model_gradient_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
+dev.off()
