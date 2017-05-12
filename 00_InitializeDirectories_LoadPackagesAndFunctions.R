@@ -37,7 +37,8 @@ is.error <- function(x) inherits(x, "try-error")
 ############################################################################
 ### Load and install all needed libraries
 ############################################################################
-needed_libs <- c("devtools", # download from github
+needed_libs <- c("adespatial", # for beta-diversity partitioning
+                 "devtools", # download from github
                  "mobsim", # simulation of species communities
                  "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
                  "vegan", # for diversity indices
@@ -66,7 +67,7 @@ usePackage <- function(p) {
 }
 
 ### document system properties
-version
+# version
 # _                           
 # platform       x86_64-w64-mingw32          
 # arch           x86_64                      

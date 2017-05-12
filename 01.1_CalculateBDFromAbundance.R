@@ -38,10 +38,6 @@ Inf_to_NA <- function(x)
 
 
 ############################################
-# Function from Legendre 2014 GEB
-source(path2wd %+% "beta_div_comp.R") 
-
-############################################
 # Function to calculate biodiversity indices from every patch
 
 CalcBDfromAbundance <- function(filename){
@@ -118,9 +114,23 @@ CalcBDfromAbundance <- function(filename){
    # This row results in a bug when the data for entitiy.size is empty
    div_indi <- join(div_indi, dat_head_t[,c("entity.id","entity.size")], match="first")
    
-   # simple diversity indices
+   # Check sampling design
    div_indi$sampling_units <- dat_n_sampling_units[,3]
    div_indi$sample_effort <- dat_abund_pool[,"dat_sample_eff"] 
+   
+   range_sample_eff <- range(div_indi$sample_effort)
+   range_sample_units <- range(div_indi$sampling_units)
+   if (range_sample_eff[2] - range_sample_eff[1] == 0){
+      div_indi$sample_design <- "standardized"
+   } else {
+      if (range_sample_units[2] - range_sample_units[1] == 0) {
+         div_indi$sample_design <- "pooled"
+      } else {
+         div_indi$sample_design <- "subsamples_in_frag"
+      }
+   }
+   
+   # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
    div_indi$N_std <-  div_indi$N/div_indi$sample_effort
    div_indi$S <- colSums(dat_abund_pool2 > 0)
@@ -203,25 +213,64 @@ CalcBDfromAbundance <- function(filename){
    #############################################################################
    # Beta-diversity partitioning
    
-   # Select fragments with 
+   div_indi$repl_part_S_qF <- NA
+   div_indi$repl_part_J_qF <- NA
+   div_indi$repl_part_BS_qF <- NA
+   div_indi$repl_part_BJ_qF <- NA
    
-   # Smallest and largest only
-   #sub_ranks <- c(min(dat_ranks), max(dat_ranks))
+   div_indi$repl_part_S_qT <- NA
+   div_indi$repl_part_J_qT <- NA
+   div_indi$repl_part_BS_qT <- NA
+   div_indi$repl_part_BJ_qT <- NA
    
-   # Lower and upper quartile
-   q_ranks <- quantile(dat_ranks, prob = c(0.25, 0.75))
-   sub_ranks <- sort(dat_ranks[dat_ranks <= q_ranks[1] | dat_ranks >= q_ranks[2]])
+   # Check sampling design
+   range_sample_eff <- range(div_indi$sample_effort)
+   range_sample_units <- range(div_indi$sampling_units)
+   if (range_sample_eff[2] - range_sample_eff[1] == 0){
+      div_indi$sample_design <- "standardized"
+   } else {
+      if (range_sample_units[2] - range_sample_units[1] == 0) {
+         div_indi$sample_design <- "pooled"
+      } else {
+         div_indi$sample_design <- "subsamples_in_frag"
+      }
+   }
    
-   dat_abund_pool3 <- dat_abund_pool[dat_abund_pool[,2] %in% sub_ranks, ]
-   
-   size_class <- ifelse(dat_abund_pool3$Group.2 <= q_ranks[1], "Small", "Large")
-   
-   #Pool fragments with the same size rank
-   dat_abund_pool3a <- aggregate(dat_abund_pool3[, 4:ncol(dat_abund_pool3)],
-                                 by = list(size_class),
-                                 FUN = sum)
-   
-   beta_comp <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BJ", quant = T)
+   if (div_indi$sample_design[1] != "pooled"){
+      
+      # Select fragments with 
+      
+      # Smallest and largest only
+      #sub_ranks <- c(min(dat_ranks), max(dat_ranks))
+      
+      # Lower and upper quartile
+      q_ranks <- quantile(dat_ranks, prob = c(0.25, 0.75))
+      sub_ranks <- sort(dat_ranks[dat_ranks <= q_ranks[1] | dat_ranks >= q_ranks[2]])
+      
+      dat_abund_pool3 <- dat_abund_pool[dat_abund_pool[,2] %in% sub_ranks, ]
+      
+      size_class <- ifelse(dat_abund_pool3$Group.2 <= q_ranks[1], "Small", "Large")
+
+      # didive by sampling effort in case of non-standardized design
+      ncol1 <- ncol(dat_abund_pool3)
+      if (div_indi$sample_design[1] == "subsamples_in_frag")
+         dat_abund_pool3[,4:ncol1] <- dat_abund_pool3[,4:ncol1]/dat_abund_pool3$dat_sample_eff
+            
+      #Pool fragments with the same size rank
+      dat_abund_pool3a <- aggregate(dat_abund_pool3[, 4:ncol1],
+                                    by = list(size_class),
+                                    FUN = mean)
+      
+      div_indi$repl_part_S_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "S", quant = F)$part[4]
+      div_indi$repl_part_J_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "J", quant = F)$part[4]
+      div_indi$repl_part_BS_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = F)$part[4]
+      div_indi$repl_part_BJ_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BJ", quant = F)$part[4]
+      
+      div_indi$repl_part_S_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "S", quant = T)$part[4]
+      div_indi$repl_part_J_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "J", quant = T)$part[4]
+      div_indi$repl_part_BS_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = T)$part[4]
+      div_indi$repl_part_BJ_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BJ", quant = T)$part[4]
+   }
    
    # # inter- and extrapolation plot
    # inext1 <- iNEXT(dat_abund_pool2[ ,div_indi$N > 0], q = 0, datatype="abundance")

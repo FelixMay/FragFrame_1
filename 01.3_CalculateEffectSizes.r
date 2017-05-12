@@ -23,18 +23,6 @@ for(i in 1:length(ES_frag_df$Case.ID)){
    for(j in BDmetrics){
       ES_frag_df[i,"ES." %+% j] <- log(mean(small.df[,j])/mean(large.df[,j]))
    }
-
-   range_sample_eff <- range(c(small.df$sample_effort,large.df$sample.effort))
-   range_sample_units <- range(c(small.df$sampling_units,large.df$sampling_units))
-   if (range_sample_eff[2] - range_sample_eff[1] == 0){
-      ES_frag_df[i,"sample.design"] <- "standardized"
-   } else {
-      if (range_sample_units[2] - range_sample_units[1] == 0) {
-         ES_frag_df[i,"sample.design"] <- "pooled"
-      } else {
-         ES_frag_df[i,"sample.design"] <- "subsamples_in_frag"
-      }
-   }
 }
 
 ###############################################################
@@ -57,18 +45,6 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
    for(j in BDmetrics){
       ES_frag_group_df[i,"ES." %+% j] <- log(mean(small.df[,j])/mean(large.df[,j]))
    }
-
-   range_sample_eff <- range(c(small.df$sample_effort,large.df$sample.effort))
-   range_sample_units <- range(c(small.df$sampling_units,large.df$sampling_units))
-   if (range_sample_eff[2] - range_sample_eff[1] == 0){
-      ES_frag_group_df[i,"sample.design"] <- "standardized"
-   } else {
-      if (range_sample_units[2] - range_sample_units[1] == 0) {
-         ES_frag_group_df[i,"sample.design"] <- "pooled"
-      } else {
-         ES_frag_group_df[i,"sample.design"] <- "subsamples_in_frag"
-      }
-   }
 }
 
 ###############################################################
@@ -88,18 +64,6 @@ for(i in 1:length(ES_df$Case.ID)){
                   cor(sub.df$entity.size.rank,sub.df[,j],method="spearman", use = "na.or.complete")) ### transform rank-correlation into Pearson-correlation, cf. Box 13.3. p 201 in Koricheva et al 2013
       ES_df[i,"ES." %+% j] <- 1/2*log((1+r)/(1-r))
       ES_df[i,"ES.var." %+% j] <- ifelse(ES_df[i,"n.fragment"]>3,1/(ES_df[i,"n.fragment"]-3),NA)
-   }
-   
-   range_sample_eff <- range(sub.df$sample_effort)
-   range_sample_units <- range(sub.df$sampling_units)
-   if (range_sample_eff[2] - range_sample_eff[1] == 0){
-      ES_df[i,"sample.design"] <- "standardized"
-   } else {
-      if (range_sample_units[2] - range_sample_units[1] == 0) {
-         ES_df[i,"sample.design"] <- "pooled"
-      } else {
-         ES_df[i,"sample.design"] <- "subsamples_in_frag"
-      }
    }
    
    fig_name <- path2temp %+% "BoxPlots/" %+% paste(unique(sub.df$filename), ".png", sep = "")
