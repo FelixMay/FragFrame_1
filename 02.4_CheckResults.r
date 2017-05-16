@@ -11,8 +11,9 @@ consistency_func <- function(model){
                                  logLik=NA, deviance=NA, AIC=NA, BIC=NA, AICc=NA,
                                  QE=unlist(lapply(model,function(x) x$QE)), QEp=unlist(lapply(model,function(x) x$QEp)),
                                  QM=unlist(lapply(model,function(x) x$QM)),QMp=unlist(lapply(model,function(x) x$QMp)))
-   consistency.tab[,3:7] <- t(sapply(model,fitstats.rma))
-#   consistency.tab$I2 <- lapply(model, function(x) x$sigma2/(x$sigma2+))
+   consistency.tab[,3:7] <- t(sapply(model, function(x) fitstats.rma(x, REML=F)))
+   #consistency.tab[,3:7] <- t(sapply(model, fitstats.rma))
+   #   consistency.tab$I2 <- lapply(model, function(x) x$sigma2/(x$sigma2+))
    consistency.tab$R2 <- consistency.tab$QM/(consistency.tab$QM+consistency.tab$QE)
    
    return(consistency.tab)
