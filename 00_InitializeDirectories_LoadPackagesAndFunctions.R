@@ -15,7 +15,7 @@
    else {#FM
       path2wd <-"c:/FelixMay/Fragmentation_Extinction/FragFrame_1/" 
       path2Dropbox <- "C:/Users/fm28towy/Dropbox (iDiv)/Habitat loss meta-analysis/"
-      path2temp <- "C:/dropbox/fm28towy/Dropbox (iDiv)/Habitat loss meta-analysis/Analysis/"
+      path2temp <- "C:/Users/fm28towy/Dropbox (iDiv)/Habitat loss meta-analysis/analysis/"
    }
    return(list(path2temp,path2Dropbox,path2wd))
 }
