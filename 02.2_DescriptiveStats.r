@@ -208,7 +208,17 @@ CrosstabViz.func(var1="biome",var2="time.since.fragmentation")
 
 CrosstabViz.func(var1="matrix.category",var2="time.since.fragmentation")
 
-
+meta_df <- ES_df.complete
+df <- expand.grid(levels(meta_df[,var1]),levels(meta_df[,var2]))
+df$value <- c(with(meta_df,table(meta_df[,var1],meta_df[,var2])))
+g <- ggplot(df, aes(Var1,Var2)) +
+   geom_point(aes(size = value), colour = "green") +
+   scale_size_continuous(range=c(8,20)) +
+   geom_text(aes(label = value)) +
+   ggtitle("Crosstab " %+% var1 %+% " vs. " %+% var2) +
+   theme_bw() + theme(axis.text.x=element_text(angle=45,vjust = 1, hjust=1)) + xlab("") + ylab("")
+g
+ggsave(path2temp %+% "Histograms/Crosstab_ES_df.complete_Time_vs_Taxa.png")
 
 #### RESTERAMPE
 ############################################################################
