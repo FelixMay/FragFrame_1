@@ -211,18 +211,93 @@ dev.off()
 # preds <- predict(model,newmods=c(1,0,0),addx=T)
 # 
 # 
-# # Time:Taxa
-# ES_frag_df.complete$time.since.fragmentation <- setRefToMostCommonLevel(ES_frag_df.complete$time.since.fragmentation)
-# ES_frag_df.complete$taxa <- setRefToMostCommonLevel(ES_frag_df.complete$taxa)
-# 
-# model <- model_frag[["Time:Taxa"]][[1]]
-# newdat <- expand.grid(time.since.fragmentation=levels(ES_frag_df.complete$time.since.fragmentation),taxa=levels(ES_frag_df.complete$taxa))
-# mm <- model.matrix(~time.since.fragmentation+taxa+time.since.fragmentation:taxa, data=newdat)
-# preds <- predict(model,newmods=mm)
-# 
+
+# Matrix:SizeRatio
+ES_frag_group_df.complete$matrix.category <- setRefToMostCommonLevel(ES_frag_group_df.complete$matrix.category)
+
+new.SizeRatio <- seq(min(ES_frag_group_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_group_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1)
+newdat <- expand.grid(matrix.category=levels(ES_frag_group_df.complete$matrix.category),ratio.min.max.fragment.size2=new.SizeRatio)
+mm <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
+
+pred.se.list <- lapply(model,function(x) predict.rma(x,newmods=mm))
+#   str(pred.se.list)
+pred.list2df <- function(pred.list){
+   pred.df <- data.frame(pred=pred.list$pred,
+                         se=pred.list$se,
+                         ci.lb=pred.list$ci.lb,
+                         ci.ub=pred.list$ci.ub,
+                         cr.lb=pred.list$cr.lb,
+                         cr.ub=pred.list$cr.ub,
+                         matrix.category=newdat$matrix.category,
+                         SizeRatio=newdat$ratio.min.max.fragment.size2)
+   return(pred.df)
+}
+pred.se.df <- bind_rows(lapply(pred.se.list,pred.list2df),.id="model")
+
+pred.se.df$variable <- factor(rep(c("S", "D0_hat", "N_std", "ENS_pie"),each=length(new.SizeRatio)*length(levels(ES_frag_group_df.complete$matrix.category))),levels=c("S", "D0_hat", "N_std", "ENS_pie"))
+
+plot1 <- ggplot(pred.se.df,aes(y=pred,x=SizeRatio, color=matrix.category)) +
+   geom_line(size=2) +
+   geom_hline(yintercept=0,linetype="twodash", size=0.6) +
+   geom_ribbon(aes(ymin=ci.lb,ymax=ci.ub,fill=matrix.category),alpha=0.2,color=NA) +
+   xlab("Min/Max Size Ratio") + ylab("Log(Response Ratio)") +
+   ggtitle("Smallest vs. largest fragment group") +
+   facet_grid(variable~.) +
+   theme_bw() +
+   theme(legend.position="bottom")
+
+png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_MatrixSizeRatio.png", width=30,height=20,units="cm",res=200,type = "cairo-png")
+print(plot1)
+dev.off()
+
+#-------------------------------
+# Time:Taxa
+ES_df.complete$time.since.fragmentation <- setRefToMostCommonLevel(ES_df.complete$time.since.fragmentation)
+ES_df.complete$taxa <- setRefToMostCommonLevel(ES_df.complete$taxa)
+
+newdat <- expand.grid(time.since.fragmentation=levels(ES_df.complete$time.since.fragmentation),taxa=levels(ES_df.complete$taxa))
+mm <- model.matrix(~time.since.fragmentation+taxa+time.since.fragmentation:taxa, data=newdat)
+
+pred.se.list <- list()
+
+for(i in 1:4){
+   model <- model_gradient[["Time:Taxa"]][[i]]
+   mm <- mm[,colnames(mm) %in% rownames(model$b)]
+   temp <- predict.rma(model,newmods=mm,addx=T)
+   pred.se.list[[i]] <- newdat
+   pred.se.list[[i]][,c("b","se","ci.lb","ci.ub")] <- cbind(temp$pred, temp$se, temp$ci.lb, temp$ci.ub)
+}
+
+pred.se.df <- bind_rows(pred.se.list,.id="model")  
+pred.se.df$variable <- rep(c("S", "D0_hat", "N_std", "ENS_pie"),each=nrow(newdat))
+pred.se.df$levels <- factor(paste(pred.se.df$time.since.fragmentation,pred.se.df$taxa, sep = "_"))
+
+ylim <- c(floor(10*min(pred.se.df$ci.lb))/10,ceiling(10*max(pred.se.df$ci.ub))/10)
+
+pd <- position_dodge(width=0.6)
+coul = colorRampPalette(brewer.pal(5, "Accent"))    # Classic palette, with n.study colors
+
+plot1 <- ggplot(pred.se.df, aes(color=levels)) +
+   geom_point(position=pd,aes(x=variable, y=b),size=4) +
+   geom_errorbar(position=pd,aes(x=variable, ymin=b-1.96*se,ymax=b+1.96*se),width=0.2,size=1.2) +
+   geom_hline(yintercept=0,linetype="twodash", size=0.6) +
+   scale_x_discrete("",limits=c("S", "D0_hat", "N_std", "ENS_pie")) +
+   xlab("") + ylab("Fisher's z") + ylim(ylim) +
+   ggtitle("Gradient of fragmentation") +
+ #  guide_legend(title="",direction="horizontal",nrow=round(length(levels)/3)) +
+   scale_color_manual("", values=coul(15))+#,
+#                      guide=guide_legend(title="", direction="horizontal",nrow=round(length(pred.se.df$levels)/5))) +
+   theme_bw() +
+   theme(legend.position="bottom")
+
+png(file=path2temp %+% "ResultsPlots/ResultPlot_gradient_TimeTaxa.png", width=30,height=20,units="cm",res=200,type = "cairo-png")
+print(plot1)
+dev.off()
+
 # dat.bcg$alloc <- factor(dat.bcg$alloc)
 # res <- rma(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, mods = ~ ablat + alloc + ablat:alloc, data=dat.bcg)
 # newdat <- expand.grid(ablat=c(10,20,30,40),alloc=levels(dat.bcg$alloc))
 # mm <- model.matrix(~ablat + alloc + ablat:alloc, data=newdat)
-# preds <- predict(model,newmods=cbind(rep(c(10,20,30,40),times=3),c(rep(0,4),rep(1,4),rep(0,4)),c(rep(0,8),rep(1,4)),rep(c(10,20,30,40),times=3)*c(rep(0,4),rep(1,4),rep(0,4)),rep(c(10,20,30,40),times=3)*c(rep(0,8),rep(1,4))),addx=T)
+# preds <- predict(res,newmods=cbind(rep(c(10,20,30,40),times=3),c(rep(0,4),rep(1,4),rep(0,4)),c(rep(0,8),rep(1,4)),rep(c(10,20,30,40),times=3)*c(rep(0,4),rep(1,4),rep(0,4)),rep(c(10,20,30,40),times=3)*c(rep(0,8),rep(1,4))),addx=T)
 # predict(res, addx=TRUE)
+
