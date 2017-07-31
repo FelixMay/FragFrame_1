@@ -12,6 +12,14 @@ for(BD in BDmetrics){
    hist(ES_frag_group_df[,"ES." %+% BD],main=BD,xlab="ES_frag_group_df")
    hist(ES_df[,"ES." %+% BD],main=BD,xlab="ES_df")
 }
+hist(ES_frag_df[,"repl_part_S_qF"],main="repl_part_S_qF",xlab="ES_frag_df")
+hist(ES_frag_group_df[,"repl_part_S_qF"],main="repl_part_S_qF",xlab="ES_frag_group_df")
+hist(ES_df[,"repl_part_S_qF"],main="repl_part_S_qF",xlab="ES_df")
+
+hist(ES_frag_df[,"repl_part_S_qT"],main="repl_part_S_qT",xlab="ES_frag_df")
+hist(ES_frag_group_df[,"repl_part_S_qT"],main="repl_part_S_qT",xlab="ES_frag_group_df")
+hist(ES_df[,"repl_part_S_qT"],main="repl_part_S_qT",xlab="ES_df")
+
 dev.off()
 
 ############################################################################
@@ -119,13 +127,13 @@ panel.smooth <- function (x, y, col = par("col"), bg = NA, pch = par("pch"),
 }
 
 png(file=path2temp %+% "PairwiseCorPlots/PairwiseCorPlot_frag.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
-pairs(ES_frag_df.complete[,"ES." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
+pairs(ES_frag_df.complete[,c("ES." %+% BDmetrics,"repl_part_S_qF","repl_part_S_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()
 png(file=path2temp %+% "PairwiseCorPlots/PairwiseCorPlot_frag_group.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
-pairs(ES_frag_group_df.complete[,"ES." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
+pairs(ES_frag_group_df.complete[,c("ES." %+% BDmetrics,"repl_part_S_qF","repl_part_S_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()
 png(file=path2temp %+% "PairwiseCorPlots/PairwiseCorPlot_gradient.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
-pairs(ES_df.complete[,"ES." %+% BDmetrics], labels=BDmetrics,lower.panel = panel.smooth, upper.panel = panel.cor)
+pairs(ES_df.complete[,c("ES." %+% BDmetrics,"repl_part_S_qF","repl_part_S_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()
 
 ############################################################################
@@ -159,7 +167,7 @@ for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.bi
 # Histograms of sample.design
 hist.sample.design <- function(df){
    p <- ggplot(data=df) + 
-      geom_histogram(aes(x=df$sample.design), size=0.4,stat="count") + 
+      geom_histogram(aes(x=df$sample_design), size=0.4,stat="count") + 
       labs(x="",y="") +
       ggtitle("sample.design") + 
       theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
@@ -168,13 +176,13 @@ hist.sample.design <- function(df){
 }
 
 p <- hist.sample.design(df=ES_frag_df.complete)
-ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_frag_df_sample.design.png", width = 20, height = 8, type = "cairo-png")
+ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_frag_df_sample_design.png", width = 20, height = 8, type = "cairo-png")
 
 p <- hist.sample.design(df=ES_frag_group_df.complete)
-ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_frag_group_df_sample.design.png", width = 20, height = 8, type = "cairo-png")
+ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_frag_group_df_sample_design.png", width = 20, height = 8, type = "cairo-png")
 
 p <- hist.sample.design(df=ES_df.complete)
-ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_df_sample.design.png", width = 20, height = 8, type = "cairo-png")
+ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_df_sample_design.png", width = 20, height = 8, type = "cairo-png")
 ############################################################################
 ### Crosstables
 ############################################################################
@@ -209,6 +217,8 @@ CrosstabViz.func(var1="biome",var2="time.since.fragmentation")
 CrosstabViz.func(var1="matrix.category",var2="time.since.fragmentation")
 
 meta_df <- ES_df.complete
+var1 <- "time.since.fragmentation"
+var2 <- "taxa"
 df <- expand.grid(levels(meta_df[,var1]),levels(meta_df[,var2]))
 df$value <- c(with(meta_df,table(meta_df[,var1],meta_df[,var2])))
 g <- ggplot(df, aes(Var1,Var2)) +

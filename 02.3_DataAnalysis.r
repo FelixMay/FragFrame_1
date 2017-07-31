@@ -41,6 +41,8 @@ analysis_func <- function(df, mods.formula, method){#,df_long
       model[["Less individuals"]] <- rma.mv(yi=ES.N_std,V=ES.var.N_std, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
       #     c.	Species loss due to PIE/ENS_PIE: Fragmentation reduces the evenness.
       model[["Lower evenness"]] <- rma.mv(yi=ES.ENS_pie,V=ES.var.ENS_pie, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+      model[["BetaDiv_PA"]] <- rma.mv(yi=repl_part_S_qF,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+      model[["BetaDiv_abund"]] <- rma.mv(yi=repl_part_S_qT,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
       
    return(model)
 }
@@ -126,11 +128,10 @@ model_frag_group[["Time:Taxa"]] <- analysis_func(df=ES_frag_group_df.complete,mo
 model_gradient[["Time:Taxa"]] <- analysis_func(df=ES_df.complete, mods.formula="~time.since.fragmentation+taxa+time.since.fragmentation:taxa", method="REML")
 # 
 
-#-----
-model_sample.design <- list()
-model_sample.design[["frag"]] <- analysis_func(df=ES_frag_df.complete, covar="sample.design", method="REML")
-model_sample.design[["frag_group"]] <- analysis_func(df=ES_frag_group_df.complete,covar="sample.design", method="REML")
-model_sample.design[["gradient"]] <- analysis_func(df=ES_df.complete,covar="sample.design", method="REML")
+# sample_design
+model_frag[["sample_design"]] <- analysis_func(df=ES_frag_df.complete, mods.formula="~sample_design-1", method="REML")
+model_frag_group[["sample_design"]] <- analysis_func(df=ES_frag_group_df.complete,mods.formula="~sample_design-1", method="REML")
+model_gradient[["sample_design"]] <- analysis_func(df=ES_df.complete,mods.formula="~sample_design-1", method="REML")
 
 
 #--------------------------------------------------------
