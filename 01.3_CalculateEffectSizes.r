@@ -9,10 +9,8 @@ BDmetrics <- c("N_std","S","D0_hat","ENS_pie")
 ###############################################################
 #ES_frag_df <- data.frame(Case.ID = unique(div_df$filename))
 ES_frag_df <- unique(dplyr::select(div_df, filename, sample_design,
-                                   repl_part_S_qF, repl_part_J_qF,
-                                   repl_part_BS_qF, repl_part_BJ_qF,
-                                   repl_part_S_qT, repl_part_J_qT,
-                                   repl_part_BS_qT, repl_part_BJ_qT
+                                   repl_part_S_qF, #repl_part_J_qF, repl_part_BS_qF, repl_part_BJ_qF,
+                                   repl_part_S_qT#, repl_part_J_qT, repl_part_BS_qT, repl_part_BJ_qT
                                    )
                      )
 
@@ -39,11 +37,9 @@ for(i in 1:length(ES_frag_df$Case.ID)){
 ###############################################################
 #ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
 ES_frag_group_df <- unique(dplyr::select(div_df, filename, sample_design,
-                                         repl_part_S_qF, repl_part_J_qF,
-                                         repl_part_BS_qF, repl_part_BJ_qF,
-                                         repl_part_S_qT, repl_part_J_qT,
-                                         repl_part_BS_qT, repl_part_BJ_qT
-                                        )
+                                         repl_part_S_qF, #repl_part_J_qF, repl_part_BS_qF, repl_part_BJ_qF,
+                                         repl_part_S_qT#, repl_part_J_qT, repl_part_BS_qT, repl_part_BJ_qT
+)
                           )
 
 names(ES_frag_group_df)[1] <- "Case.ID"
@@ -71,11 +67,9 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
 #calculate rank-correlation
 #ES_df <- data.frame(Case.ID=unique(div_df$filename))
 ES_df <- unique(dplyr::select(div_df, filename, sample_design,
-                              repl_part_S_qF, repl_part_J_qF,
-                              repl_part_BS_qF, repl_part_BJ_qF,
-                              repl_part_S_qT, repl_part_J_qT,
-                              repl_part_BS_qT, repl_part_BJ_qT
-                             )
+                              repl_part_S_qF, #repl_part_J_qF, repl_part_BS_qF, repl_part_BJ_qF,
+                              repl_part_S_qT#, repl_part_J_qT, repl_part_BS_qT, repl_part_BJ_qT
+)
                )
 
 names(ES_df)[1] <- "Case.ID"
@@ -94,8 +88,8 @@ for(i in 1:length(ES_df$Case.ID)){
    }
    
    fig_name <- path2temp %+% "BoxPlots/" %+% paste(unique(sub.df$filename), ".png", sep = "")
-   png(fig_name, width = 8, height = 6, units = "in", res = 200)
-   op <- par(mfrow = c(2,3), oma = c(0,0,4,0), las = 1)
+   png(fig_name, width = 10, height = 6, units = "in", res = 200)
+   op <- par(mfrow = c(2,4), oma = c(0,0,4,0), las = 1)
    boxplot(N ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "N")
    boxplot(sample_effort ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
@@ -108,6 +102,11 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "Asymptotic S")
    boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "ENS_PIE")
+   try(boxplot(repl_part_S_qF ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+               main = "repl_part_S_qF"))
+   try(boxplot(repl_part_S_qT ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "repl_part_S_qT"))
+   
    mtext(unique(sub.df$filename), side = 3,
          line = 2, outer = T, cex = 1.2)
    mtext(paste(ES_df$n.fragment[i]," Fragments, ", ES_df$sample.design[i], sep = ""),
