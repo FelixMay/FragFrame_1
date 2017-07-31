@@ -37,11 +37,11 @@ is.error <- function(x) inherits(x, "try-error")
 ############################################################################
 ### Load and install all needed libraries
 ############################################################################
-needed_libs <- c("adespatial", # for beta-diversity partitioning
-                 "devtools", # download from github
+needed_libs <- c("devtools", # download from github
                  "mobsim", # simulation of species communities
                  "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
                  "vegan", # for diversity indices
+                 "adespatial", # for beta-diversity partitioning
                  "metafor", # for meta-analysis 
                  "lme4", # for lmer
                  "ggplot2", # for plotting
@@ -84,20 +84,28 @@ usePackage <- function(p) {
 # version.string R version 3.2.5 (2016-04-14)
 # nickname       Very, Very Secure Dishes    
 
-ip <- as.data.frame(installed.packages()[needed_libs,c(1,3)])
-rownames(ip) <- NULL
-ip
+ip <- as.data.frame(installed.packages(),optional=F)
+ip[ip$Package %in% needed_libs,c(1,3)]
 # Package    Version
-# 1    devtools     1.10.0
-# 2      mobsim 0.0.0.9000
-# 3       iNEXT     2.0.12
-# 4       vegan      2.4-1
-# 5     metafor      1.9-8
-# 6     ggplot2      2.1.0
-# 7   gridExtra      2.2.1
-# 8       dplyr      0.5.0
-# 9        xlsx      0.5.7
-# 10     SpadeR      0.1.1
+# adespatial     adespatial      0.0-8
+# devtools         devtools     1.10.0
+# dplyr               dplyr      0.5.0
+# ggplot2           ggplot2      2.2.1
+# grid                 grid      3.2.5
+# gridExtra       gridExtra      2.2.1
+# iNEXT               iNEXT     2.0.14
+# lme4                 lme4     1.1-12
+# metafor           metafor      1.9-9
+# mobsim             mobsim 0.0.0.9000
+# plot3D             plot3D        1.1
+# plyr                 plyr      1.8.4
+# raster             raster     2.3-40
+# RColorBrewer RColorBrewer      1.1-2
+# reshape2         reshape2      1.4.2
+# SpadeR             SpadeR      0.1.1
+# vegan               vegan      2.4-3
+# xlsx                 xlsx      0.5.7
+# grid.1               grid      3.2.5
 
 sapply(needed_libs, usePackage)
 
