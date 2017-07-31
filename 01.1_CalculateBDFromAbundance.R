@@ -132,7 +132,8 @@ CalcBDfromAbundance <- function(filename){
    
    # simple diversity indices
    div_indi$N <- colSums(dat_abund_pool2)
-   div_indi$N_std <-  div_indi$N/div_indi$sample_effort
+#   div_indi$N_std <-  div_indi$N/div_indi$sample_effort
+   div_indi$N_std <-  div_indi$N/(div_indi$sample_effort/max(div_indi$sample_effort)
    div_indi$S <- colSums(dat_abund_pool2 > 0)
    
 #   div_indi$Shannon <- diversity(t(dat_abund_pool2), index = "shannon")
