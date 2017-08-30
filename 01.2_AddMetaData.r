@@ -10,7 +10,7 @@ meta_list <- list()
 for (i in 1:length(filenames)){
    
    print(filenames[i])
-   
+
    df <- try(read.xlsx(filenames[i], sheetIndex = 2, rowIndex=1:23, colIndex=1:2,  header = F)) # specify row and column indices to avoid reading empty cols and rows which would produce errors
    if (!inherits(df, "try-error")){
       if(ncol(df)>1){
@@ -48,7 +48,7 @@ meta_df$taxa <- factor(meta_df$taxa)
 
 # ---------------------------------------------------
 ### join meta data extracted from files with manual extensions
-meta_manual <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean matrix_based on the tk sheet_kg.xlsx", sheetIndex = 2, startRow = 1,  header = T)
+meta_manual <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2017_July_27.xlsx", sheetIndex = 2, startRow = 1,  header = T)
 meta_total <- join(meta_df, meta_manual, type="right")
 meta_df <- meta_total
 
