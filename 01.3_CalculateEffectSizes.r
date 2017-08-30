@@ -2,7 +2,7 @@ div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
 
 str(div_df)
 
-BDmetrics <- c("N_std","S","D0_hat","ENS_pie")
+BDmetrics <- c("N_std","D0_hat","ENS_pie")
 
 ###############################################################
 ### 1. largest vs smallest fragment incl continuous as fragment using log RR
@@ -96,8 +96,6 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "Sampling effort")
    boxplot(N_std ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "N standardized")
-   boxplot(S ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
-           main = "S")
    boxplot(D0_hat ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Asymptotic S")
    boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
@@ -132,5 +130,5 @@ write.csv(ES_df, file=path2temp %+% "ES_df.csv")
 # div_df[div_df$filename %in% check$Case.ID,  ]
 
 # Check correlation among turnover indices
-pairs(ES_frag_group_df[, 3:10])
-cor(ES_frag_group_df[, 3:10], use = "pairwise.complete.obs")
+pairs(ES_frag_group_df[, c("repl_part_S_qF","repl_part_S_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")])
+cor(ES_frag_group_df[, c("repl_part_S_qF","repl_part_S_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")], use = "pairwise.complete.obs")
