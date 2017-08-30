@@ -23,7 +23,8 @@ cons_frag <- bind_rows(lapply(model_frag,consistency_func),.id="Covariate")
 cons_frag_group <- bind_rows(lapply(model_frag_group,consistency_func),.id="Covariate")
 cons_gradient <- bind_rows(lapply(model_gradient,consistency_func),.id="Covariate")
 
-cons_df <- data.frame(data=rep(c("frag","frag_group","gradient"),each=84),bind_rows(list(cons_frag,cons_frag_group,cons_gradient)))
+cons_df <- bind_rows(list(cons_frag,cons_frag_group,cons_gradient), .id="data")
+cons_df$data <- factor(cons_df$data, levels=c("1","2","3"), labels=c("frag","frag_group","gradient"))
 
 cons_df[,5:14] <- apply(cons_df[,5:14], 2,function(x) round(x,digits=3))
 

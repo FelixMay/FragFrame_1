@@ -8,7 +8,7 @@ plot.func <- function(model,ylab,title){
    pred.se.df.list <- lapply(pred.se.list, function(x) bind_rows(x,.id="model"))
    pred.se.df <- bind_rows(pred.se.df.list)
 #   pred.se.df$levels <- rep(c("frag","frag_group","gradient"),each=4)
-   pred.se.df$variable <- c("S", "D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund") # rep(c("S", "D0_hat", "N_std", "ENS_pie"),times=3)
+   pred.se.df$variable <- c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund") # rep(c("S", "D0_hat", "N_std", "ENS_pie"),times=3)
    ylim <- c(floor(10*min(pred.se.df$b-1.96*pred.se.df$se))/10,ceiling(10*max(pred.se.df$b+1.96*pred.se.df$se))/10)
    
    pd <- position_dodge(width=0.4)
@@ -17,7 +17,7 @@ plot.func <- function(model,ylab,title){
       geom_point(position=pd,aes(x=variable, y=b),size=4) +
       geom_errorbar(position=pd,aes(x=variable, ymin=b-1.96*se,ymax=b+1.96*se),width=0.2,size=1.2) +
       geom_hline(yintercept=0,linetype="twodash", size=0.6) +
-      scale_x_discrete("",limits=c("S", "D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund")) +
+      scale_x_discrete("",limits=c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund")) +
       xlab("") + ylab(ylab) + ylim(ylim) +
       ggtitle(title) +
       # scale_color_manual("", values=coul,
@@ -45,7 +45,7 @@ dev.off()
 plot.func.levels <- function(model,cov,levels,ylab,title){
    pred.se.list <- lapply(model,function(x) data.frame(b=x$b,se=x$se))
    pred.se.df <- bind_rows(pred.se.list,.id="model")  
-   pred.se.df$variable <- rep(c("S", "D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"),each=length(levels))
+   pred.se.df$variable <- factor(pred.se.df$model, levels=unique(pred.se.df$model), labels=c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"))
    pred.se.df$levels <- unlist(lapply(model, function(x) sapply(strsplit(rownames(x$b),cov), function(y) y[2])))
    pred.se.df$levels <- factor(pred.se.df$levels, levels=levels) 
    
@@ -58,7 +58,7 @@ plot.func.levels <- function(model,cov,levels,ylab,title){
       geom_point(position=pd,aes(x=variable, y=b),size=4) +
       geom_errorbar(position=pd,aes(x=variable, ymin=b-1.96*se,ymax=b+1.96*se),width=0.2,size=1.2) +
       geom_hline(yintercept=0,linetype="twodash", size=0.6) +
-      scale_x_discrete("",limits=c("S", "D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund")) +
+      scale_x_discrete("",limits=c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund")) +
       xlab("") + ylab(ylab) + ylim(ylim) +
       ggtitle(title) +
       scale_color_manual("", values=coul,
@@ -73,10 +73,10 @@ png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_Taxa.png", width=30,height=
 plot.func.levels(model=model_frag[["Taxa"]],cov="taxa", levels=c("invertebrates", "amphibians & reptiles", "birds", "mammals","plants"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
 dev.off()
 
-png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_Biome.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model=model_frag[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
-dev.off()
-
+# png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_Biome.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
+# plot.func.levels(model=model_frag[["Biome"]],cov="biome", levels=levels(ES_frag_group_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
+# dev.off()
+# 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_Matrix.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
 plot.func.levels(model=model_frag[["Matrix"]],cov="matrix.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
 dev.off()
@@ -90,9 +90,9 @@ png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Taxa.png", width=20,h
 plot.func.levels(model_frag_group[["Taxa"]],cov="taxa", levels=c("invertebrates", "amphibians & reptiles", "birds", "mammals","plants"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
 dev.off()
 
-png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Biome.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model_frag_group[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
-dev.off()
+# png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Biome.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+# plot.func.levels(model_frag_group[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
+# dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Matrix.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
 plot.func.levels(model_frag_group[["Matrix"]],cov="matrix.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
@@ -107,9 +107,9 @@ png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_Taxa.png", width=2
 plot.func.levels(model_gradient[["Taxa"]],cov="taxa", levels=c("invertebrates", "amphibians & reptiles", "birds", "mammals","plants"), ylab="Fishers' z",title="Gradient of fragmentation")
 dev.off()
 
-png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_Biome.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model_gradient[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Fishers' z",title="Gradient of fragmentation")
-dev.off()
+# png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_Biome.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+# plot.func.levels(model_gradient[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Fishers' z",title="Gradient of fragmentation")
+# dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_Matrix.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
 plot.func.levels(model_gradient[["Matrix"]],cov="matrix.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Fishers' z",title="Gradient of fragmentation")
@@ -136,7 +136,7 @@ plot.func.continuous <- function(model,newmods,ylab,title){
    }
    pred.se.df <- bind_rows(lapply(pred.se.list,pred.list2df),.id="model")
    
-   pred.se.df$variable <- factor(rep(c("S", "D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"),each=length(newmods)),levels=c("S", "D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"))
+   pred.se.df$variable <- factor(rep(c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"),each=length(newmods)),levels=c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"))
    pred.se.df$newmods <- newmods 
 
    plot1 <- ggplot(pred.se.df,aes(y=pred,x=newmods)) +

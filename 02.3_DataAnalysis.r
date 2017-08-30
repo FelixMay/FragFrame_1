@@ -26,15 +26,11 @@ analysis_func <- function(df, mods.formula, method){#,df_long
    ### Weighted estimation (with inverse-variance weights) is used by default. User-defined weights can be supplied via the weights argument. Unweighted estimation can be used by setting weighted=FALSE in rma.uni. This is the same as setting the weights equal to a constant (Source: R Help rma.uni)
    if(!any(grepl("var",names(df)))){
       df <- data.frame(df,
-                       ES.var.S = rep(1,nrow(df)),
                        ES.var.D0_hat = rep(1,nrow(df)),
                        ES.var.N_std = rep(1,nrow(df)),
                        ES.var.ENS_pie = rep(1,nrow(df)))
    }      
-      # 1.	Species loss: Fragmentation leads to decrease of observed species richness, i.e. naïve species richness without considering methodological differences.  
-      model[["Naive species loss"]] <- rma.mv(yi=ES.S, V=ES.var.S, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
-      
-      # 2.	Fragmentation per se:
+      # Fragmentation per se:
       #    a.	Species loss due to less coverage standardized species richness: Fragmentation leads to decrease in coverage standardized species richness.
       model[["Coverage standardized species loss"]] <- rma.mv(yi=ES.D0_hat, V=ES.var.D0_hat, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
       #     b.	Species loss due to less Individuals: Fragmentation decreases the number of individuals.

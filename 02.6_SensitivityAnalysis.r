@@ -21,7 +21,7 @@ setRefToMostCommonLevel <- function(f) {
 analysis_func <- function(df, covar="intercept.only", method){
    
    ### set reference levels
-   for(col in c("taxa","biome","matrix.category","time.since.fragmentation","sample.design")){
+   for(col in c("taxa","biome","matrix.category","time.since.fragmentation","sample_design")){
       df[,col] <- setRefToMostCommonLevel(df[,col])
    }
    
@@ -30,7 +30,7 @@ analysis_func <- function(df, covar="intercept.only", method){
    if(covar=="intercept.only"){
       mods.formula <- "~1"
    }
-   if(covar %in% c("taxa","biome","matrix.category","time.since.fragmentation","sample.design")){
+   if(covar %in% c("taxa","biome","matrix.category","time.since.fragmentation","sample_design")){
       mods.formula <- "~" %+% covar %+% "-1"
    }
    if(covar == "ratio.min.max.fragment.size2"){
@@ -42,14 +42,10 @@ analysis_func <- function(df, covar="intercept.only", method){
    ### Weighted estimation (with inverse-variance weights) is used by default. User-defined weights can be supplied via the weights argument. Unweighted estimation can be used by setting weighted=FALSE in rma.uni. This is the same as setting the weights equal to a constant (Source: R Help rma.uni)
    if(!any(grepl("var",names(df)))){
       df <- data.frame(df,
-                       ES.var.S = rep(1,nrow(df)),
                        ES.var.D0_hat = rep(1,nrow(df)),
                        ES.var.N_std = rep(1,nrow(df)),
                        ES.var.ENS_pie = rep(1,nrow(df)))
     }      
-   # 1.	Species loss: Fragmentation leads to decrease of observed species richness, i.e. naïve species richness without considering methodological differences.  
-   model[["Naive species loss"]] <- rma.mv(yi=ES.S, V=ES.var.S, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
-   
    # 2.	Fragmentation per se:
    #    a.	Species loss due to less coverage standardized species richness: Fragmentation leads to decrease in coverage standardized species richness.
    model[["Coverage standardized species loss"]] <- rma.mv(yi=ES.D0_hat, V=ES.var.D0_hat, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
@@ -58,6 +54,8 @@ analysis_func <- function(df, covar="intercept.only", method){
    model[["Less individuals"]] <- rma.mv(yi=ES.N_std,V=ES.var.N_std, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
    #     c.	Species loss due to PIE/ENS_PIE: Fragmentation reduces the evenness.
    model[["Lower evenness"]] <- rma.mv(yi=ES.ENS_pie,V=ES.var.ENS_pie, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["BetaDiv_PA"]] <- rma.mv(yi=repl_part_S_qF,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["BetaDiv_abund"]] <- rma.mv(yi=repl_part_S_qT,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
    
    return(model)
 }
@@ -101,8 +99,8 @@ plot.func <- function(model,model_sub,ylab,title){
    pred.se.df <- bind_rows(pred.se.list,.id="model")
    pred.se.df_sub <- bind_rows(pred.se.list_sub,.id="model")
    pred.se.df <- rbind(pred.se.df,pred.se.df_sub)
-   pred.se.df$data <- rep(c("full", "sub"),each=4)
-   pred.se.df$variable <- rep(c("S", "D0_hat", "N_std", "ENS_pie"),times=2)
+   pred.se.df$data <- rep(c("full", "sub"),each=5)
+   pred.se.df$variable <- factor(pred.se.df$model, levels=unique(pred.se.df$model), labels=c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"))
    ylim <- c(floor(10*min(pred.se.df$b-1.96*pred.se.df$se))/10,ceiling(10*max(pred.se.df$b+1.96*pred.se.df$se))/10)
    
    pd <- position_dodge(width=0.3)
@@ -110,7 +108,7 @@ plot.func <- function(model,model_sub,ylab,title){
       geom_point(position=pd,aes(x=variable, y=b),size=4) +
       geom_errorbar(position=pd,aes(x=variable, ymin=b-1.96*se,ymax=b+1.96*se),width=0.2,size=1.2) +
       geom_hline(yintercept=0,linetype="twodash", size=0.6) +
-      scale_x_discrete("",limits=c("S", "D0_hat", "N_std", "ENS_pie")) +
+      scale_x_discrete("",limits=c("D0_hat", "N_std", "ENS_pie")) +
       xlab("") + ylab(ylab) + ylim(ylim) +
       ggtitle(title) +
       theme(axis.text = element_text(size = rel(0.8)), 
@@ -140,8 +138,8 @@ plot.func.levels <- function(model,model_sub,cov,levels,ylab,title){
    pred.se.df <- bind_rows(pred.se.list,.id="model")
    pred.se.df_sub <- bind_rows(pred.se.list_sub,.id="model")
    pred.se.df <- rbind(pred.se.df,pred.se.df_sub)
-   pred.se.df$data <- rep(c("full", "sub"),each=4)
-   pred.se.df$variable <- rep(c("S", "D0_hat", "N_std", "ENS_pie"),each=length(levels))
+   pred.se.df$data <- rep(c("full", "sub"),each=5)
+   pred.se.df$variable <- factor(pred.se.df$model, levels=unique(pred.se.df$model), labels=c("D0_hat", "N_std", "ENS_pie","BetaDiv_PA","BetaDiv_abund"))
    pred.se.df$levels <- c(unlist(lapply(model, function(x) sapply(strsplit(rownames(x$b),cov), function(y) y[2]))),
                           unlist(lapply(model_sub, function(x) sapply(strsplit(rownames(x$b),cov), function(y) y[2]))))
    pred.se.df$levels <- factor(pred.se.df$levels, levels=levels) 
@@ -154,7 +152,7 @@ plot.func.levels <- function(model,model_sub,cov,levels,ylab,title){
       geom_point(position=pd,aes(x=variable, y=b),size=2) +
       geom_errorbar(position=pd,aes(x=variable, ymin=b-1.96*se,ymax=b+1.96*se),width=0.2,size=1) +
       geom_hline(yintercept=0,linetype="twodash", size=0.6) +
-      scale_x_discrete("",limits=c("S", "D0_hat", "N_std", "ENS_pie")) +
+      scale_x_discrete("",limits=c("D0_hat", "N_std", "ENS_pie")) +
       xlab("") + ylab(ylab) + ylim(ylim) +
       ggtitle(title) +
       scale_color_manual("", values=coul,
@@ -178,9 +176,9 @@ png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_Taxa_su
 plot.func.levels(model=model_frag[["Taxa"]], model_sub=model_frag_sub[["Taxa"]],cov="taxa",levels=c("invertebrates", "amphibians & reptiles", "birds", "mammals","plants"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
 dev.off()
 
-png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_Biome_subset.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model=model_frag[["Biome"]], model_sub=model_frag_sub[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
-dev.off()
+# png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_Biome_subset.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
+# plot.func.levels(model=model_frag[["Biome"]], model_sub=model_frag_sub[["Biome"]],cov="biome", levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
+# dev.off()
 
 png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_Matrix_subset.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
 plot.func.levels(model=model_frag[["Matrix"]], model_sub=model_frag_sub[["Matrix"]],cov="matrix.category",levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
@@ -195,9 +193,9 @@ png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_group_T
 plot.func.levels(model=model_frag_group[["Taxa"]], model_sub=model_frag_group_sub[["Taxa"]],cov="taxa",levels=c("invertebrates", "amphibians & reptiles", "birds", "mammals","plants"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
 dev.off()
 
-png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Biome_subset.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model=model_frag_group[["Biome"]], model_sub=model_frag_group_sub[["Biome"]],cov="biome",levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
-dev.off()
+# png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Biome_subset.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
+# plot.func.levels(model=model_frag_group[["Biome"]], model_sub=model_frag_group_sub[["Biome"]],cov="biome",levels=levels(ES_frag_df.complete$biome), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
+# dev.off()
 
 png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_group_Matrix_subset.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
 plot.func.levels(model=model_frag_group[["Matrix"]], model_sub=model_frag_group_sub[["Matrix"]],cov="matrix.category",levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
@@ -250,23 +248,24 @@ dev.off()
 #---------------------------------------------------------------------------
 # Influence diagnostics
 #---------------------------------------------------------------------------
-cooks.distance.func <- function(model){
-   x <- cooks.distance(model)
-   plot(x, ylab="Cook's distance", xlab="Study")#, main=names(model))
-   abline(h=0,lty="dashed")
-   segments(x0=1:length(x), y0=0, x1 = 1:length(x), y1 = x)
-   return(x)
-}
-
-# TO DO: Title for the plots
-png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-model_frag_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
-dev.off()
-
-png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag_group.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-model_frag_group_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
-dev.off()
-
-png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_gradient.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-model_gradient_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
-dev.off()
+# cooks.distance.func <- function(model){
+#    x <- try(cooks.distance(model))
+#    if(is.error(x)) return()
+#    plot(x, ylab="Cook's distance", xlab="Study"), main=model.name)
+#    abline(h=0,lty="dashed")
+#    segments(x0=1:length(x), y0=0, x1 = 1:length(x), y1 = x)
+#    return(x)
+# }
+# 
+# # TO DO: Title for the plots
+# pdf(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag.pdf", width=20,height=10)
+# model_frag_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
+# dev.off()
+# 
+# pdf(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag_group.pdf", width=20,height=10)
+# model_frag_group_cook.dist <- lapply(model_frag_group,function(x) lapply(x, function(y) cooks.distance.func(y)))
+# dev.off()
+# 
+# pdf(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_gradient.pdf", width=20,height=10)
+# model_gradient_cook.dist <- lapply(model_gradient,function(x) lapply(x, function(y) cooks.distance.func(y)))
+# dev.off()

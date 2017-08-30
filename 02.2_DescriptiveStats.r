@@ -1,7 +1,7 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 #ls()
 
-BDmetrics <- c("S","D0_hat","N_std","ENS_pie")
+BDmetrics <- c("D0_hat","N_std","ENS_pie")
 
 ############################################################################
 ### 1. Histograms of Effect sizes
