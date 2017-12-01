@@ -3,6 +3,7 @@
 ############################################################################
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=TRUE)
 
+sink(file=path2temp %+% "dataprep_documentation.txt")
 ############################################################################
 ### 01 DATA PREPARATION
 ############################################################################
@@ -15,30 +16,35 @@ source(path2wd %+% "01.2_AddMetaData.r")
 # 3. calculate effect sizes per Case.ID
 source(path2wd %+% "01.3_CalculateEffectSizes.r") 
 
-############################################################################
-###  02 DATA ANALYSIS
-############################################################################
-# 1. merge dataframes with meta-data
+# 4. merge dataframes with meta-data
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
 source(path2wd %+% "02.1_DataPrep4Analysis.r") 
 save.image(file=path2temp %+% "02.1_Data4Analysis_out.Rdata")
 
-# 2. 
+# 5. 
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
 source(path2wd %+% "02.2_DescriptiveStats.r") 
 
-# 3. 
+sink()
+
+############################################################################
+###  02 DATA ANALYSIS
+############################################################################
+# 1. 
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
-source(path2wd %+% "02.3_DataAnalysis.r") 
+source(path2wd %+% "02.3a_BDAnalysis.r") 
+source(path2wd %+% "02.3b_BetaDivAnalysis.r") 
 save.image(file=path2temp %+% "02.3_DataAnalysis_out.Rdata")
 
-# 4. 
+# 2. 
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
+sink(file=path2temp %+% "CheckResults/ModelDiagnostics_Output.txt")
 source(path2wd %+% "02.4_CheckResults.r") 
+sink()
 
 rm(list=ls())
 source('~/GitHub/FragFrame_1/00_InitializeDirectories_LoadPackagesAndFunctions.R', echo=F)
