@@ -42,6 +42,7 @@ needed_libs <- c("devtools", # download from github
                  "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
                  "vegan", # for diversity indices
                  "adespatial", # for beta-diversity partitioning
+                 "car", # for logit transformation
                  "metafor", # for meta-analysis 
                  "lme4", # for lmer
                  "ggplot2", # for plotting
