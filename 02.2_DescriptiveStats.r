@@ -1,7 +1,7 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 #ls()
 
-BDmetrics <- c("D0_hat","N_std","ENS_pie")
+BDmetrics <- c("S_plot_mean","D0_hat","N_std","ENS_pie")
 
 ############################################################################
 ### 1. Histograms of Effect sizes
@@ -12,13 +12,9 @@ for(BD in BDmetrics){
    hist(ES_frag_group_df[,"ES." %+% BD],main=BD,xlab="ES_frag_group_df")
    hist(ES_df[,"ES." %+% BD],main=BD,xlab="ES_df")
 }
-hist(ES_frag_df[,"repl_part_S_qF"],main="repl_part_S_qF",xlab="ES_frag_df")
-hist(ES_frag_group_df[,"repl_part_S_qF"],main="repl_part_S_qF",xlab="ES_frag_group_df")
-hist(ES_df[,"repl_part_S_qF"],main="repl_part_S_qF",xlab="ES_df")
-
-hist(ES_frag_df[,"repl_part_S_qT"],main="repl_part_S_qT",xlab="ES_frag_df")
-hist(ES_frag_group_df[,"repl_part_S_qT"],main="repl_part_S_qT",xlab="ES_frag_group_df")
-hist(ES_df[,"repl_part_S_qT"],main="repl_part_S_qT",xlab="ES_df")
+hist(ES_frag_df[,"repl_part_BS_qT"],main="repl_part_BS_qT",xlab="ES_frag_df")
+hist(ES_frag_group_df[,"repl_part_BS_qT"],main="repl_part_BS_qT",xlab="ES_frag_group_df")
+hist(ES_df[,"repl_part_BS_qT"],main="repl_part_BS_qT",xlab="ES_df")
 
 dev.off()
 
@@ -45,7 +41,7 @@ g_legend<-function(a.gplot){
 plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
    geom_segment() +
    geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","D0_hat","N_std","ENS_PIE"))
+   scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
 
 # # if legend from plot1 is drawn
 legend <- g_legend(plot1)
@@ -58,8 +54,7 @@ plot2 <- ggplot(data=ES_df.complete_long, aes(x=Case.ID,y=value,ymin=value-1.96*
    geom_pointrange(position=pd, cex=0.4,show.legend = F) + 
    geom_hline(aes(yintercept=0), linetype="twodash",size=0.6) +
    xlab("") + ylab("") +
-   coord_flip() +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","D0_hat","N_std","ENS_PIE"))
+   coord_flip() 
 
 grid.arrange(plot2,legend, ncol=2, widths=c(15,4))
 dev.off()
@@ -77,7 +72,7 @@ g_legend<-function(a.gplot){
 plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
          geom_segment() +
          geom_point(aes(x=value)) +
-         scale_color_brewer("", palette="Set1",breaks=c("ES.S","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","D0_hat","N_std","ENS_PIE"))
+         scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
 
 # # if legend from plot1 is drawn
 legend <- g_legend(plot1)
@@ -91,12 +86,24 @@ plot2 <- ggplot(data=ES_df.complete_long, aes(x=Case.ID,y=value,ymin=value-1.96*
    geom_hline(aes(yintercept=0), linetype="twodash",size=0.6) +
    ylim(-5,5) +
    xlab("") + ylab("") +
-   coord_flip() +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","D0_hat","N_std","ENS_PIE"))
+   coord_flip() 
 
 grid.arrange(plot2,legend, ncol=2, widths=c(15,4))
 dev.off()
 
+### combined forest plot for frag_group dataset
+png(path2temp %+% "ForestPlots_ES_frag_group_df.png",height=40,width=25,units="cm",res=400)
+ggplot(data=ES_frag_group_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
+   geom_point(aes(x=value)) +
+   scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
+dev.off()
+
+### combined forest plot for frag dataset
+png(path2temp %+% "ForestPlots_ES_frag_df.png",height=40,width=25,units="cm",res=400)
+ggplot(data=ES_frag_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
+   geom_point(aes(x=value)) +
+   scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
+dev.off()
 ############################################################################
 ### 2. pairwise correlation of effect sizes based on complete observations
 ############################################################################
@@ -127,13 +134,13 @@ panel.smooth <- function (x, y, col = par("col"), bg = NA, pch = par("pch"),
 }
 
 png(file=path2temp %+% "PairwiseCorPlots/PairwiseCorPlot_frag.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
-pairs(ES_frag_df.complete[,c("ES." %+% BDmetrics,"repl_part_S_qF","repl_part_S_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
+pairs(ES_frag_df.complete[,c("ES." %+% BDmetrics,"repl_part_BS_qF","repl_part_BS_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()
 png(file=path2temp %+% "PairwiseCorPlots/PairwiseCorPlot_frag_group.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
-pairs(ES_frag_group_df.complete[,c("ES." %+% BDmetrics,"repl_part_S_qF","repl_part_S_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
+pairs(ES_frag_group_df.complete[,c("ES." %+% BDmetrics,"repl_part_BS_qF","repl_part_BS_qT")], labels=c(BDmetrics,"repl_part_BS_qF","repl_part_BS_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()
 png(file=path2temp %+% "PairwiseCorPlots/PairwiseCorPlot_gradient.png", width=20,height=20,units="cm",res=400,type = "cairo-png")
-pairs(ES_df.complete[,c("ES." %+% BDmetrics,"repl_part_S_qF","repl_part_S_qT")], labels=c(BDmetrics,"repl_part_S_qF","repl_part_S_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
+pairs(ES_df.complete[,c("ES." %+% BDmetrics,"repl_part_BS_qF","repl_part_BS_qT")], labels=c(BDmetrics,"repl_part_BS_qF","repl_part_BS_qT"),lower.panel = panel.smooth, upper.panel = panel.cor)
 dev.off()
 
 ############################################################################
@@ -142,7 +149,8 @@ dev.off()
 
 for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation","ratio.min.max.fragment.size2")){
    print(col)
-   if(is.factor(meta_df[,col])){
+   if(col %in% c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation")){
+      meta_df[,col] <- factor(meta_df[,col])
       p <- ggplot(data=meta_df) + 
          geom_histogram(aes(x=meta_df[,col]), size=0.4,stat="count") + 
          labs(x="",y="") +
@@ -219,6 +227,9 @@ CrosstabViz.func(var1="matrix.category",var2="time.since.fragmentation")
 meta_df <- ES_df.complete
 var1 <- "time.since.fragmentation"
 var2 <- "taxa"
+meta_df[,var1] <- factor(meta_df[,var1])
+meta_df[,var2] <- factor(meta_df[,var2])
+
 df <- expand.grid(levels(meta_df[,var1]),levels(meta_df[,var2]))
 df$value <- c(with(meta_df,table(meta_df[,var1],meta_df[,var2])))
 g <- ggplot(df, aes(Var1,Var2)) +
@@ -229,61 +240,4 @@ g <- ggplot(df, aes(Var1,Var2)) +
    theme_bw() + theme(axis.text.x=element_text(angle=45,vjust = 1, hjust=1)) + xlab("") + ylab("")
 g
 ggsave(path2temp %+% "Histograms/Crosstab_ES_df.complete_Time_vs_Taxa.png")
-
-#### RESTERAMPE
-############################################################################
-### 1. Plot effect sizes in a 2-dim space
-############################################################################
-# pdf(file=path2temp %+% "2D_Scatterplot_of_z.pdf")
-# ggplot(data=ES_df.complete, aes(x=z.N,y=z.S,col=taxa)) + 
-#    geom_point(alpha=.5,size=3) +
-#    geom_errorbar(aes(ymin=z.S - (1.96*sqrt(z.var.S)),ymax=z.S + (1.96*sqrt(z.var.S)))) +
-#    geom_errorbarh(aes(xmin=z.N - (1.96*sqrt(z.var.N)),xmax=z.N + (1.96*sqrt(z.var.N)))) +
-#    geom_abline(intercept=0,slope=1,lty="dotted")
-# 
-# ggplot(data=ES_df.complete, aes(x=z.N,y=z.ENS_pie,col=taxa)) + 
-#    geom_point(alpha=.5,size=3) +
-#    geom_errorbar(aes(ymin=z.ENS_pie - (1.96*sqrt(z.var.ENS_pie)),ymax=z.ENS_pie + (1.96*sqrt(z.var.ENS_pie)))) +
-#    geom_errorbarh(aes(xmin=z.N - (1.96*sqrt(z.var.N)),xmax=z.N + (1.96*sqrt(z.var.N)))) +
-#    geom_abline(intercept=0,slope=1,lty="dotted")
-# 
-# ggplot(data=ES_df.complete, aes(x=z.S,y=z.ENS_pie,col=taxa)) + 
-#    geom_point(alpha=.5,size=3) +
-#    geom_errorbar(aes(ymin=z.ENS_pie - (1.96*sqrt(z.var.ENS_pie)),ymax=z.ENS_pie + (1.96*sqrt(z.var.ENS_pie)))) +
-#    geom_errorbarh(aes(xmin=z.S - (1.96*sqrt(z.var.S)),xmax=z.S + (1.96*sqrt(z.var.S)))) +
-#    geom_abline(intercept=0,slope=1,lty="dotted")
-# 
-# dev.off()
-
-# ############################################################################
-# ### 1. Plot effect sizes in a 3-dim space
-# ############################################################################
-# pdf(file=path2temp %+% "3D_Scatterplot_of_z.pdf")
-# with(ES_df.complete, scatter3D(x = z.N, y = z.S, z = z.ENS_pie, 
-#                                col = rainbow(length(levels(taxa))), 
-#                                pch = 16, cex = 1.5, alpha=0.6,
-#                                xlab = "Abundance N", ylab = "Species richness S", zlab = "ENS PIE", phi=5, ltheta=2, lphi=2,
-#                                #                       clab = c("Taxa"),
-#                                main = "", ticktype = "detailed",
-#                                colkey = F))
-# legend("bottomleft", paste(levels(ES_df.complete$taxa)), pch = 16, col = rainbow(length(levels(ES_df.complete$taxa))), cex=1, inset=c(-0.01,-0.03),bty="n")
-# 
-# with(ES_df.complete, scatter3D(x = z.N, z = z.S, y = z.ENS_pie, 
-#                                col = rainbow(length(levels(taxa))), 
-#                                pch = 16, cex = 1.5, alpha=0.6,
-#                                xlab = "Abundance N", zlab = "Species richness S", ylab = "ENS PIE", phi=5, ltheta=2, lphi=2,
-#                                #                       clab = c("Taxa"),
-#                                main = "", ticktype = "detailed",
-#                                colkey = F))
-# legend("bottomleft", paste(levels(ES_df.complete$taxa)), pch = 16, col = rainbow(length(levels(ES_df.complete$taxa))), cex=1, inset=c(-0.01,-0.03),bty="n")
-# 
-# with(ES_df.complete, scatter3D(z = z.N, y = z.S, x = z.ENS_pie, 
-#                                col = rainbow(length(levels(taxa))), 
-#                                pch = 16, cex = 1.5, alpha=0.6,
-#                                zlab = "Abundance N", ylab = "Species richness S", xlab = "ENS PIE", phi=5, ltheta=2, lphi=2,
-#                                #                       clab = c("Taxa"),
-#                                main = "", ticktype = "detailed",
-#                                colkey = F))
-# legend("bottomleft", paste(levels(ES_df.complete$taxa)), pch = 16, col = rainbow(length(levels(ES_df.complete$taxa))), cex=1, inset=c(-0.01,-0.03),bty="n")
-# dev.off()
 

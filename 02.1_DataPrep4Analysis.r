@@ -1,3 +1,7 @@
+#-----------------------------------------
+### Read datasets without coercing strings into factor (that would create warnings during join)
+options(stringsAsFactors=F)
+
 div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
 ES_frag_df <- read.csv(file=path2temp %+% "ES_frag_df.csv")
 ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv")
@@ -8,14 +12,14 @@ BDmetrics <- c("N_std","D0_hat","ENS_pie")
 
 #-----------------------------------------
 ### subset original dataset
-ES_frag_df <- ES_frag_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_S_qF", "repl_part_S_qT",
+ES_frag_df <- ES_frag_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qT",
                             sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))]
 
-ES_frag_group_df <- ES_frag_group_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_S_qF", "repl_part_S_qT",
+ES_frag_group_df <- ES_frag_group_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qT",
                             sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))]
 
 ES_df <- subset(ES_df, n.fragment>3)
-ES_df <- ES_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_S_qF", "repl_part_S_qT",
+ES_df <- ES_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qT",
                   sapply(BDmetrics, function(x) paste(c("ES.","ES.var."),x,sep="")))]
 
 #-----------------------------------------
@@ -46,4 +50,6 @@ write.csv(ES_frag_group_df.complete, file=path2temp %+% "ES_frag_group_df.comple
 write.csv(ES_df.complete, file=path2temp %+% "ES_df.complete.csv")
 
 
+### reset options to read datasets without coercing strings into factor (that would create warnings during join)
+options(stringsAsFactors=T)
 
