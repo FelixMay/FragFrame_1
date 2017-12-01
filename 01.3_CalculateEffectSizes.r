@@ -1,15 +1,16 @@
 div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
+#str(div_df)
 
-str(div_df)
+div_df <- subset(div_df, base_cov>0.5) # exclude studies with base coverage less than 0.5 that indicates incomplete sampling
 
-BDmetrics <- c("N_std","D0_hat","ENS_pie")
+BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
 
 ###############################################################
 ### 1. largest vs smallest fragment incl continuous as fragment using log RR
 ###############################################################
 #ES_frag_df <- data.frame(Case.ID = unique(div_df$filename))
 ES_frag_df <- unique(dplyr::select(div_df, filename, sample_design,
-                                   repl_part_BS_qT)
+                                   repl_part_BS_qF, repl_part_BS_qT)
                      )
 
 names(ES_frag_df)[1] <- "Case.ID"
@@ -35,7 +36,7 @@ for(i in 1:length(ES_frag_df$Case.ID)){
 ###############################################################
 #ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
 ES_frag_group_df <- unique(dplyr::select(div_df, filename, sample_design,
-                                         repl_part_BS_qT)
+                                         repl_part_BS_qF, repl_part_BS_qT)
                           )
 
 names(ES_frag_group_df)[1] <- "Case.ID"
@@ -63,7 +64,7 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
 #calculate rank-correlation
 #ES_df <- data.frame(Case.ID=unique(div_df$filename))
 ES_df <- unique(dplyr::select(div_df, filename, sample_design,
-                              repl_part_BS_qT)
+                              repl_part_BS_qF, repl_part_BS_qT)
                )
 
 names(ES_df)[1] <- "Case.ID"

@@ -154,13 +154,13 @@ CalcBDfromAbundance <- function(filename){
                               function(x) {Chat.Ind(x, sum(x))} )
    
    # extrapolated coverage with sample size * 2
-   cov_extra <- apply(dat_abund_pool2, 2,
+   div_indi$cov_extra <- apply(dat_abund_pool2, 2,
                       function(x) {Chat.Ind(x, 2*sum(x))})
    
    ### get base coverage following Chao et al. 2014. Ecol Monographs, box 1, p 60
-   ### p.62:  However, for q = 0, extrapolation is reliable up to no more than double the reference sample size. Beyond that, the predictor for q = 0 may be subject to some biasbecause our asymptotic estimator for species richness (Chaol for abundance data and Chao2 for incidence data) is a lower bound only.
+   ### p.62:  However, for q = 0, extrapolation is reliable up to no more than double the reference sample size. Beyond that, the predictor for q = 0 may be subject to some bias because our asymptotic estimator for species richness (Chaol for abundance data and Chao2 for incidence data) is a lower bound only.
    div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
-                            min(cov_extra, na.rm = T))
+                            min(div_indi$cov_extra, na.rm = T))
 
    # calculate standardized coverage
    div_indi$D0_hat <- rep(NA, nrow(div_indi)) 
@@ -224,7 +224,8 @@ CalcBDfromAbundance <- function(filename){
                                     by = list(size_class),
                                     FUN = mean)
       
-      div_indi$repl_part_BS_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = T)$part[4]
+      div_indi$repl_part_BS_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = F)$part[4] # beta-div partitioning based on presence-absence, i.e. all species are equal regardless of their abundance
+      div_indi$repl_part_BS_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = T)$part[4] # beta-div partitioning based on abundance
    }
    
    # set indices to NA when they are Inf or NaN

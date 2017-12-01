@@ -1,32 +1,30 @@
 #-----------------------------------------
 ### Read datasets without coercing strings into factor (that would create warnings during join)
-options(stringsAsFactors=F)
+div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",", stringsAsFactors=F)
+ES_frag_df <- read.csv(file=path2temp %+% "ES_frag_df.csv", stringsAsFactors=F)
+ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv", stringsAsFactors=F)
+ES_df <- read.csv(file=path2temp %+% "ES_df.csv", stringsAsFactors=F)
+meta_df <- read.csv(file=path2temp %+% "metaData.csv", stringsAsFactors=F)
 
-div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
-ES_frag_df <- read.csv(file=path2temp %+% "ES_frag_df.csv")
-ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv")
-ES_df <- read.csv(file=path2temp %+% "ES_df.csv")
-meta_df <- read.csv(file=path2temp %+% "metaData.csv")
-
-BDmetrics <- c("N_std","D0_hat","ENS_pie")
+BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
 
 #-----------------------------------------
 ### subset original dataset
-ES_frag_df <- ES_frag_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qT",
+ES_frag_df <- ES_frag_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qF", "repl_part_BS_qT",
                             sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))]
 
-ES_frag_group_df <- ES_frag_group_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qT",
+ES_frag_group_df <- ES_frag_group_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qF", "repl_part_BS_qT",
                             sapply(BDmetrics, function(x) paste(c("ES."),x,sep="")))]
 
 ES_df <- subset(ES_df, n.fragment>3)
-ES_df <- ES_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qT",
+ES_df <- ES_df[,c("Case.ID","Study.ID", "n.fragment", "sample_design", "repl_part_BS_qF", "repl_part_BS_qT",
                   sapply(BDmetrics, function(x) paste(c("ES.","ES.var."),x,sep="")))]
 
 #-----------------------------------------
 ### append meta-data
-ES_frag_df.complete <- left_join(ES_frag_df,meta_df[,-1],by=c("Case.ID","n.fragment"))
-ES_frag_group_df.complete <- left_join(ES_frag_group_df,meta_df[,-1],c("Case.ID","n.fragment"))
-ES_df.complete <- left_join(ES_df,meta_df[,-1],c("Case.ID","n.fragment"))
+ES_frag_df.complete <- left_join(ES_frag_df,meta_df[,-c(1,3)],by=c("Case.ID"))
+ES_frag_group_df.complete <- left_join(ES_frag_group_df,meta_df[,-c(1,3)],c("Case.ID"))
+ES_df.complete <- left_join(ES_df,meta_df[,-c(1,3)],c("Case.ID"))
 
 #-----------------------------------------
 ### restructure datasets _df.complete
@@ -49,7 +47,4 @@ write.csv(ES_frag_df.complete, file=path2temp %+% "ES_frag_df.complete.csv")
 write.csv(ES_frag_group_df.complete, file=path2temp %+% "ES_frag_group_df.complete.csv")
 write.csv(ES_df.complete, file=path2temp %+% "ES_df.complete.csv")
 
-
-### reset options to read datasets without coercing strings into factor (that would create warnings during join)
-options(stringsAsFactors=T)
 

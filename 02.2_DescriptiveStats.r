@@ -1,7 +1,7 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 #ls()
 
-BDmetrics <- c("S_plot_mean","D0_hat","N_std","ENS_pie")
+BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
 
 ############################################################################
 ### 1. Histograms of Effect sizes
@@ -12,6 +12,10 @@ for(BD in BDmetrics){
    hist(ES_frag_group_df[,"ES." %+% BD],main=BD,xlab="ES_frag_group_df")
    hist(ES_df[,"ES." %+% BD],main=BD,xlab="ES_df")
 }
+hist(ES_frag_df[,"repl_part_BS_qF"],main="repl_part_BS_qF",xlab="ES_frag_df")
+hist(ES_frag_group_df[,"repl_part_BS_qF"],main="repl_part_BS_qF",xlab="ES_frag_group_df")
+hist(ES_df[,"repl_part_BS_qF"],main="repl_part_BS_qF",xlab="ES_df")
+
 hist(ES_frag_df[,"repl_part_BS_qT"],main="repl_part_BS_qT",xlab="ES_frag_df")
 hist(ES_frag_group_df[,"repl_part_BS_qT"],main="repl_part_BS_qT",xlab="ES_frag_group_df")
 hist(ES_df[,"repl_part_BS_qT"],main="repl_part_BS_qT",xlab="ES_df")
@@ -41,7 +45,7 @@ g_legend<-function(a.gplot){
 plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
    geom_segment() +
    geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
+   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
 
 # # if legend from plot1 is drawn
 legend <- g_legend(plot1)
@@ -72,7 +76,7 @@ g_legend<-function(a.gplot){
 plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
          geom_segment() +
          geom_point(aes(x=value)) +
-         scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
+   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
 
 # # if legend from plot1 is drawn
 legend <- g_legend(plot1)
@@ -95,14 +99,14 @@ dev.off()
 png(path2temp %+% "ForestPlots_ES_frag_group_df.png",height=40,width=25,units="cm",res=400)
 ggplot(data=ES_frag_group_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
    geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
+   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
 dev.off()
 
 ### combined forest plot for frag dataset
 png(path2temp %+% "ForestPlots_ES_frag_df.png",height=40,width=25,units="cm",res=400)
 ggplot(data=ES_frag_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
    geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S","N","ENS_PIE"))
+   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
 dev.off()
 ############################################################################
 ### 2. pairwise correlation of effect sizes based on complete observations
