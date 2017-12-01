@@ -1,39 +1,9 @@
 setwd(path2Dropbox %+% "good_datasets/")
 
+
 # ---------------------------------------------------
-### extract meta data from xls-sheets
-filenames <- list.files(pattern="*.xls*", full.names = F)
-filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
-
-meta_list <- list()
-
-for (i in 1:length(filenames)){
-   
-   print(filenames[i])
-
-   df <- try(read.xlsx(filenames[i], sheetIndex = 2, rowIndex=1:23, colIndex=1:2,  header = F)) # specify row and column indices to avoid reading empty cols and rows which would produce errors
-   if (!inherits(df, "try-error")){
-      if(ncol(df)>1){
-         dat_meta <- as.data.frame(matrix(data=NA,ncol=nrow(df),nrow=1))
-         dat_meta[1,] <- t(df[,2])
-         names(dat_meta) <- df[,1]
-         
-         meta_list[[filenames2[i]]] <- data.frame(Case.ID = filenames2[i],
-                                                  taxa=dat_meta$taxa.class,
-                                                  country=dat_meta$location.country,
-                                                  continent=dat_meta$location.continent,
-                                                  biome=dat_meta$location.biome,
-                                                  fragment.biome = dat_meta$fragment.biome,
-                                                  matrix.biome=dat_meta$matrix.biome,
-                                                  fragment.veg=dat_meta$fragment.vegetation,
-                                                  matrix.veg=dat_meta$matrix.vegetation,
-                                                  sampling.effort = dat_meta$sampling.effort.measure)
-         meta_list[[filenames2[i]]] <- sapply(meta_list[[filenames2[i]]],as.character)
-      }
-   }
-}
-
-meta_df <- as.data.frame(do.call(rbind, meta_list) )
+### join meta data extracted from files with manual extensions
+meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2017_November_14.xlsx", sheetIndex = 2, startRow = 1,  header = T)
 
 # ---------------------------------------------------
 ### group taxa levels
@@ -45,12 +15,6 @@ meta_df$taxa[meta_df$taxa %in% c("plants")] <- "plants"
 meta_df$taxa[meta_df$taxa %in% c("arachnids", "insects", "arthropods")] <- "invertebrates"
 
 meta_df$taxa <- factor(meta_df$taxa) 
-
-# ---------------------------------------------------
-### join meta data extracted from files with manual extensions
-meta_manual <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2017_July_27.xlsx", sheetIndex = 2, startRow = 1,  header = T)
-meta_total <- join(meta_df, meta_manual, type="right")
-meta_df <- meta_total
 
 # ---------------------------------------------------
 ### make levels consistent
@@ -69,3 +33,39 @@ meta_df$time.since.fragmentation <- factor(meta_df$time.since.fragmentation, lev
 ### save table
 write.csv(meta_df, file = paste(path2temp, "metaData.csv", sep = ""))
 
+##############################
+### RESTERAMPE
+# ---------------------------------------------------
+### extract meta data from xls-sheets
+# filenames <- list.files(pattern="*.xls*", full.names = F)
+# filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
+# 
+# meta_list <- list()
+# 
+# for (i in 1:length(filenames)){
+#    
+#    print(filenames[i])
+#    
+#    df <- try(read.xlsx(filenames[i], sheetIndex = 2, rowIndex=1:23, colIndex=1:2,  header = F)) # specify row and column indices to avoid reading empty cols and rows which would produce errors
+#    if (!inherits(df, "try-error")){
+#       if(ncol(df)>1){
+#          dat_meta <- as.data.frame(matrix(data=NA,ncol=nrow(df),nrow=1))
+#          dat_meta[1,] <- t(df[,2])
+#          names(dat_meta) <- df[,1]
+#          
+#          meta_list[[filenames2[i]]] <- data.frame(Case.ID = filenames2[i],
+#                                                   taxa=dat_meta$taxa.class,
+#                                                   country=dat_meta$location.country,
+#                                                   continent=dat_meta$location.continent,
+#                                                   biome=dat_meta$location.biome,
+#                                                   fragment.biome = dat_meta$fragment.biome,
+#                                                   matrix.biome=dat_meta$matrix.biome,
+#                                                   fragment.veg=dat_meta$fragment.vegetation,
+#                                                   matrix.veg=dat_meta$matrix.vegetation,
+#                                                   sampling.effort = dat_meta$sampling.effort.measure)
+#          meta_list[[filenames2[i]]] <- sapply(meta_list[[filenames2[i]]],as.character)
+#       }
+#    }
+# }
+# 
+# meta_df <- as.data.frame(do.call(rbind, meta_list) )
