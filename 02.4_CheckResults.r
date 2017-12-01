@@ -1,27 +1,31 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 load(path2temp %+% "02.3_DataAnalysis_out.Rdata") 
 
-############################################################################
+
+###########################################################################
 ### 2. Study level of consistency among studies
 ############################################################################
 
 consistency_func <- function(model){
    consistency.tab <- data.frame(model=names(model),
-                                 n.samples = unlist(lapply(model, function(x) length(x$not.na[T]))),
+                                 n.samples = unlist(lapply(model, function(x) x$k)), # k = number of studies included in the model.
                                  logLik=NA, deviance=NA, AIC=NA, BIC=NA, AICc=NA,
                                  QE=unlist(lapply(model,function(x) x$QE)), QEp=unlist(lapply(model,function(x) x$QEp)),
                                  QM=unlist(lapply(model,function(x) x$QM)),QMp=unlist(lapply(model,function(x) x$QMp)))
    consistency.tab[,3:7] <- t(sapply(model, function(x) fitstats.rma(x, REML=F)))
-   #consistency.tab[,3:7] <- t(sapply(model, fitstats.rma))
-   #   consistency.tab$I2 <- lapply(model, function(x) x$sigma2/(x$sigma2+))
    consistency.tab$R2 <- consistency.tab$QM/(consistency.tab$QM+consistency.tab$QE)
    
    return(consistency.tab)
 }
 
 cons_frag <- bind_rows(lapply(model_frag,consistency_func),.id="Covariate")
+cons_frag <- arrange(cons_frag, model, AIC) # sort by response than by AIC
+
 cons_frag_group <- bind_rows(lapply(model_frag_group,consistency_func),.id="Covariate")
+cons_frag_group <- arrange(cons_frag_group, model, AIC) # sort by response than by AIC
+
 cons_gradient <- bind_rows(lapply(model_gradient,consistency_func),.id="Covariate")
+cons_gradient <- arrange(cons_gradient, model, AIC) # sort by response than by AIC
 
 cons_df <- bind_rows(list(cons_frag,cons_frag_group,cons_gradient), .id="data")
 cons_df$data <- factor(cons_df$data, levels=c("1","2","3"), labels=c("frag","frag_group","gradient"))
@@ -30,90 +34,93 @@ cons_df[,5:14] <- apply(cons_df[,5:14], 2,function(x) round(x,digits=3))
 
 write.csv(cons_df, file=path2temp %+% "model_consistency.csv")
 
-############################################################################
-### 3. Publication bias
-############################################################################
+#---------------------------------------------------------------------------
+# Model diagnostics
+#---------------------------------------------------------------------------
+model.diagnostics.func <- function(model){
+
+   ### identifiability of parameters
+   profile(model)
+   
+   ### Residuals vs fitted
+   dat <- join(data.frame(rowID=names(fitted(model)),fit=fitted(model)), data.frame(rowID=names(residuals(model,type="rstandard")),res=rstandard(model)$z),by="rowID")
+   plot(dat$fit, dat$res)
+   abline(h =0)
+   
+   ### Pearson model residuals
+   plot(residuals(model, type="pearson"))
+   abline(h =0)
+   
+   ### Normality of residuals
+   qqnorm(residuals(model))
+   qqline(residuals(model))
+   print(paste("Testing normality of model residuals:" ))
+   print(shapiro.test(residuals(model)))
+   
+}
+
+
+#---------------------------------------------------------------------------
+# Influence diagnostics
+#---------------------------------------------------------------------------
+cooks.distance.func <- function(model){
+   x <- try(cooks.distance(model))
+   if(is.error(x)) return()
+   plot(x, ylab="Cook's distance", xlab="Study")
+   abline(h=0,lty="dashed")
+   segments(x0=1:length(x), y0=0, x1 = 1:length(x), y1 = x)
+   return(x)
+}
+
+#---------------------------------------------------------------------------
+# Publication bias
+#---------------------------------------------------------------------------
+
 # A funnel plot shows the observed effect sizes or outcomes on the x-axis against some measure of precision of the observed effect sizes or outcomes on the y-axis. Based on Sterne and Egger (2001), the recommended choice for the y-axis is the standard error (in decreasing order) and this is also the default for the funnel() function in the metafor package. In the absence of publication bias and heterogeneity, one would then expect to see the points forming a funnel shape, with the majority of the points falling inside of the pseudo-confidence region with bounds ^θ±1.96SE, where ^θ is the estimated effect or outcome based on the fixed-effects model and SE is the standard error value from the y-axis. With other measures of precision for the y-axis, the expected shape of the funnel can be rather different. (Source: http://www.metafor-project.org/doku.php/plots:funnel_plot_variations)
 
+pub.bias.func <- function(model){
+   ### funnel plot
+   ### using pre-implemented funnel function
+   funnel(residuals(model),vi=model$vi, yaxis="seinv", level=c(90, 95, 99), ylab="Precision (1/SE)",
+          xlab="Model residuals", shade=c("white", "gray", "darkgray"), refline=0)
+   
+   ### asymmetry test
+   ### Test of funnel plot asymmetry using Egger's regression (eqn 36 in Nakagawa & Santos 2012 EvolEcol)
+   ## regtest() is not working for rma.mv
+   residuals.vec <- residuals(model)
+   weights <- 1/model$vi
+   fm <- lm(residuals.vec*sqrt(weights)~sqrt(weights))
+   # test if intercept is significantly different from zero
+   if(summary(fm)$coefficients[1,4]<0.05){print("There is evidence for publication bias.")}
+   if(summary(fm)$coefficients[1,4]>0.05){print("No evidence for publication bias.")}
+   print(summary(fm)$coefficients[1,c(1,4)])
+}
 
-# ### Funnel plots using pre-implemented funnel function
-# funnel(model_gradient[[1]][[1]],ylim=c(1:4,by=2),yaxis="seinv",level=c(90, 95, 99),ylab="Precision (1/SE)" ,shade=c("white", "gray", "darkgray"), refline=0)
-
-# ### Funnel plots with transparent points
-# funnel.plot <- function(yi,sei,refline,x.label,main.title){
-#    # function input: yi=vector of observed effect sizes
-#    #                 sei=vector of the corresponding standard errors
-#    #                 refline=summary effect
-#    # function output:funnel plot of effect sizes against precision (i.e. standard error)
-#    
-#    alpha <- 0.05
-#    ylim <- c(0, max(sei) * 1)
-#    steps <- 5
-#    
-#    x.lb.bot <- refline - qnorm(alpha/2, lower.tail = FALSE) * sqrt(ylim[2])
-#    x.ub.bot <- refline + qnorm(alpha/2, lower.tail = FALSE) * sqrt(ylim[2])
-#    x.lb.top <- refline - qnorm(alpha/2, lower.tail = FALSE) * sqrt(ylim[1])
-#    x.ub.top <- refline + qnorm(alpha/2, lower.tail = FALSE) * sqrt(ylim[1])
-#    
-#    xlim <- c(min(x.lb.bot, min(yi)), max(x.ub.bot, max(yi)))
-#    rxlim <- xlim[2] - xlim[1]
-#    xlim[1] <- xlim[1] - (rxlim * 0.1)
-#    xlim[2] <- xlim[2] + (rxlim * 0.1)
-#    
-#    plot(NA, NA, xlim = xlim, ylim = max(sei) - c(ylim[2], ylim[1]), xlab = x.label, ylab = "Standard Error", 
-#         xaxt = "n", yaxt = "n", bty = "n",main=main.title)
-#    
-#    par.usr <- par("usr")
-#    rect(par.usr[1], par.usr[3], par.usr[2], par.usr[4], col = "lightgray", border = NA)
-#    axis(side = 2, at = max(sei) - seq(ylim[2], ylim[1], length = steps), 
-#         labels = formatC(seq(ylim[2], ylim[1], length = steps), digits = 2, format = "f"),las=1)
-#    abline(h = max(sei) - seq(ylim[2], ylim[1], length = steps), col = "white")
-#    
-#    rylim <- ylim[2] - ylim[1]
-#    ylim[1] <- max(0, ylim[1] - (rylim * 0.1))
-#    ylim[2] <- ylim[2] + (rylim * 0.1)
-#    vi.vals <- seq(ylim[1], ylim[2], length = 100)
-#    ci.left <- refline - qnorm(alpha/2, lower.tail = FALSE) * sqrt(vi.vals)
-#    ci.right <- refline + qnorm(alpha/2, lower.tail = FALSE) * sqrt(vi.vals)
-#    lvi <- length(vi.vals)
-#    polygon(c(ci.left[lvi:1], ci.right), c(max(sei) - sqrt(vi.vals)[lvi:1], max(sei) - sqrt(vi.vals)), border = NA, col = "white")
-#    segments(refline, max(sei), refline, max(sei) - ylim[2])
-#    lines(ci.left, max(sei) - sqrt(vi.vals), lty = "dotted")
-#    lines(ci.right, max(sei) - sqrt(vi.vals), lty = "dotted")
-#    box(bty = "l")
-#    at <- axTicks(side = 1)
-#    axis(side = 1, at = at, labels = at)
-#    points(yi, max(sei) - sei,col=rgb(0,0,0,50,maxColorValue=255), pch = 19)
-#    
-# }
-# 
-# funnel.plot(residuals(model_gradient[[1]]),sqrt(ES_df.complete$ES.var.S),0,x.label="Residuals",main.title=names(model_gradient)[1])
-# funnel.plot(residuals(model_gradient[[2]]),sqrt(ES_df.complete$ES.var.D0_hat),0,x.label="Residuals",main.title=names(model_gradient)[2])
-# funnel.plot(residuals(model_gradient[[3]]),sqrt(ES_df.complete$ES.var.N_std),0,x.label="Residuals",main.title=names(model_gradient)[3])
-# funnel.plot(residuals(model_gradient[[4]]),sqrt(ES_df.complete$ES.var.ENS_pie),0,x.label="Residuals",main.title=names(model_gradient)[4])
-# df_long_sub <- subset(ES_df.complete_long, ES %in% c("ES.D0_hat", "ES.ENS_pie"))
-# funnel.plot(residuals(model_gradient[[5]]),sqrt(df_long_sub$ES.var[as.numeric(names(residuals(model_gradient[[5]])))]),0,x.label="Residuals",main.title=names(model_gradient)[5])# NA effect sizes removed prior to modelling and do not appear in residuals, need to manually remove corresponding variances
-# 
-# # Not sure if this is valuable since we set variances to 1
-# #funnel.plot(residuals(model_frag[[1]]),rep(1,length(residuals(model_frag[[1]]))),0,x.label="Residuals",main.title=names(model_frag)[1])
-# 
-# ### Test of funnel plot asymmetry
-# ## regtest() is not working for rma.mv
-# asymmetry.test <- function(model,weights){
-#    residuals.vec <- residuals(model)
-#    fm <- lm(residuals.vec*sqrt(weights)~sqrt(weights))  
-#    # test if intercept is significantly different from zero
-#    if(summary(fm)$coefficients[1,4]<0.05){print("There is evidence for publication bias.")}
-#    if(summary(fm)$coefficients[1,4]>0.05){print("No evidence for publication bias.")}
-#    return(summary(fm)$coefficients[1,c(1,4)])
-# }
-# 
-# asymmetry.test(model_gradient[[1]],1/ES_df.complete$ES.var.S)
-# asymmetry.test(model_gradient[[2]],1/ES_df.complete$ES.var.D0_hat)
-# asymmetry.test(model_gradient[[3]],1/ES_df.complete$ES.var.N_std)
-# asymmetry.test(model_gradient[[4]],1/ES_df.complete$ES.var.ENS_pie)
-# asymmetry.test(model_gradient[[5]],1/df_long_sub$ES.var[as.numeric(names(residuals(model_gradient[[5]])))])
-# 
-
-
-
+#---------------------------------------------------------------------------
+# Loop over all models and save prints into a pdf
+#---------------------------------------------------------------------------
+for(i in names(model_frag)){
+   for(j in names(model_frag[[i]])){
+      
+      print(paste(i, j))
+      
+      pdf(path2temp %+% "CheckResults/ModelDiagnostics_frag_" %+% i %+% "_" %+% j %+% ".pdf")
+      model.diagnostics.func(model_frag[[i]][[j]])
+      cooks.distance.func(model_frag[[i]][[j]])
+      pub.bias.func(model_frag[[i]][[j]])
+      dev.off()
+      
+      pdf(path2temp %+% "CheckResults/ModelDiagnostics_frag_group_" %+% i %+% "_" %+% j %+% ".pdf")
+      model.diagnostics.func(model_frag_group[[i]][[j]])
+      cooks.distance.func(model_frag_group[[i]][[j]])
+      pub.bias.func(model_frag_group[[i]][[j]])
+      dev.off()
+      
+      pdf(path2temp %+% "CheckResults/ModelDiagnostics_gradient_" %+% i %+% "_" %+% j %+% ".pdf")
+      model.diagnostics.func(model_gradient[[i]][[j]])
+      cooks.distance.func(model_gradient[[i]][[j]])
+      pub.bias.func(model_gradient[[i]][[j]])
+      dev.off()
+      
+   }
+}

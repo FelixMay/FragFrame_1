@@ -48,14 +48,14 @@ analysis_func <- function(df, covar="intercept.only", method){
     }      
    # 2.	Fragmentation per se:
    #    a.	Species loss due to less coverage standardized species richness: Fragmentation leads to decrease in coverage standardized species richness.
-   model[["Coverage standardized species loss"]] <- rma.mv(yi=ES.D0_hat, V=ES.var.D0_hat, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["S"]] <- rma.mv(yi=ES.D0_hat, V=ES.var.D0_hat, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
    
    #     b.	Species loss due to less Individuals: Fragmentation decreases the number of individuals.
-   model[["Less individuals"]] <- rma.mv(yi=ES.N_std,V=ES.var.N_std, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["N"]] <- rma.mv(yi=ES.N_std,V=ES.var.N_std, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
    #     c.	Species loss due to PIE/ENS_PIE: Fragmentation reduces the evenness.
-   model[["Lower evenness"]] <- rma.mv(yi=ES.ENS_pie,V=ES.var.ENS_pie, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
-   model[["BetaDiv_PA"]] <- rma.mv(yi=repl_part_S_qF,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
-   model[["BetaDiv_abund"]] <- rma.mv(yi=repl_part_S_qT,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["ENS_PIE"]] <- rma.mv(yi=ES.ENS_pie,V=ES.var.ENS_pie, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["BetaDiv_PA"]] <- rma.mv(yi=repl_part_BS_qF,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+   model[["BetaDiv_abund"]] <- rma.mv(yi=repl_part_BS_qT,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
    
    return(model)
 }
@@ -245,27 +245,3 @@ dev.off()
 #    print(plot1)
 # }
 
-#---------------------------------------------------------------------------
-# Influence diagnostics
-#---------------------------------------------------------------------------
-# cooks.distance.func <- function(model){
-#    x <- try(cooks.distance(model))
-#    if(is.error(x)) return()
-#    plot(x, ylab="Cook's distance", xlab="Study"), main=model.name)
-#    abline(h=0,lty="dashed")
-#    segments(x0=1:length(x), y0=0, x1 = 1:length(x), y1 = x)
-#    return(x)
-# }
-# 
-# # TO DO: Title for the plots
-# pdf(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag.pdf", width=20,height=10)
-# model_frag_cook.dist <- lapply(model_frag,function(x) lapply(x, function(y) cooks.distance.func(y)))
-# dev.off()
-# 
-# pdf(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_frag_group.pdf", width=20,height=10)
-# model_frag_group_cook.dist <- lapply(model_frag_group,function(x) lapply(x, function(y) cooks.distance.func(y)))
-# dev.off()
-# 
-# pdf(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/CooksDistance_gradient.pdf", width=20,height=10)
-# model_gradient_cook.dist <- lapply(model_gradient,function(x) lapply(x, function(y) cooks.distance.func(y)))
-# dev.off()
