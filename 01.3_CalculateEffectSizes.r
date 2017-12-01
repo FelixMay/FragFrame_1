@@ -9,9 +9,7 @@ BDmetrics <- c("N_std","D0_hat","ENS_pie")
 ###############################################################
 #ES_frag_df <- data.frame(Case.ID = unique(div_df$filename))
 ES_frag_df <- unique(dplyr::select(div_df, filename, sample_design,
-                                   repl_part_S_qF, #repl_part_J_qF, repl_part_BS_qF, repl_part_BJ_qF,
-                                   repl_part_S_qT#, repl_part_J_qT, repl_part_BS_qT, repl_part_BJ_qT
-                                   )
+                                   repl_part_BS_qT)
                      )
 
 names(ES_frag_df)[1] <- "Case.ID"
@@ -37,9 +35,7 @@ for(i in 1:length(ES_frag_df$Case.ID)){
 ###############################################################
 #ES_frag_group_df <- data.frame(Case.ID=unique(div_df$filename))
 ES_frag_group_df <- unique(dplyr::select(div_df, filename, sample_design,
-                                         repl_part_S_qF, #repl_part_J_qF, repl_part_BS_qF, repl_part_BJ_qF,
-                                         repl_part_S_qT#, repl_part_J_qT, repl_part_BS_qT, repl_part_BJ_qT
-)
+                                         repl_part_BS_qT)
                           )
 
 names(ES_frag_group_df)[1] <- "Case.ID"
@@ -67,9 +63,7 @@ for(i in 1:length(ES_frag_group_df$Case.ID)){
 #calculate rank-correlation
 #ES_df <- data.frame(Case.ID=unique(div_df$filename))
 ES_df <- unique(dplyr::select(div_df, filename, sample_design,
-                              repl_part_S_qF, #repl_part_J_qF, repl_part_BS_qF, repl_part_BJ_qF,
-                              repl_part_S_qT#, repl_part_J_qT, repl_part_BS_qT, repl_part_BJ_qT
-)
+                              repl_part_BS_qT)
                )
 
 names(ES_df)[1] <- "Case.ID"
@@ -77,8 +71,10 @@ namES_df <- c("n.fragment",c("ES.","ES.var.") %+% rep(BDmetrics,each=2))
 ES_df[,namES_df] <- NA
 
 for(i in 1:length(ES_df$Case.ID)){
+   print(ES_df$Case.ID[i], max.levels=0)
    sub.df <- subset(div_df, filename==ES_df$Case.ID[i])
    ES_df[i,"n.fragment"] <- nrow(sub.df)
+
    for(j in BDmetrics){
       r <- ifelse(ES_df[i,"n.fragment"] < 90,
                   2*sin(pi*cor(sub.df$entity.size.rank,sub.df[,j],method="spearman", use = "na.or.complete")/6),
@@ -100,10 +96,8 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "Asymptotic S")
    boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "ENS_PIE")
-   try(boxplot(repl_part_S_qF ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
-               main = "repl_part_S_qF"))
-   try(boxplot(repl_part_S_qT ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
-           main = "repl_part_S_qT"))
+   try(boxplot(repl_part_BS_qT ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "repl_part_BS_qT"))
    
    mtext(unique(sub.df$filename), side = 3,
          line = 2, outer = T, cex = 1.2)
@@ -130,5 +124,5 @@ write.csv(ES_df, file=path2temp %+% "ES_df.csv")
 # div_df[div_df$filename %in% check$Case.ID,  ]
 
 # Check correlation among turnover indices
-pairs(ES_frag_group_df[, c("repl_part_S_qF","repl_part_S_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")])
-cor(ES_frag_group_df[, c("repl_part_S_qF","repl_part_S_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")], use = "pairwise.complete.obs")
+pairs(ES_frag_group_df[, c("repl_part_BS_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")])
+cor(ES_frag_group_df[, c("repl_part_BS_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")], use = "pairwise.complete.obs")
