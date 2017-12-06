@@ -70,14 +70,9 @@ usePackage <- function(p) {
 sapply(needed_libs, usePackage)
 
 ### document system properties
-sink(file=path2temp %+% "version_documentation.txt")
+sink(file=path2temp %+% "session_info.txt")
 
-print("R version")
-version
-
-print("Package versions")
-ip <- as.data.frame(installed.packages(),optional=F)
-ip[ip$Package %in% needed_libs,c(1,3)]
+session_info()
 
 sink()
 
