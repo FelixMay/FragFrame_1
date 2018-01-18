@@ -46,7 +46,9 @@ CalcBDfromAbundance <- function(filename){
    
    filename2 <- strsplit(filename, split = "[.]")[[1]][1]
    
-   dat_head <- read.xlsx(filename, sheetIndex = 1, rowIndex = 2:4,
+   path2file <- path2Dropbox %+% "good_datasets/" %+% filename
+   
+   dat_head <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 2:4,
                          header = F)
    dat_head_t <- as.data.frame(t(dat_head[,-1]))
    names(dat_head_t) <- dat_head[,1]
@@ -61,13 +63,13 @@ CalcBDfromAbundance <- function(filename){
    
    
    ### extract fragment sizes and size ranks
-   dat_frag_size <- read.xlsx(filename, sheetIndex = 1, rowIndex = 5,
+   dat_frag_size <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 5,
                               stringsAsFactors = F, header = F)
    dat_frag_size <- dat_frag_size[, -1]
    
    dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
    
-   dat_ranks <- read.xlsx(filename, sheetIndex = 1, rowIndex = 6, header = F,
+   dat_ranks <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 6, header = F,
                           stringsAsFactors = F)
    
    dat_ranks <- as.numeric(dat_ranks[1,-1])
@@ -76,7 +78,7 @@ CalcBDfromAbundance <- function(filename){
    dat_head_t$entity.size.rank <- dat_ranks
    
    ### extract sampling effort
-   dat_sample_eff <- read.xlsx(filename, sheetIndex = 1, rowIndex = 1,
+   dat_sample_eff <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 1,
                                header = F, stringsAsFactors = F)
    dat_sample_eff <- as.numeric(dat_sample_eff[, -1])
    dat_sample_eff[is.na(dat_sample_eff)] <- 1
@@ -84,7 +86,7 @@ CalcBDfromAbundance <- function(filename){
    if (max(dat_sample_eff) > 1) print(paste("Unequal sampling effort in", filename))
    
    ### extract abundance data
-   dat_abund <- read.xlsx(filename, sheetIndex = 1, startRow = 7, header = F)
+   dat_abund <- read.xlsx(path2file, sheetIndex = 1, startRow = 7, header = F)
    dat_abund <- dat_abund[, -1]
    
    na_col <- apply(dat_abund, 1, function(x) sum(is.na(x)))
@@ -237,11 +239,10 @@ CalcBDfromAbundance <- function(filename){
 ################################################################################
 # execution of script
 
-setwd(path2Dropbox %+% "good_datasets/")
-
 div_list <- list()
 
-filenames <- list.files(pattern="*.xls*", full.names = F)
+filenames <- list.files(path =  path2Dropbox %+% "good_datasets/",
+                        pattern="*.xls*", full.names = F)
 
 filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 

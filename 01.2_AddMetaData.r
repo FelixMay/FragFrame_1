@@ -1,9 +1,7 @@
-setwd(path2Dropbox %+% "good_datasets/")
-
 
 # ---------------------------------------------------
 ### join meta data extracted from files with manual extensions
-meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2017_November_14.xlsx", sheetIndex = 2, startRow = 1,  header = T)
+meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2017_December_18.xlsx", sheetIndex = 2, startRow = 1,  header = T)
 
 # ---------------------------------------------------
 ### group taxa levels
