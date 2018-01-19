@@ -70,11 +70,7 @@ usePackage <- function(p) {
 sapply(needed_libs, usePackage)
 
 ### document system properties
-sink(file=path2temp %+% "session_info.txt")
-
 session_info()
 
-sink()
-
-rm(ip, needed_libs, usePackage)
+rm(needed_libs, usePackage)
 
