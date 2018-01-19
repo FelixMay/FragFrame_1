@@ -6,7 +6,7 @@ ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv", stringsA
 ES_df <- read.csv(file=path2temp %+% "ES_df.csv", stringsAsFactors=F)
 meta_df <- read.csv(file=path2temp %+% "metaData.csv", stringsAsFactors=F)
 
-BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
+BDmetrics <- c("N_std","S_obs","D0_hat","ENS_pie")
 
 #-----------------------------------------
 ### subset original dataset
@@ -39,6 +39,10 @@ for (BD in BDmetrics){
    ES_df.complete_long$ES.var[ES_df.complete_long$ES=="ES." %+% BD] <- ES_df.complete_long[ES_df.complete_long$ES=="ES." %+% BD,"ES.var." %+% BD]
 }
 ES_df.complete_long <- ES_df.complete_long[,-which(names(ES_df.complete_long) %in% c("ES.var." %+% BDmetrics))]
+
+#-----------------------------------------
+### load metadata with strings as factors
+meta_df <- read.csv(file=path2temp %+% "metaData.csv", stringsAsFactors=T)
 
 #-----------------------------------------
 ### 5. save output
