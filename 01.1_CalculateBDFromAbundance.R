@@ -53,14 +53,16 @@ CalcBDfromAbundance <- function(filename){
    dat_head_t <- as.data.frame(t(dat_head[,-1]))
    names(dat_head_t) <- dat_head[,1]
    
+   ### revise entity.id for three datasets (check mail exchange from 28 Nov 2017)
+   ### combine edges and interior in Dauber2006 and Didham1998 
    if(filename %in% c("Dauber_2006_rounded.xls","Didham_1998.xls")){
       dat_head_t$entity.id <- sapply(as.character(dat_head_t$entity.id), function(x) strsplit(x,".",fixed=T)[[1]][1])
    }
+   ### combine three sites per fragment in Schnitzler2008
    if(filename == "Schnitzler_2008_Tab2.xlsx"){
       dat_head_t$entity.id <- rep(paste0("fragment",1:10), times=c(rep(3,8),2,3))
    }
-   
-   
+
    
    ### extract fragment sizes and size ranks
    dat_frag_size <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 5,
