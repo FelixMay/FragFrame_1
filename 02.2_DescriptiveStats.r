@@ -1,7 +1,7 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 #ls()
 
-BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
+BDmetrics <- c("N_std","S_obs","D0_hat","ENS_pie")
 
 ############################################################################
 ### 1. Histograms of Effect sizes
@@ -151,9 +151,9 @@ dev.off()
 ### 3. Histograms of predictor variables
 ############################################################################
 
-for(col in c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation","ratio.min.max.fragment.size2")){
+for(col in c("taxa","country", "continent", "biome", "biome.fragment","biome.matrix", "veg.fragment", "veg.matrix", "matrix.filter.category","time.since.fragmentation","ratio.min.max.fragment.size2")){
    print(col)
-   if(col %in% c("taxa","country", "continent", "biome", "fragment.biome","matrix.biome", "fragment.veg", "matrix.veg", "matrix.category","time.since.fragmentation")){
+   if(col %in% c("taxa","country", "continent", "biome", "biome.fragment","biome.matrix", "veg.fragment", "veg.matrix", "matrix.filter.category","time.since.fragmentation")){
       meta_df[,col] <- factor(meta_df[,col])
       p <- ggplot(data=meta_df) + 
          geom_histogram(aes(x=meta_df[,col]), size=0.4,stat="count") + 
@@ -199,13 +199,13 @@ ggsave(p, file = path2temp %+% "Histograms/Histogram_ES_df_sample_design.png", w
 ### Crosstables
 ############################################################################
 # with(meta_df,table(biome,taxa))
-# with(meta_df,table(matrix.category,taxa))
+# with(meta_df,table(matrix.filter.category,taxa))
 # with(meta_df,table(time.since.fragmentation,taxa))
 # 
-# with(meta_df,table(matrix.category,biome))
+# with(meta_df,table(matrix.filter.category,biome))
 # with(meta_df,table(time.since.fragmentation,biome))
 # 
-# with(meta_df,table(time.since.fragmentation,matrix.category))
+# with(meta_df,table(time.since.fragmentation,matrix.filter.category))
 
 CrosstabViz.func <- function(var1,var2){
    df <- expand.grid(levels(meta_df[,var1]),levels(meta_df[,var2]))
@@ -220,13 +220,13 @@ CrosstabViz.func <- function(var1,var2){
 }
 
 CrosstabViz.func(var1="taxa",var2="biome")
-CrosstabViz.func(var1="taxa",var2="matrix.category")
+CrosstabViz.func(var1="taxa",var2="matrix.filter.category")
 CrosstabViz.func(var1="taxa",var2="time.since.fragmentation")
 
-CrosstabViz.func(var1="biome",var2="matrix.category")
+CrosstabViz.func(var1="biome",var2="matrix.filter.category")
 CrosstabViz.func(var1="biome",var2="time.since.fragmentation")
 
-CrosstabViz.func(var1="matrix.category",var2="time.since.fragmentation")
+CrosstabViz.func(var1="matrix.filter.category",var2="time.since.fragmentation")
 
 meta_df <- ES_df.complete
 var1 <- "time.since.fragmentation"
