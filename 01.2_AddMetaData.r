@@ -1,5 +1,3 @@
-setwd(path2Dropbox %+% "good_datasets/")
-
 
 # ---------------------------------------------------
 ### join meta data extracted from files with manual extensions

@@ -37,8 +37,8 @@ analysis_func <- function(df, mods.formula, method){#,df_long
       model[["Less individuals"]] <- rma.mv(yi=ES.N_std,V=ES.var.N_std, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
       #     c.	Species loss due to PIE/ENS_PIE: Fragmentation reduces the evenness.
       model[["Lower evenness"]] <- rma.mv(yi=ES.ENS_pie,V=ES.var.ENS_pie, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
-      model[["BetaDiv_PA"]] <- rma.mv(yi=repl_part_S_qF,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
-      model[["BetaDiv_abund"]] <- rma.mv(yi=repl_part_S_qT,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+      model[["BetaDiv_PA"]] <- rma.mv(yi=repl_part_BS_qF,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
+      model[["BetaDiv_abund"]] <- rma.mv(yi=repl_part_BS_qT,V=1, mods = as.formula(mods.formula), random = ~ 1 | Study.ID, struct="UN", data=df, method=method)
       
    return(model)
 }
