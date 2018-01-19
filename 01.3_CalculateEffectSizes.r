@@ -93,6 +93,8 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "Sampling effort")
    boxplot(N_std ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "N standardized")
+   boxplot(S_obs ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "Observed S")
    boxplot(D0_hat ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Asymptotic S")
    boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
@@ -124,6 +126,10 @@ write.csv(ES_df, file=path2temp %+% "ES_df.csv")
 # (check <- ES_df[is.na(ES_df$ES.S), ])
 # div_df[div_df$filename %in% check$Case.ID,  ]
 
+# Check correlation among BD indices
+pairs(ES_frag_group_df[, c("ES.N_std","ES.S_obs","ES.D0_hat","ES.ENS_pie")])
+cor(ES_frag_group_df[, c("ES.N_std","ES.D0_hat","ES.S_obs","ES.ENS_pie")], use = "pairwise.complete.obs")
+
 # Check correlation among turnover indices
-pairs(ES_frag_group_df[, c("repl_part_BS_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")])
-cor(ES_frag_group_df[, c("repl_part_BS_qT","ES.N_std","ES.D0_hat","ES.ENS_pie")], use = "pairwise.complete.obs")
+pairs(ES_frag_group_df[, c("repl_part_BS_qT","repl_part_BS_qF")])
+cor(ES_frag_group_df[, c("repl_part_BS_qT","repl_part_BS_qF")], use = "pairwise.complete.obs")
