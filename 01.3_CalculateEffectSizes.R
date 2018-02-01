@@ -99,7 +99,8 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "Asymptotic S")
    boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "ENS_PIE")
-   try(boxplot(repl_part_BS_qT ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+   if (ES_df$sample_design[i] != "pooled")
+      try(boxplot(repl_part_BS_qT ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "repl_part_BS_qT"))
    
    mtext(unique(sub.df$filename), side = 3,
