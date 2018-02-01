@@ -156,7 +156,7 @@ for(col in c("taxa","country", "continent", "biome", "biome.fragment","biome.mat
    if(col %in% c("taxa","country", "continent", "biome", "biome.fragment","biome.matrix", "veg.fragment", "veg.matrix", "matrix.category","time.since.fragmentation")){
       meta_df[,col] <- factor(meta_df[,col])
       p <- ggplot(data=meta_df) + 
-         geom_histogram(aes(x=meta_df[,col]), size=0.4,stat="count") + 
+         geom_bar(aes(x=meta_df[,col]), size=0.4,stat="count") + 
          labs(x="",y="") +
          ggtitle(paste(col)) + 
          theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
@@ -179,7 +179,7 @@ for(col in c("taxa","country", "continent", "biome", "biome.fragment","biome.mat
 # Histograms of sample.design
 hist.sample.design <- function(df){
    p <- ggplot(data=df) + 
-      geom_histogram(aes(x=df$sample_design), size=0.4,stat="count") + 
+      geom_bar(aes(x=df$sample_design), size=0.4,stat="count") + 
       labs(x="",y="") +
       ggtitle("sample.design") + 
       theme(axis.title = element_text(size = rel(2)), axis.text = element_text(size = rel(2)),plot.title=element_text(size = rel(2)) , axis.text.x=element_text(angle=45,vjust = 1, hjust=1),legend.text=element_text(size = rel(2)),legend.title=element_text(size = rel(2)))
