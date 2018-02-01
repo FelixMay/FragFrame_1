@@ -1,7 +1,7 @@
 
 # ---------------------------------------------------
 ### join meta data extracted from files with manual extensions
-meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2017_December_18.xlsx", sheetIndex = 2, startRow = 1,  header = T)
+meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2018_January_22.xlsx", sheetIndex = 2, startRow = 1,  header = T)
 
 # ---------------------------------------------------
 ### group taxa levels
@@ -17,9 +17,9 @@ meta_df$taxa <- factor(meta_df$taxa)
 # ---------------------------------------------------
 ### make levels consistent
 ## relevel matrix category
-meta_df$matrix.filter.category <- as.character(meta_df$matrix.filter.category)
-meta_df$matrix.filter.category[meta_df$matrix.filter.category == "intermediate"] <- "medium filter"
-meta_df$matrix.filter.category <- factor(meta_df$matrix.filter.category, levels=c("light filter", "medium filter", "harsh filter")) 
+meta_df$matrix.category <- as.character(meta_df$matrix.category)
+meta_df$matrix.category[meta_df$matrix.category == "intermediate"] <- "medium filter"
+meta_df$matrix.category <- factor(meta_df$matrix.category, levels=c("light filter", "medium filter", "harsh filter")) 
 
 ## relevel time.since.fragmentation
 meta_df$time.since.fragmentation <- as.character(meta_df$time.since.fragmentation)
