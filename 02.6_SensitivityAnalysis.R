@@ -21,7 +21,7 @@ setRefToMostCommonLevel <- function(f) {
 analysis_func <- function(df, covar="intercept.only", method){
    
    ### set reference levels
-   for(col in c("taxa","biome","matrix.filter.category","time.since.fragmentation","sample_design")){
+   for(col in c("taxa","biome","matrix.category","time.since.fragmentation","sample_design")){
       df[,col] <- setRefToMostCommonLevel(df[,col])
    }
    
@@ -30,7 +30,7 @@ analysis_func <- function(df, covar="intercept.only", method){
    if(covar=="intercept.only"){
       mods.formula <- "~1"
    }
-   if(covar %in% c("taxa","biome","matrix.filter.category","time.since.fragmentation","sample_design")){
+   if(covar %in% c("taxa","biome","matrix.category","time.since.fragmentation","sample_design")){
       mods.formula <- "~" %+% covar %+% "-1"
    }
    if(covar == "ratio.min.max.fragment.size2"){
@@ -81,8 +81,8 @@ model_frag_sub[["Biome"]] <- analysis_func(df=ES_frag_df.complete, covar="biome"
 model_frag_group_sub[["Biome"]] <- analysis_func(df=ES_frag_group_df.complete,covar="biome", method="REML")
 
 # 4. Matrix category
-model_frag_sub[["Matrix"]] <- analysis_func(df=ES_frag_df.complete, covar="matrix.filter.category", method="REML")
-model_frag_group_sub[["Matrix"]] <- analysis_func(df=ES_frag_group_df.complete,covar="matrix.filter.category", method="REML")
+model_frag_sub[["Matrix"]] <- analysis_func(df=ES_frag_df.complete, covar="matrix.category", method="REML")
+model_frag_group_sub[["Matrix"]] <- analysis_func(df=ES_frag_group_df.complete,covar="matrix.category", method="REML")
 
 # 5. Time since fragmentation
 model_frag_sub[["Time"]] <- analysis_func(df=ES_frag_df.complete, covar="time.since.fragmentation", method="REML")
@@ -181,7 +181,7 @@ dev.off()
 # dev.off()
 
 png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_Matrix_subset.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model=model_frag[["Matrix"]], model_sub=model_frag_sub[["Matrix"]],cov="matrix.filter.category",levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
+plot.func.levels(model=model_frag[["Matrix"]], model_sub=model_frag_sub[["Matrix"]],cov="matrix.category",levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_Time_subset.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
@@ -198,7 +198,7 @@ dev.off()
 # dev.off()
 
 png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_group_Matrix_subset.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model=model_frag_group[["Matrix"]], model_sub=model_frag_group_sub[["Matrix"]],cov="matrix.filter.category",levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
+plot.func.levels(model=model_frag_group[["Matrix"]], model_sub=model_frag_group_sub[["Matrix"]],cov="matrix.category",levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/SensitivityAnalysis/ResultPlot_frag_group_Time_subset.png", width=20,height=10,units="cm",res=200,type = "cairo-png")

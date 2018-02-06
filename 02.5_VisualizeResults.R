@@ -5,7 +5,7 @@ plot.func <- function(model,type=c("BD", "BetaDiv"),ylab,title){
    pred.se.list <- lapply(model,function(x) data.frame(b=x$b,se=x$se))
    pred.se.df <- bind_rows(pred.se.list,.id="model")
    if(type=="BD")   pred.se.df$variable <- factor(pred.se.df$model, levels=c("S_obs", "S_asym", "ENS_PIE", "N"), labels=c("S_obs", "S_asym", "S_PIE", "N_std"))
-   if(type=="BetaDiv")   pred.se.df$variable <- factor(pred.se.df$model, levels=c("PA", "abund"), labels=c("BetaDiv_PA", "BetaDiv_abund"))
+   if(type=="BetaDiv")   pred.se.df$variable <- factor(pred.se.df$model, levels=c("BetaDiv_PA", "BetaDiv_abund"), labels=c("BetaDiv_PA", "BetaDiv_abund"))
    ylim <- c(floor(10*min(pred.se.df$b-1.96*pred.se.df$se))/10,ceiling(10*max(pred.se.df$b+1.96*pred.se.df$se))/10)
    
    pd <- position_dodge(width=0.4)
@@ -38,15 +38,15 @@ plot.func(model_gradient[["GrandMean"]], type="BD", ylab="Fishers' z",title="Gra
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_GrandMean_BetaDiv.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func(model=model_frag[["BetaDiv"]],type="BetaDiv",ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
+plot.func(model=model_frag[["GrandMean"]],type="BetaDiv",ylab="Replacement component",title="Smallest vs. largest fragment")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_GrandMean_BetaDiv.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func(model=model_frag_group[["BetaDiv"]],type="BetaDiv",ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
+plot.func(model=model_frag_group[["GrandMean"]],type="BetaDiv",ylab="Replacement component",title="Smallest vs. largest fragment group")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_gradient_GrandMean_BetaDiv.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func(model=model_gradient[["BetaDiv"]],type="BetaDiv",ylab="Fishers' z",title="Gradient of fragmentation")
+plot.func(model=model_gradient[["GrandMean"]],type="BetaDiv",ylab="Replacement component",title="Gradient of fragmentation")
 dev.off()
 
 #####################################################################################
@@ -86,7 +86,7 @@ dev.off()
 # dev.off()
 # 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_Matrix.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model=model_frag[["Matrix"]],cov="matrix.filter.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
+plot.func.levels(model=model_frag[["Matrix"]],cov="matrix.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_Time.png", width=30,height=10,units="cm",res=200,type = "cairo-png")
@@ -103,7 +103,7 @@ dev.off()
 # dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Matrix.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model_frag_group[["Matrix"]],cov="matrix.filter.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
+plot.func.levels(model_frag_group[["Matrix"]],cov="matrix.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Log(Response Ratio)",title="Smallest vs. largest fragment group")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_group_Time.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
@@ -120,7 +120,7 @@ dev.off()
 # dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_Matrix.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
-plot.func.levels(model_gradient[["Matrix"]],cov="matrix.filter.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Fishers' z",title="Gradient of fragmentation")
+plot.func.levels(model_gradient[["Matrix"]],cov="matrix.category", levels=c("light filter", "medium filter", "harsh filter"), ylab="Fishers' z",title="Gradient of fragmentation")
 dev.off()
 
 png(file=path2temp %+% "ResultsPlots/ResultPlot_frag_gradient_Time.png", width=20,height=10,units="cm",res=200,type = "cairo-png")
@@ -193,18 +193,18 @@ dev.off()
 #    f.new <- relevel(f,ref=as.integer(which(t>=max(t))[[1]]))
 #    return(f.new)
 # }
-# ES_frag_df.complete$matrix.filter.category <- setRefToMostCommonLevel(ES_frag_df.complete$matrix.filter.category)
+# ES_frag_df.complete$matrix.category <- setRefToMostCommonLevel(ES_frag_df.complete$matrix.category)
 # 
 # # Matrix:SizeRatio
 # model <- model_frag[["Matrix:SizeRatio"]][[1]]
-# newdat <- expand.grid(matrix.filter.category=levels(ES_frag_df.complete$matrix.filter.category),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
-# mm <- model.matrix(~matrix.filter.category+ratio.min.max.fragment.size2+matrix.filter.category:ratio.min.max.fragment.size2, data=newdat)
+# newdat <- expand.grid(matrix.category=levels(ES_frag_df.complete$matrix.category),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
+# mm <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
 # preds <- predict(model,newmods=cbind("harsh filter",seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T)),by=0.1))
 # pred.se.list <- lapply(model,function(x) predict(x,newmods=cbind(mm),intercept=F,addx=T))
 # 
-# X <- model.matrix(~matrix.filter.category+ratio.min.max.fragment.size2+matrix.filter.category:ratio.min.max.fragment.size2, data=newdat)
-# newdat <- expand.grid(matrix.filter.category=levels(setRefToMostCommonLevel(ES_frag_df.complete$matrix.filter.category)),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
-# X_new <- model.matrix(~matrix.filter.category+ratio.min.max.fragment.size2+matrix.filter.category:ratio.min.max.fragment.size2, data=newdat)
+# X <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
+# newdat <- expand.grid(matrix.category=levels(setRefToMostCommonLevel(ES_frag_df.complete$matrix.category)),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
+# X_new <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
 # 
 # preds <- X_new %*% model$b
 # fits <- X %*% model$b
@@ -213,20 +213,20 @@ dev.off()
 # 
 # # Matrix+SizeRatio
 # model <- model_frag[["Matrix+SizeRatio"]][[1]]
-# newdat <- expand.grid(matrix.filter.category=levels(ES_frag_df.complete$matrix.filter.category),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
-# mm <- model.matrix(~matrix.filter.category+ratio.min.max.fragment.size2, data=newdat)
-# preds <- predict(model,newmods=cbind(levels(ES_frag_df.complete$matrix.filter.category),c(0.1,0.2,0.3,0.4,0.5)))
+# newdat <- expand.grid(matrix.category=levels(ES_frag_df.complete$matrix.category),ratio.min.max.fragment.size2=seq(min(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1))
+# mm <- model.matrix(~matrix.category+ratio.min.max.fragment.size2, data=newdat)
+# preds <- predict(model,newmods=cbind(levels(ES_frag_df.complete$matrix.category),c(0.1,0.2,0.3,0.4,0.5)))
 # pred.se.list <- lapply(model,function(x) predict(x,newmods=cbind(mm),intercept=F,addx=T))
 # preds <- predict(model,newmods=c(1,0,0),addx=T)
 # 
 # 
 
 # # Matrix:SizeRatio
-# ES_frag_group_df.complete$matrix.filter.category <- setRefToMostCommonLevel(ES_frag_group_df.complete$matrix.filter.category)
+# ES_frag_group_df.complete$matrix.category <- setRefToMostCommonLevel(ES_frag_group_df.complete$matrix.category)
 # 
 # new.SizeRatio <- seq(min(ES_frag_group_df.complete$ratio.min.max.fragment.size2,na.rm=T),max(ES_frag_group_df.complete$ratio.min.max.fragment.size2,na.rm=T),by=0.1)
-# newdat <- expand.grid(matrix.filter.category=levels(ES_frag_group_df.complete$matrix.filter.category),ratio.min.max.fragment.size2=new.SizeRatio)
-# mm <- model.matrix(~matrix.filter.category+ratio.min.max.fragment.size2+matrix.filter.category:ratio.min.max.fragment.size2, data=newdat)
+# newdat <- expand.grid(matrix.category=levels(ES_frag_group_df.complete$matrix.category),ratio.min.max.fragment.size2=new.SizeRatio)
+# mm <- model.matrix(~matrix.category+ratio.min.max.fragment.size2+matrix.category:ratio.min.max.fragment.size2, data=newdat)
 # colnames(mm)[1] <- "intrcpt"
 # 
 # pred.se.list <- lapply(model_frag_group[["Matrix:SizeRatio"]],function(x) predict.rma(x,newmods=mm))
@@ -238,18 +238,18 @@ dev.off()
 #                          ci.ub=pred.list$ci.ub,
 #                          cr.lb=pred.list$cr.lb,
 #                          cr.ub=pred.list$cr.ub,
-#                          matrix.filter.category=newdat$matrix.filter.category,
+#                          matrix.category=newdat$matrix.category,
 #                          SizeRatio=newdat$ratio.min.max.fragment.size2)
 #    return(pred.df)
 # }
 # pred.se.df <- bind_rows(lapply(pred.se.list,pred.list2df),.id="model")
 # 
-# pred.se.df$variable <- factor(rep(c("S", "S_obs", "N_std", "S_asym","BetaDiv_PA","BetaDiv_abund"),each=length(new.SizeRatio)*length(levels(ES_frag_group_df.complete$matrix.filter.category))),levels=c("S", "S_obs", "N_std", "S_asym","BetaDiv_PA","BetaDiv_abund"))
+# pred.se.df$variable <- factor(rep(c("S", "S_obs", "N_std", "S_asym","BetaDiv_PA","BetaDiv_abund"),each=length(new.SizeRatio)*length(levels(ES_frag_group_df.complete$matrix.category))),levels=c("S", "S_obs", "N_std", "S_asym","BetaDiv_PA","BetaDiv_abund"))
 # 
-# plot1 <- ggplot(pred.se.df,aes(y=pred,x=SizeRatio, color=matrix.filter.category)) +
+# plot1 <- ggplot(pred.se.df,aes(y=pred,x=SizeRatio, color=matrix.category)) +
 #    geom_line(size=2) +
 #    geom_hline(yintercept=0,linetype="twodash", size=0.6) +
-#    geom_ribbon(aes(ymin=ci.lb,ymax=ci.ub,fill=matrix.filter.category),alpha=0.2,color=NA) +
+#    geom_ribbon(aes(ymin=ci.lb,ymax=ci.ub,fill=matrix.category),alpha=0.2,color=NA) +
 #    xlab("Min/Max Size Ratio") + ylab("Log(Response Ratio)") +
 #    ggtitle("Smallest vs. largest fragment group") +
 #    facet_grid(variable~.) +
