@@ -38,8 +38,7 @@ is.error <- function(x) inherits(x, "try-error")
 ### Load and install all needed libraries
 ############################################################################
 needed_libs <- c("devtools", # download from github
-                 "mobsim", # simulation of species communities
-                 "iNEXT", # computes diversity estimates for rarefied and extrapolated samples
+                 "mobr", # calculation of biodiversity indices
                  "vegan", # for diversity indices
                  "adespatial", # for beta-diversity partitioning
                  "car", # for logit transformation
@@ -61,7 +60,7 @@ needed_libs <- c("devtools", # download from github
 usePackage <- function(p) {
    #if(p=="iNEXT")   install_github('JohnsonHsieh/iNEXT') # iNEXT is on CRAN !
    if (!is.element(p, installed.packages()[,1])) {   
-      if(p == "mobsim") {install_github('MoBiodiv/mobsim')}  
+      if(p == "mobr") {install_github('MoBiodiv/mobr')}  
       install.packages(p, dep = TRUE)
    }
    require(p, character.only = TRUE)
