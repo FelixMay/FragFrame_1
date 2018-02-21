@@ -235,8 +235,9 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    # div_indi$D0_hat[cov_eq_1] <- div_indi$S_obs[cov_eq_1]
    # 
    # # set indices to NA when there are no individuals
-   # empty_plots <- div_indi$N == 0 
-   # div_indi$ENS_pie[empty_plots] <- NA
+   empty_plots <- div_indi$N == 0 
+   div_indi$S_asymp[empty_plots] <- NA
+   div_indi$S_PIE[empty_plots] <- NA
 
    #############################################################################
    ### Beta-diversity partitioning
