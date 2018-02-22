@@ -154,10 +154,8 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    #div_indi$N_std <-  div_indi$N/div_indi$sample_effort ## standardize abundance by absolute sampling effort
    div_indi$N_std <-  div_indi$N/rel_sample_eff ## standardize abundance by relative sampling effort
    
-   n_std <- round(mean(div_indi$N_std))
-   
    # get mobr indices
-   effort_n <- unique(sort(c(n_min, 2*n_min, n_std)))
+   effort_n <- unique(sort(c(n_min, 2*n_min)))
    div_dat <- calc_biodiv(abund_mat = t(dat_abund_pool2),
                           groups = rep("frag", ncol(dat_abund_pool2)),
                           index = c("N", "S", "S_n", "S_asymp", "f_0", "S_PIE"), 
@@ -166,15 +164,14 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    # observed richness
    div_indi$S_obs <- div_dat$value[div_dat$index == "S"]
    
-   # richness standardized by mean sampling effort in smalles sampling unit
-   # div_indi$n_std <- div_dat$effort[div_dat$index == "S_n" & div_dat$effort == n_std]
-   
-   if (n_std >= n_thres){
-      div_indi$S_std <- div_dat$value[div_dat$index == "S_n" & div_dat$effort == n_std]  
-   } else {
-      div_indi$S_std <- NA
-   }                  
-   
+   # richness standardized by mean sampling effort in smallest sampling unit
+   div_indi$S_std <- NA
+   for (i in 1:nrow(div_indi)){
+     div_indi$S_std[i] <- rarefaction(dat_abund_pool2[,i],
+                                      method = "indiv",
+                                      effort = round(div_indi$N_std[i]))        
+   }
+
    # rarefied richness
    if (n_min >= n_thres){
       div_indi$n1 <- div_dat$effort[div_dat$index == "S_n" & div_dat$effort == n_min]
