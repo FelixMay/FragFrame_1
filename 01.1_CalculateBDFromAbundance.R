@@ -167,9 +167,10 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    # richness standardized by mean sampling effort in smallest sampling unit
    div_indi$S_std <- NA
    for (i in 1:nrow(div_indi)){
-     div_indi$S_std[i] <- rarefaction(dat_abund_pool2[,i],
-                                      method = "indiv",
-                                      effort = round(div_indi$N_std[i]))        
+      if (div_indi$N_std[i] >= n_thres)   
+         div_indi$S_std[i] <- rarefaction(dat_abund_pool2[,i],
+                                          method = "indiv",
+                                          effort = round(div_indi$N_std[i]))        
    }
 
    # rarefied richness

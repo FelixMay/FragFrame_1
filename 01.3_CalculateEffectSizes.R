@@ -1,9 +1,14 @@
 div_df <- read.csv(path2temp %+% "DiversityData.csv", sep=",")
 #str(div_df)
 
-div_df <- subset(div_df, base_cov>0.5) # exclude studies with base coverage less than 0.5 that indicates incomplete sampling
+# div_df <- subset(div_df, base_cov>0.5) # exclude studies with base coverage less than 0.5 that indicates incomplete sampling
+# We do not calculate a base coverage anymore, because we (Jon + Felix) decided to use
+# Schao instead of coverage standardized D0hat (for consistency with mob framework)
+# So we might need another quality check
 
-BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
+# BDmetrics <- c("S_obs","D0_hat","N_std","ENS_pie")
+BDmetrics <- c("N", "N_std","S_obs","S_std","S_n1","S_n2","S_asymp","S_PIE")
+
 
 ###############################################################
 ### 1. largest vs smallest fragment incl continuous as fragment using log RR
@@ -128,8 +133,12 @@ write.csv(ES_df, file=path2temp %+% "ES_df.csv")
 # div_df[div_df$filename %in% check$Case.ID,  ]
 
 # Check correlation among BD indices
-pairs(ES_frag_group_df[, c("ES.N_std","ES.S_obs","ES.D0_hat","ES.ENS_pie")])
-cor(ES_frag_group_df[, c("ES.N_std","ES.D0_hat","ES.S_obs","ES.ENS_pie")], use = "pairwise.complete.obs")
+pairs(ES_frag_group_df[, c("ES.N", "ES.N_std","ES.S_obs","ES.S_std","ES.S_n1","ES.S_n2","ES.S_asymp","ES.S_PIE")])
+cor(ES_frag_group_df[, c("ES.N", "ES.N_std","ES.S_obs","ES.S_std","ES.S_n1","ES.S_n2","ES.S_asymp","ES.S_PIE")],
+    use = "pairwise.complete.obs")
+
+#pairs(ES_frag_group_df[, c("ES.N_std","ES.S_obs","ES.D0_hat","ES.ENS_pie")])
+# cor(ES_frag_group_df[, c("ES.N_std","ES.D0_hat","ES.S_obs","ES.ENS_pie")], use = "pairwise.complete.obs")
 
 # Check correlation among turnover indices
 pairs(ES_frag_group_df[, c("repl_part_BS_qT","repl_part_BS_qF")])
