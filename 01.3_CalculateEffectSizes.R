@@ -89,9 +89,10 @@ for(i in 1:length(ES_df$Case.ID)){
       ES_df[i,"ES.var." %+% j] <- ifelse(ES_df[i,"n.fragment"]>3,1/(ES_df[i,"n.fragment"]-3),NA)
    }
    
+   BDmetrics <- c("N", "N_std","S_obs","S_std","S_n1","S_n2","S_asymp","S_PIE")
    fig_name <- path2temp %+% "BoxPlots/" %+% paste(unique(sub.df$filename), ".png", sep = "")
    png(fig_name, width = 10, height = 6, units = "in", res = 200)
-   op <- par(mfrow = c(2,4), oma = c(0,0,4,0), las = 1)
+   op <- par(mfrow = c(2,5), oma = c(0,0,4,0), las = 1)
    boxplot(N ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "N")
    boxplot(sample_effort ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
@@ -100,10 +101,16 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "N standardized")
    boxplot(S_obs ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Observed S")
-   boxplot(D0_hat ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+   boxplot(S_std ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "Rarefied S")
+   boxplot(S_n1 ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "Rarefied S to N_min")
+   boxplot(S_n2 ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "Rarefied S to 2*N_min")
+   boxplot(S_asymp ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Asymptotic S")
-   boxplot(ENS_pie ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
-           main = "ENS_PIE")
+   boxplot(S_PIE ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+           main = "S_PIE")
    if (ES_df$sample_design[i] != "pooled")
       try(boxplot(repl_part_BS_qT ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "repl_part_BS_qT"))
