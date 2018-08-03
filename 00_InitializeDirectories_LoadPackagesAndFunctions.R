@@ -61,6 +61,7 @@ usePackage <- function(p) {
    #if(p=="iNEXT")   install_github('JohnsonHsieh/iNEXT') # iNEXT is on CRAN !
    if (!is.element(p, installed.packages()[,1])) {   
       if(p == "mobr") {install_github('MoBiodiv/mobr')}  
+      if(p == "adespatial") {install.packages("XML",type="binary")}
       install.packages(p, dep = TRUE)
    }
    require(p, character.only = TRUE)
