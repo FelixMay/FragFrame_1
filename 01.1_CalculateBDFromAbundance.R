@@ -159,7 +159,9 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    div_dat <- calc_biodiv(abund_mat = t(dat_abund_pool2),
                           groups = rep("frag", ncol(dat_abund_pool2)),
                           index = c("N", "S", "S_n", "S_asymp", "f_0", "S_PIE"), 
-                          effort = effort_n)
+                          effort = effort_n,
+                          extrapolate=T,
+                          return_NA=F)
    
    # observed richness
    div_indi$S_obs <- div_dat$value[div_dat$index == "S"]
