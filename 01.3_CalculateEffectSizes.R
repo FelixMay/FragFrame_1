@@ -101,12 +101,18 @@ for(i in 1:length(ES_df$Case.ID)){
            main = "N standardized")
    boxplot(S_obs ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Observed S")
-   boxplot(S_std ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+   if(!all(is.na(sub.df$S_std))){
+      boxplot(S_std ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Rarefied S")
-   boxplot(S_n1 ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
-           main = "Rarefied S to N_min")
-   boxplot(S_n2 ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+   }
+   if(!all(is.na(sub.df$S_n1))){
+      boxplot(S_n1 ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
+              main = "Rarefied S to N_min")
+   }
+   if(!all(is.na(sub.df$S_n2))){
+      boxplot(S_n2 ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Rarefied S to 2*N_min")
+   }
    boxplot(S_asymp ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
            main = "Asymptotic S")
    boxplot(S_PIE ~ entity.size.rank, data = sub.df, xlab = "Fragment size rank",
