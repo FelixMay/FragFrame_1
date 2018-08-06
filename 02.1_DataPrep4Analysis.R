@@ -6,7 +6,7 @@ ES_frag_group_df <- read.csv(file=path2temp %+% "ES_frag_group_df.csv", stringsA
 ES_df <- read.csv(file=path2temp %+% "ES_df.csv", stringsAsFactors=F)
 meta_df <- read.csv(file=path2temp %+% "metaData.csv", stringsAsFactors=F)
 
-BDmetrics <- c("N_std","S_obs","D0_hat","ENS_pie")
+BDmetrics <- c("N", "N_std","S_obs","S_std","S_n1","S_n2","S_asymp","S_PIE")
 
 #-----------------------------------------
 ### subset original dataset
