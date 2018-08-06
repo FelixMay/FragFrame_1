@@ -1,7 +1,7 @@
 load(path2temp %+% "02.1_Data4Analysis_out.Rdata") 
 #ls()
 
-BDmetrics <- c("N_std","S_obs","D0_hat","ENS_pie")
+BDmetrics <- c("N", "N_std","S_obs","S_std","S_n1","S_n2","S_asymp","S_PIE")
 
 ############################################################################
 ### 1. Histograms of Effect sizes
@@ -32,82 +32,83 @@ pdf(file=path2temp %+% "ForestPlots_z.pdf")
 sapply(BDmetrics, function(j) forest(x=ES_df.complete[,"ES." %+% j],vi=ES_df.complete[,"ES.var." %+% j],slab=ES_df.complete$Study.ID,psize=1,main=paste(j),cex=.6))
 dev.off()       
 
-############################################################################
-### combined forest plot for complete dataset
-png(path2temp %+% "ForestPlots_ES_df.complete_extremes.png",height=40,width=25,units="cm",res=400)
-g_legend<-function(a.gplot){ 
-   tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
-   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
-   legend <- tmp$grobs[[leg]] 
-   return(legend)} 
-
-### save legend
-plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
-   geom_segment() +
-   geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
-
-# # if legend from plot1 is drawn
-legend <- g_legend(plot1)
-# png(path2temp %+% "legend.png",height=10,width=10,units="cm",res=200)
-# grid.draw(legend)
+# ############################################################################
+# ### combined forest plot for complete dataset
+# png(path2temp %+% "ForestPlots_ES_df.complete_extremes.png",height=40,width=25,units="cm",res=400)
+# g_legend<-function(a.gplot){ 
+#    tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+#    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+#    legend <- tmp$grobs[[leg]] 
+#    return(legend)} 
+# 
+# ### save legend
+# plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
+#    geom_segment() +
+#    geom_point(aes(x=value)) +
+#    scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
+# 
+# # # if legend from plot1 is drawn
+# legend <- g_legend(plot1)
+# # png(path2temp %+% "legend.png",height=10,width=10,units="cm",res=200)
+# # grid.draw(legend)
+# # dev.off()
+# 
+# pd <- position_dodge(width=0.6)
+# plot2 <- ggplot(data=ES_df.complete_long, aes(x=Case.ID,y=value,ymin=value-1.96*sqrt(ES.var),ymax=value+1.96*sqrt(ES.var),color=ES)) + 
+#    geom_pointrange(position=pd, cex=0.4,show.legend = F) + 
+#    geom_hline(aes(yintercept=0), linetype="twodash",size=0.6) +
+#    xlab("") + ylab("") +
+#    coord_flip() 
+# 
+# grid.arrange(plot2,legend, ncol=2, widths=c(15,4))
+# dev.off()
+# 
+# ############################################################################
+# ### combined forest plot for complete dataset without extremes of Goodman and Zartman
+# png(path2temp %+% "ForestPlots_ES_df.complete_wo_extremes.png",height=40,width=25,units="cm",res=400)
+# g_legend<-function(a.gplot){ 
+#    tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+#    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+#    legend <- tmp$grobs[[leg]] 
+#    return(legend)} 
+# 
+# ### save legend
+# plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
+#          geom_segment() +
+#          geom_point(aes(x=value)) +
+#    scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
+# 
+# # # if legend from plot1 is drawn
+# legend <- g_legend(plot1)
+# # png(path2temp %+% "legend.png",height=10,width=10,units="cm",res=200)
+# # grid.draw(legend)
+# # dev.off()
+# 
+# pd <- position_dodge(width=0.6)
+# plot2 <- ggplot(data=ES_df.complete_long, aes(x=Case.ID,y=value,ymin=value-1.96*sqrt(ES.var),ymax=value+1.96*sqrt(ES.var),color=ES)) + 
+#    geom_pointrange(position=pd, cex=0.4,show.legend = F) + 
+#    geom_hline(aes(yintercept=0), linetype="twodash",size=0.6) +
+#    ylim(-5,5) +
+#    xlab("") + ylab("") +
+#    coord_flip() 
+# 
+# grid.arrange(plot2,legend, ncol=2, widths=c(15,4))
+# dev.off()
+# 
+# ### combined forest plot for frag_group dataset
+# png(path2temp %+% "ForestPlots_ES_frag_group_df.png",height=40,width=25,units="cm",res=400)
+# ggplot(data=ES_frag_group_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
+#    geom_point(aes(x=value)) +
+#    scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
+# dev.off()
+# 
+# ### combined forest plot for frag dataset
+# png(path2temp %+% "ForestPlots_ES_frag_df.png",height=40,width=25,units="cm",res=400)
+# ggplot(data=ES_frag_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
+#    geom_point(aes(x=value)) +
+#    scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
 # dev.off()
 
-pd <- position_dodge(width=0.6)
-plot2 <- ggplot(data=ES_df.complete_long, aes(x=Case.ID,y=value,ymin=value-1.96*sqrt(ES.var),ymax=value+1.96*sqrt(ES.var),color=ES)) + 
-   geom_pointrange(position=pd, cex=0.4,show.legend = F) + 
-   geom_hline(aes(yintercept=0), linetype="twodash",size=0.6) +
-   xlab("") + ylab("") +
-   coord_flip() 
-
-grid.arrange(plot2,legend, ncol=2, widths=c(15,4))
-dev.off()
-
-############################################################################
-### combined forest plot for complete dataset without extremes of Goodman and Zartman
-png(path2temp %+% "ForestPlots_ES_df.complete_wo_extremes.png",height=40,width=25,units="cm",res=400)
-g_legend<-function(a.gplot){ 
-   tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
-   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
-   legend <- tmp$grobs[[leg]] 
-   return(legend)} 
-
-### save legend
-plot1 <- ggplot(data=ES_df.complete_long,aes(y=Case.ID,yend=Case.ID,x=value-1.96*sqrt(ES.var),xend=value+1.96*sqrt(ES.var),color=ES)) + 
-         geom_segment() +
-         geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
-
-# # if legend from plot1 is drawn
-legend <- g_legend(plot1)
-# png(path2temp %+% "legend.png",height=10,width=10,units="cm",res=200)
-# grid.draw(legend)
-# dev.off()
-
-pd <- position_dodge(width=0.6)
-plot2 <- ggplot(data=ES_df.complete_long, aes(x=Case.ID,y=value,ymin=value-1.96*sqrt(ES.var),ymax=value+1.96*sqrt(ES.var),color=ES)) + 
-   geom_pointrange(position=pd, cex=0.4,show.legend = F) + 
-   geom_hline(aes(yintercept=0), linetype="twodash",size=0.6) +
-   ylim(-5,5) +
-   xlab("") + ylab("") +
-   coord_flip() 
-
-grid.arrange(plot2,legend, ncol=2, widths=c(15,4))
-dev.off()
-
-### combined forest plot for frag_group dataset
-png(path2temp %+% "ForestPlots_ES_frag_group_df.png",height=40,width=25,units="cm",res=400)
-ggplot(data=ES_frag_group_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
-   geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
-dev.off()
-
-### combined forest plot for frag dataset
-png(path2temp %+% "ForestPlots_ES_frag_df.png",height=40,width=25,units="cm",res=400)
-ggplot(data=ES_frag_df.complete_long,aes(y=Case.ID,x=value,color=ES)) + 
-   geom_point(aes(x=value)) +
-   scale_color_brewer("", palette="Set1",breaks=c("ES.S_obs","ES.D0_hat","ES.N_std","ES.ENS_pie"), labels=c("S_obs","S_asym","N","ENS_PIE"))
-dev.off()
 ############################################################################
 ### 2. pairwise correlation of effect sizes based on complete observations
 ############################################################################
