@@ -79,6 +79,9 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    
    dat_head_t$entity.size.rank <- dat_ranks
    
+   dat_head_t$entity.type <- factor("fragment", levels = c("fragment","continuous"))
+   dat_head_t$entity.type[dat_ranks == 9999] <- "continuous"
+   
    ### extract sampling effort
    dat_sample_eff <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 1,
                                header = F, stringsAsFactors = F)
@@ -122,7 +125,7 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
                           entity.id = dat_abund_pool[ ,1],
                           entity.size.rank =  dat_abund_pool[ ,2])
    
-   div_indi <- join(div_indi, dat_head_t[,c("entity.id","entity.size")], match="first")
+   div_indi <- join(div_indi, dat_head_t[,c("entity.id","entity.size","entity.type")], match="first")
    
    ### Check sampling design
    div_indi$sampling_units <- dat_n_sampling_units[,3]
