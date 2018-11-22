@@ -13,9 +13,9 @@
       path2temp <- "C:/Users/kg83hyby/Documents/temp/FragFrame_1/" 
    }  
    else {#FM
-      path2wd <-"/home/fm28towy/Documents/Fragmentation_Extinction/FragFrame_1/" 
-      path2Dropbox <- "/home/fm28towy/Dropbox (iDiv)/Habitat loss meta-analysis/"
-      path2temp <- "/home/fm28towy/Dropbox (iDiv)/Habitat loss meta-analysis/analysis/"
+      path2wd <- "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1/" 
+      path2Dropbox <- "C:/Users/May/Dropbox (iDiv)/Habitat loss meta-analysis/"
+      path2temp <- "C:/Users/May/Dropbox (iDiv)/Habitat loss meta-analysis/analysis/"
    }
    return(list(path2temp,path2Dropbox,path2wd))
 }
