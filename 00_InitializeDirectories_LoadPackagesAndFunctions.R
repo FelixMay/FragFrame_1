@@ -54,7 +54,8 @@ needed_libs <- c("devtools", # download from github
                  "xlsx",  # for reading Excel spreadsheets
                  "SpadeR",
                  "RColorBrewer",
-                 "raster"# for trim()
+                 "raster", # for trim()
+                 "iNEXT" # for overage standardized richness
 )
 
 usePackage <- function(p) {

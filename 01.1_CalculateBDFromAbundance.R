@@ -145,26 +145,53 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    
    ### simple diversity indices
    
-   # calculate sampling efforts for rarefied richness
-   
    # standardize sampling effort
    # smallest sampling unit:  sampling effort = 1
    rel_sample_eff <- div_indi$sample_effort/min(div_indi$sample_effort)
    
+   # No. of individuals
    div_indi$N <- colSums(dat_abund_pool2)
-   n_min <- min(div_indi$N)
+   
+   # n_min <- min(div_indi$N)
+   
+   # No. of individuals standardized by sampling effort
    
    #div_indi$N_std <-  div_indi$N/div_indi$sample_effort ## standardize abundance by absolute sampling effort
    div_indi$N_std <-  div_indi$N/rel_sample_eff ## standardize abundance by relative sampling effort
    
+   # Determine base sample size for the sample-size-based rarefaction and extrapolation
+   # Chao et al. 2014. Box 1
+   n_max <- max(div_indi$N)
+   n_min_r <- min(2 * div_indi$N)
+   
+   n_base <- min(n_max, n_min_r)   
+   div_indi$n_base <- n_base
+   
+   # Chao et al. 2014 suggests using the maximum here,
+   # we decided to go for a more conservative measure
+   
+   # Determine base coverage for the coverage-based rarefaction and extrapolation
+   # Chao et al. 2014. Box 1
+   
+   # sample coverage
+   div_indi$coverage <- apply(dat_abund_pool2, 2,
+                              function(x) {Chat.Ind(x, sum(x))} )
+   
+   # extrapolated coverage with sample size * 2
+   cov_extra <- apply(dat_abund_pool2, 2,
+                      function(x) {Chat.Ind(x, 2*sum(x))})
+ 
+   # base coverage 
+   cov_base <- min(max(div_indi$coverage, na.rm = T),
+                   min(cov_extra, na.rm = T))
+   div_indi$cov_base <- cov_base
    # get mobr indices
-   effort_n <- unique(sort(c(n_min, 2*n_min)))
    div_dat <- calc_biodiv(abund_mat = t(dat_abund_pool2),
                           groups = rep("frag", ncol(dat_abund_pool2)),
                           index = c("N", "S", "S_n", "S_asymp", "f_0", "S_PIE"), 
-                          effort = effort_n,
-                          extrapolate=T,
-                          return_NA=F)
+                          effort = n_base,
+                          extrapolate = T,
+                          return_NA = F)
    
    # observed richness
    div_indi$S_obs <- div_dat$value[div_dat$index == "S"]
@@ -179,18 +206,10 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    }
 
    # rarefied richness
-   if (n_min >= n_thres){
-      div_indi$n1 <- div_dat$effort[div_dat$index == "S_n" & div_dat$effort == n_min]
-      div_indi$S_n1 <- div_dat$value[div_dat$index == "S_n" & div_dat$effort == n_min]
-      
-      div_indi$n2 <- div_dat$effort[div_dat$index == "S_n" & div_dat$effort == 2*n_min]
-      div_indi$S_n2 <- div_dat$value[div_dat$index == "S_n" & div_dat$effort == 2*n_min]
+   if (n_base >= n_thres){
+      div_indi$S_n <- div_dat$value[div_dat$index == "S_n"]
    } else {
-      div_indi$n1 <- n_min
-      div_indi$S_n1 <- NA
-      
-      div_indi$n2 <- 2*n_min
-      div_indi$S_n2 <- NA
+      div_indi$S_n <- NA
    }
    
    # asymptotic richness
@@ -199,46 +218,40 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    # ENS PIE
    div_indi$S_PIE <- div_dat$value[div_dat$index == "S_PIE"]
    
+   # div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
+   
+   #####################################################################
+   # I do not remember when and how we defined the following calulation
    # S_plot <- colSums(dat_abund > 0)    # observed species richness per plot before plots within the same fragments have been pooled
    # div_indi$S_plot <- ifelse(div_indi$sample_design == "pooled", NA, aggregate(S_plot, 
    #                          by = list(dat_head_t$entity.id,
    #                                    dat_head_t$entity.size.rank),
-   #                          FUN = mean)$x) # mean of plot level species richness, comparison only meaningful if sampling effort among plots is equal, i.e. sampling_design either standardized or multiple standardized subsamples within fragments
-   # div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
+   #                          FUN = mean)$x) # mean of plot level species richness, comparison only meaningful 
+   # if sampling effort among plots is equal, i.e. sampling_design either standardized or
+   # multiple standardized subsamples within fragments
+   #####################################################################
    
-   # sample coverage
-   div_indi$coverage <- apply(dat_abund_pool2, 2,
-                              function(x) {Chat.Ind(x, sum(x))} )
+   # Calculate coverage standardized richness
+   div_indi$S_cov <- rep(NA, nrow(div_indi)) 
    
-   # # extrapolated coverage with sample size * 2
-   # div_indi$cov_extra <- apply(dat_abund_pool2, 2,
-   #                    function(x) {Chat.Ind(x, 2*sum(x))})
-   # 
-   # ### get base coverage following Chao et al. 2014. Ecol Monographs, box 1, p 60
-   # ### p.62:  However, for q = 0, extrapolation is reliable up to no more than double the reference sample size. Beyond that, the predictor for q = 0 may be subject to some bias because our asymptotic estimator for species richness (Chaol for abundance data and Chao2 for incidence data) is a lower bound only.
-   # div_indi$base_cov <- min(max(div_indi$coverage, na.rm = T),
-   #                          min(div_indi$cov_extra, na.rm = T))
-   # 
-   # # calculate standardized coverage
-   # div_indi$D0_hat <- rep(NA, nrow(div_indi)) 
-   # 
-   # D_cov_std <- lapply(dat_abund_pool2,
-   #                     function(x) try(estimateD(x, datatype = "abundance",
-   #                                     base = "coverage",
-   #                                     level = div_indi$base_cov[1],
-   #                                     conf = NULL)))
-   # succeeded <- !sapply(D_cov_std, is.error)
-   # 
-   # if (sum(succeeded) > 0){
-   #    div_indi$D0_hat[succeeded] <- sapply(D_cov_std[succeeded],"[[","q = 0")
-   # }
-   # 
-   # cov_eq_1 <- div_indi$coverage >= 1.0 
+   S_cov_std <- lapply(dat_abund_pool2,
+                       function(x) try(estimateD(x, datatype = "abundance",
+                                       base = "coverage",
+                                       level = cov_base,
+                                       conf = NULL)))
+   succeeded <- !sapply(S_cov_std, is.error)
+
+   if (sum(succeeded) > 0){
+      div_indi$S_cov[succeeded] <- sapply(S_cov_std[succeeded],"[[","q = 0")
+   }
+   
+   # I am not sure these three lines are neede?
+   # cov_eq_1 <- div_indi$coverage >= 1.0
    # cov_eq_1[is.na(cov_eq_1)] <- FALSE
    # div_indi$D0_hat[cov_eq_1] <- div_indi$S_obs[cov_eq_1]
-   # 
-   # # set indices to NA when there are no individuals
-   empty_plots <- div_indi$N == 0 
+
+   # set indices to NA when there are no individuals
+   empty_plots <- div_indi$N == 0
    div_indi$S_asymp[empty_plots] <- NA
    div_indi$S_PIE[empty_plots] <- NA
 
