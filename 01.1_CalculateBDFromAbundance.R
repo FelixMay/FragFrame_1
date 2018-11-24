@@ -259,8 +259,9 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    ### Beta-diversity partitioning
    ### Estimate species turnover that is due to replacement (in contrast to nestedness)
    
-   div_indi$repl_part_BS_qT <- NA ##"BS" – Baselga family, Sørensen-based indices, computes quantitative forms of replacement, nestedness and D
-
+   div_indi$repl_part_BS_qF <- NA # "BS" – Baselga family, Sørensen-based indices, computes presence/absence form
+   div_indi$repl_part_BS_qT <- NA # computes quantitative form
+   
    # Check sampling design
    range_sample_eff <- range(div_indi$sample_effort)
    range_sample_units <- range(div_indi$sampling_units)
