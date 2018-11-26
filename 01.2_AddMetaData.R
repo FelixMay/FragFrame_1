@@ -1,7 +1,8 @@
 
 # ---------------------------------------------------
 ### join meta data extracted from files with manual extensions
-meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2018_January_22.xlsx", sheetIndex = 2, startRow = 1,  header = T)
+meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2018_06_datapaper.xlsx",
+                     sheetIndex = 1, startRow = 1,  header = T)
 
 # ---------------------------------------------------
 ### group taxa levels
@@ -30,6 +31,14 @@ meta_df$time.since.fragmentation <- factor(meta_df$time.since.fragmentation, lev
 # ---------------------------------------------------
 ### save table
 write.csv(meta_df, file = paste(path2temp, "metaData.csv", sep = ""))
+
+
+### add metadata to diversity indices
+table_long <- left_join(div_df_nomatrix, meta_df, by = c("filename" = "Case.ID"))
+dim(table_long)
+
+head(table_long)
+write.csv(table_long, file = paste(path2temp, "diversity_metadata.csv", sep = "") )
 
 ##############################
 ### RESTERAMPE
