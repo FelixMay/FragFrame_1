@@ -4,6 +4,9 @@
 meta_df <- read.xlsx(path2Dropbox %+% "_Mario data curating/clean metadata matrix_version_2018_06_datapaper.xlsx",
                      sheetIndex = 1, startRow = 1,  header = T)
 
+div_df_nomatrix <- read.table(file = paste(path2temp, "DiversityData.csv", sep = ""),
+                              sep = ",", header = T)
+
 # ---------------------------------------------------
 ### group taxa levels
 meta_df$taxa <- as.character(meta_df$taxa)
@@ -36,6 +39,18 @@ write.csv(meta_df, file = paste(path2temp, "metaData.csv", sep = ""))
 ### add metadata to diversity indices
 table_long <- left_join(div_df_nomatrix, meta_df, by = c("filename" = "Case.ID"))
 write.csv(table_long, file = paste(path2temp, "diversity_metadata.csv", sep = "") )
+
+# Check samplint effort
+unique(meta_df$sampling.effort)
+
+table_short <- table_long %>%
+   dplyr::select(filename, sample_design, sampling.effort) %>%
+   distinct()
+
+write.table(table_short, file = paste(path2temp, "studies_sampling_designs.csv", sep = ""), sep = "," )
+
+cross_tab <- table(table_short$sampling.effort, table_short$sample_design)
+write.table(cross_tab, file = paste(path2temp, "cross_tab_sampling_designs.csv", sep = ""), sep = ",")
 
 ##############################
 ### RESTERAMPE
