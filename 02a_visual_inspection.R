@@ -2,6 +2,8 @@
 library(tidyverse)
 
 frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/visual_inspection/')
+
 
 # we are mostly interested in diversity as a function of entity size
 # the different standardisation look qualitativley similar, though S_cov has a lower intercept
@@ -36,6 +38,7 @@ ggplot() +
   theme_bw() +
   theme(legend.position = c(0.1,0.9))
 
+# ggsave('standardised_S_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
 
 # S_PIE?
 ggplot() +
@@ -47,10 +50,10 @@ ggplot() +
               aes(x = entity.size, y = S_PIE),
               colour = 'black') +
   # add study-level variation
-  stat_smooth(data = frag,
-              method = 'lm', se=F,
-              aes(x = entity.size, y = S_PIE, group = filename, colour = taxa),
-              lwd = 1/2) +
+  # stat_smooth(data = frag,
+  #             method = 'lm', se=F,
+  #             aes(x = entity.size, y = S_PIE, group = filename, colour = taxa),
+  #             lwd = 1/2) +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2') +
   scale_colour_viridis_d(name = 'Taxa') +
@@ -58,6 +61,8 @@ ggplot() +
        y = expression(S[PIE])) +
   theme_bw() +
   theme(legend.position = c(0.1,0.8))
+
+# ggsave('S_PIE_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
 
 # what does the study-level variation look like?
 ggplot() +
@@ -70,8 +75,8 @@ ggplot() +
   stat_smooth(data = frag,
               method = 'lm', se = F,
               aes(x = entity.size, y = S_n,
-                  group = filename, colour = taxa),
-              lwd = 0.3) +
+                  group = filename),
+              colour = 'black', lwd = 0.3) +
   scale_colour_viridis_d(name = 'Taxa') +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(4,32,64,128,256)) +
@@ -80,8 +85,10 @@ ggplot() +
   theme_bw() +
   theme(legend.position = c(0.1, 0.9))
 
+# ggsave('S_n_fragmentSize_studyLevel.pdf', width = 290, height = 200, units = 'mm')
+
 # How do we want to examine taxa? Within studies, or across all studies?
-# are there really studies where we don't know the taxa? check NAs here...
+# are there really studies where we don't know the taxa? Jon will check NAs here...
 # this plot is taxa across all studies...
 ggplot() +
   geom_point(data = frag,
@@ -120,7 +127,10 @@ ggplot() +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[n]))) +
   theme_bw() +
-  theme(legend.position = c(0.1, 0.9))
+  theme(legend.position = c(0.1, 0.8),
+        legend.background = element_blank())
+
+# ggsave('standardised_S_fragmentSize_x_taxa_studyLevel.pdf', width = 290, height = 200, units = 'mm')
 
 # taxa may respond differently depending on the vegetation within the fragments
 ggplot() +
@@ -144,7 +154,10 @@ ggplot() +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[n]))) +
   theme_bw() +
-  theme(legend.position = c(0.9, 0.9))
+  theme(legend.position = c(0.9, 0.9),
+        legend.background = element_blank())
+
+# ggsave('Sn_fragmentSize_x_taxa_x_vegFragment_studyLevel.pdf', width = 290, height = 200, units = 'mm')
 
 # what about the character of the matrix?
 # add factor for ordering facets
@@ -171,7 +184,10 @@ ggplot() +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[n]))) +
   theme_bw() +
-  theme(legend.position = c(0.15, 0.9))
+  theme(legend.position = c(0.1, 0.8),
+        legend.background = element_blank())
+
+# ggsave('Sn_fragmentSize_x_taxa_x_matrixCategory_studyLevel.pdf', width = 290, height = 140, units = 'mm')
 
 # time since fragmentation
 # order for facets...
@@ -183,8 +199,7 @@ ggplot() +
   # throw out the fragments for which we don't have matrix.category data
   geom_point(data = frag %>% filter(!is.na(time.since.fragmentation)),
              aes(x = entity.size, y = S_n, 
-                 colour = taxa),
-             alpha = 0.3) +
+                 colour = taxa)) +
   stat_smooth(data = frag %>% filter(!is.na(time.since.fragmentation)),
               method = 'lm',
               aes(x = entity.size, y = S_n),
@@ -200,5 +215,8 @@ ggplot() +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[n]))) +
   theme_bw() +
-  theme(legend.position = c(0.1, 0.9),
-        legend.background = element_blank())
+  theme(legend.position = c(0.15, 0.9),
+        legend.background = element_blank()) +
+  guides(colour = guide_legend(ncol = 2))
+
+# ggsave('Sn_fragmentSize_x_taxa_x_timeSinceFrag_studyLevel.pdf', width = 290, height = 140, units = 'mm')
