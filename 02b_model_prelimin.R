@@ -75,9 +75,9 @@ car::Anova(m3_fS_taxa_matrix)
 summary(m4_fS_taxa_matrix <- lmer(lSn ~ -1 + c.lfs*taxa*matrix.category*veg.fragment + (c.lfs | filename), 
                                   data = frag2, REML = T))
 car::Anova(m4_fS_taxa_matrix) # looks like there might be support for a fragmentSize x matrixCategory x vegFragment interaction
-                              # and, fragmentSize x taxa,
+                              # and, fragmentSize x taxa, and fragmentSize x taxa
 
-# most complex
+# more complex? Not needed.
 summary(m5_fS_taxa_matrix <- lmer(lSn ~ -1 + c.lfs*taxa*matrix.category*veg.fragment*time.since.fragmentation + (c.lfs | filename), 
                                   data = frag2, REML = T))
 car::Anova(m5_fS_taxa_matrix) # looks like there might be support for a fragmentSize x matrixCategory x vegFragment interaction
