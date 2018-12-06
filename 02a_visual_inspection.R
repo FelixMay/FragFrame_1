@@ -1,8 +1,11 @@
 # visual inspection of data for fragmentation synthesis
-library(tidyverse)
 
-frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
-setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/visual_inspection/')
+# Please do not use absolute paths in a shared R script! Please adjust 00_InitializeDirectories_LoadPackages.R
+# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+
+frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
+
+# setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/visual_inspection/')
 
 
 # we are mostly interested in diversity as a function of entity size

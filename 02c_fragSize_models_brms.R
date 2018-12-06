@@ -4,10 +4,11 @@
 
 # 
 
-library(brms)
-library(tidyverse)
+
 # load the data
-frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
+
 
 # remove observations without fragment size (for now...)
 frag2 <- frag %>% 

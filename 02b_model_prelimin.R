@@ -1,10 +1,11 @@
 # code to fit preliminary models for fragmentation synthesis
 # preliminary models will use ML, but I plan to use Bayesian methods for 
 # final analysis
-library(lme4)
+# library(lme4)
 
 # load the data
-frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
 
 # remove observations without fragment size
 frag2 <- frag %>% 

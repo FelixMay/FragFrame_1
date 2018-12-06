@@ -40,22 +40,21 @@ is.error <- function(x) inherits(x, "try-error")
 needed_libs <- c("devtools", # download from github
                  "mobr", # calculation of biodiversity indices
                  "vegan", # for diversity indices
-                 "adespatial", # for beta-diversity partitioning
+                 "adespatial" , # for beta-diversity partitioning
                  "car", # for logit transformation
-                 "metafor", # for meta-analysis 
+#                 "metafor", # for meta-analysis 
                  "lme4", # for lmer
-                 "ggplot2", # for plotting
                  "gridExtra", # for multiple plots using grid.arrange()
                  "grid", # for extracting legends with grid.draw()
                  "plot3D", # for multidimensional plotting
-                 "plyr",
-                 "dplyr", # for data manipulation
+                 "tidyverse",
                  "reshape2", # for restructuring datasets with melt()
                  "xlsx",  # for reading Excel spreadsheets
                  "SpadeR",
                  "RColorBrewer",
                  "raster", # for trim()
-                 "iNEXT" # for overage standardized richness
+                 "iNEXT", # for overage standardized richness
+                 "brms"
 )
 
 usePackage <- function(p) {

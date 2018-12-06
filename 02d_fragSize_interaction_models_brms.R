@@ -5,10 +5,12 @@
 # 02/12/2018: to do:
 # refit these models with more appropriate reference levels (time and matrix are inappropriate)
 
-library(brms)
-library(tidyverse)
+
 # load the data
-frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+
+frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
+
 
 # remove observations without fragment size (for now...)
 frag2 <- frag %>% 
