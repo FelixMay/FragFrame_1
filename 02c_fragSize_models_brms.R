@@ -9,6 +9,9 @@
 # frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
 frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
 
+setwd(path2temp)
+
+
 
 # remove observations without fragment size (for now...)
 frag2 <- frag %>% 
@@ -38,7 +41,7 @@ frag2$lNstd <- log(frag2$N_std)
 #                                          levels = c("recent (less than 20 years)", "intermediate (20-100 years)", "long (100+ years)"))
 
 # load model fits:
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
+# load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
 #----- simplest model: diversity as a function of fragment size; allow fragment size to vary by study----
 summary(lSstd_fragSize <- brm(lSstd ~ c.lfs + (c.lfs | filename), 
                               # fit to data with variation in entity.size
@@ -79,9 +82,9 @@ pp_check(Nstd_lognorm_fragSize) +
   scale_x_continuous(trans = 'log')
 pp_check(lNstd_fragSize)
 
-# save(lSstd_fragSize, lSstd_sknorm_fragSize, lSn_fragSize, lS_PIE_fragSize,
-#         Nstd_lognorm_fragSize, lNstd_fragSize,
-#      file = 'fragSize_brms.Rdata')
+save(lSstd_fragSize, lSstd_sknorm_fragSize, lSn_fragSize, lS_PIE_fragSize,
+         Nstd_lognorm_fragSize, lNstd_fragSize,
+      file = 'fragSize_brms.Rdata')
 
 
 #------wrangle for plotting----------------

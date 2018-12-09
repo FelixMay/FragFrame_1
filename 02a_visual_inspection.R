@@ -6,7 +6,7 @@
 frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
 
 # setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/visual_inspection/')
-
+setwd(paste(path2temp,"figs/visual_inspection/", sep = ""))
 
 # we are mostly interested in diversity as a function of entity size
 # the different standardisation look qualitativley similar, though S_cov has a lower intercept
@@ -38,10 +38,10 @@ ggplot() +
                       values = c('S_n' = 'black', 'S_cov' = 'red', 'S_std' = 'blue')) +
   labs(x = 'Fragment size (hectares)',
        y = 'Richness (standardised)') +
-  theme_bw() +
-  theme(legend.position = c(0.1,0.9))
+  theme_bw() #+
+  #theme(legend.position = c(0.1,0.9))
 
-# ggsave('standardised_S_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
+ggsave('standardised_S_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
 
 # S_PIE?
 ggplot() +
@@ -62,10 +62,37 @@ ggplot() +
   scale_colour_viridis_d(name = 'Taxa') +
   labs(x = 'Fragment size (ha)',
        y = expression(S[PIE])) +
-  theme_bw() +
-  theme(legend.position = c(0.1,0.8))
+  theme_bw() #+
+  #theme(legend.position = c(0.1,0.8))
 
-# ggsave('S_PIE_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
+ggsave('S_PIE_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
+
+# Total and standardized N
+ggplot() +
+   geom_point(data = frag,
+              aes(x = entity.size, y = N, colour = 'N'),
+              alpha = 0.5) +
+   geom_point(data = frag,
+              aes(x = entity.size, y = N_std, colour = 'N_std'),
+              alpha = 0.5) +
+   stat_smooth(data = frag,
+               method = 'lm',
+               aes(x = entity.size, y = N),
+               colour = 'black') +
+   stat_smooth(data = frag,
+               method = 'lm',
+               aes(x = entity.size, y = N_std),
+               colour = 'red') +
+   scale_x_continuous(trans = 'log10') +
+   scale_y_continuous(trans = 'log10') +
+   scale_colour_manual(name = '',
+                       values = c('N' = 'black', 'N_std' = 'red')) +
+   labs(x = 'Fragment size (hectares)',
+        y = 'No. of individuals') +
+   theme_bw() 
+   
+ggsave('N_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
+
 
 # what does the study-level variation look like?
 ggplot() +
