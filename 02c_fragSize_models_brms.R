@@ -42,6 +42,7 @@ frag2$lNstd <- log(frag2$N_std)
 
 # load model fits:
 # load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
+load("fragSize_brms.Rdata")
 #----- simplest model: diversity as a function of fragment size; allow fragment size to vary by study----
 summary(lSstd_fragSize <- brm(lSstd ~ c.lfs + (c.lfs | filename), 
                               # fit to data with variation in entity.size
@@ -126,13 +127,13 @@ lSstd_fragSize_group_coefs <- bind_cols(lSstd_fragSize_coef[[1]][,,'Intercept'] 
                                   Intercept_lower = Q2.5,
                                   Intercept_upper = Q97.5,
                                   filename = rownames(lSstd_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                             select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
+                             dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
                          lSstd_fragSize_coef[[1]][,,'c.lfs'] %>% 
                            as_tibble() %>% 
                            mutate(Slope = Estimate,
                                   Slope_lower = Q2.5,
                                   Slope_upper = Q97.5) %>% 
-                           select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
+                           dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
   # join with min and max of the x-values
   inner_join(frag2 %>% 
                group_by(filename) %>% 
@@ -148,13 +149,13 @@ lSn_fragSize_group_coefs <- bind_cols(lSn_fragSize_coef[[1]][,,'Intercept'] %>%
                                                  Intercept_lower = Q2.5,
                                                  Intercept_upper = Q97.5,
                                                  filename = rownames(lSn_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                          select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
+                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
                                         lSn_fragSize_coef[[1]][,,'c.lfs'] %>% 
                                           as_tibble() %>% 
                                           mutate(Slope = Estimate,
                                                  Slope_lower = Q2.5,
                                                  Slope_upper = Q97.5) %>% 
-                                          select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
+                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
   # join with min and max of the x-values
   inner_join(frag2 %>% 
                group_by(filename) %>% 
@@ -170,13 +171,13 @@ lS_PIE_fragSize_group_coefs <- bind_cols(lS_PIE_fragSize_coef[[1]][,,'Intercept'
                                                  Intercept_lower = Q2.5,
                                                  Intercept_upper = Q97.5,
                                                  filename = rownames(lS_PIE_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                          select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
+                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
                                         lS_PIE_fragSize_coef[[1]][,,'c.lfs'] %>% 
                                           as_tibble() %>% 
                                           mutate(Slope = Estimate,
                                                  Slope_lower = Q2.5,
                                                  Slope_upper = Q97.5) %>% 
-                                          select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
+                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
   # join with min and max of the x-values
   inner_join(frag2 %>% 
                group_by(filename) %>% 
@@ -192,13 +193,13 @@ lNstd_fragSize_group_coefs <- bind_cols(lNstd_fragSize_coef[[1]][,,'Intercept'] 
                                                   Intercept_lower = Q2.5,
                                                   Intercept_upper = Q97.5,
                                                   filename = rownames(lNstd_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                           select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
+                                           dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
                                        lNstd_fragSize_coef[[1]][,,'c.lfs'] %>% 
                                            as_tibble() %>% 
                                            mutate(Slope = Estimate,
                                                   Slope_lower = Q2.5,
                                                   Slope_upper = Q97.5) %>% 
-                                           select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
+                                           dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
   # join with min and max of the x-values
   inner_join(frag2 %>% 
                group_by(filename) %>% 
@@ -209,8 +210,12 @@ lNstd_fragSize_group_coefs <- bind_cols(lNstd_fragSize_coef[[1]][,,'Intercept'] 
              by = 'filename')
 
 #---- regression plots showing study-level slopes-----
-setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/')
+# setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/')
+setwd(paste(path2temp,"figs/", sep = ""))
+
 # S_std
+
+
 ggplot() +
   # data
   geom_point(data = frag2,
@@ -247,7 +252,9 @@ ggplot() +
   theme_bw() +
   theme(legend.position = 'none')
 
-# ggsave('S_std_regression.pdf', width = 175, height = 150, units = 'mm')
+#ggsave('S_std_regression.pdf', width = 175, height = 150, units = 'mm')
+ggsave('S_std_regression.png', width = 100, height = 80, units = 'mm')
+
 
 # Sn
 ggplot() +
@@ -287,6 +294,8 @@ ggplot() +
   theme(legend.position = 'none')
 
 # ggsave('S_n_regression.pdf', width = 175, height = 150, units = 'mm')
+ggsave('S_n_regression.png', width = 100, height = 90, units = 'mm')
+
 
 # S_PIE
 ggplot() +
@@ -314,11 +323,11 @@ ggplot() +
                   ymax = exp(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.05, y = 132,
-           label = "beta[Frag.~size] == 0.06~(0.04 - 0.08)",
-           parse = T) +
-  scale_x_continuous(trans = 'log', breaks = c(1e-1, 1e2, 1e5)) +
-  scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
+  # annotate('text', x = 0.1, y = 132,
+  #          label = "beta[Frag.~size] == 0.06~(0.04 - 0.08)",
+  #          parse = T) +
+  scale_x_continuous(trans = 'log', breaks = c(0.01,1,100,10000)) +
+  scale_y_continuous(trans = 'log', breaks = c(4,16,32,64,128, 256)) +
   # scale_colour_viridis_d(guide=F) +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[PIE]))) +
@@ -326,6 +335,8 @@ ggplot() +
   theme(legend.position = 'none')
 
 # ggsave('S_PIE_regression.pdf', width = 175, height = 150, units = 'mm')
+ggsave('S_PIE_regression.png', width = 100, height = 90, units = 'mm')
+
 
 # N_std
 ggplot() +
@@ -354,18 +365,20 @@ ggplot() +
                   ymax = exp(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.05, y = 12000,
-           label = "beta[Frag.~size] == 0.09~(0.03 - 0.14)",
-           parse = T) +
-  scale_x_continuous(trans = 'log', breaks = c(1e-1, 1e2, 1e5)) +
-  scale_y_continuous(trans = 'log', breaks = c(2,20,200,2000,20000)) +
-  # scale_colour_viridis_d(guide=F) +
+  #annotate('text', x = 0.15, y = 20000,
+  #        label = "beta[Frag.~size] == 0.09~(0.03 - 0.14)",
+ #parse = T, size = 4) +
+  scale_x_continuous(trans = 'log10', breaks = c(0.01,1,100,10000)) +
+  scale_y_continuous(trans = 'log10', breaks = c(1,10,100,1000,10000)) +
+   # scale_colour_viridis_d(guide=F) +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(N[std]))) +
   theme_bw() +
   theme(legend.position = 'none')
 
 # ggsave('N_std_regression.pdf', width = 175, height = 150, units = 'mm')
+ggsave('N_std_regression.png', width = 100, height = 90, units = 'mm')
+
 
 ##---coef plots---------
 # combine the coefs

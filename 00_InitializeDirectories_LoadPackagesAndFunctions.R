@@ -54,7 +54,8 @@ needed_libs <- c("devtools", # download from github
                  "RColorBrewer",
                  "raster", # for trim()
                  "iNEXT", # for overage standardized richness
-                 "brms"
+                 "brms",
+                 "cowplot"
 )
 
 usePackage <- function(p) {
