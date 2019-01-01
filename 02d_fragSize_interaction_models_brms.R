@@ -2,9 +2,6 @@
 # so far: bayesian framework for approximately ML-like results (i.e.,
 # with non-informative priors - against the science of Gelman)
 
-# 02/12/2018: to do:
-# refit these models with more appropriate reference levels (time and matrix are inappropriate)
-
 
 # load the data
 # frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
