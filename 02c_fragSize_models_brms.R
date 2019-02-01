@@ -282,9 +282,9 @@ ggplot() +
                   ymax = exp(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.05, y = 132,
-           label = "beta[Frag.~size] == 0.05~(0.03 - 0.07)",
-           parse = T) +
+  # annotate('text', x = 0.05, y = 132,
+  #          label = "beta[Frag.~size] == 0.05~(0.03 - 0.07)",
+  #          parse = T) +
   scale_x_continuous(trans = 'log', breaks = c(1e-1, 1e2, 1e5)) +
   scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
   # scale_colour_viridis_d(guide=F) +
