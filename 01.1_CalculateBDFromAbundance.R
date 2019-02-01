@@ -36,6 +36,20 @@ Inf_to_NA <- function(x)
    return(x)
 }
 
+#####
+# https://stackoverflow.com/questions/23474729/convert-object-of-class-dist-into-data-frame-in-r
+dist_to_dataframe <- function(inDist) {
+   if (class(inDist) != "dist") stop("wrong input type")
+   A <- attr(inDist, "Size")
+   B <- if (is.null(attr(inDist, "Labels"))) sequence(A) else attr(inDist, "Labels")
+   if (isTRUE(attr(inDist, "Diag"))) attr(inDist, "Diag") <- FALSE
+   if (isTRUE(attr(inDist, "Upper"))) attr(inDist, "Upper") <- FALSE
+   data.frame(
+      row = B[unlist(lapply(sequence(A)[-1], function(x) x:A))],
+      col = rep(B[-length(B)], (length(B)-1):1),
+      value = as.vector(inDist))
+}
+
 
 ############################################
 # Function to calculate biodiversity indices from every patch
@@ -125,7 +139,7 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
                           entity.id = dat_abund_pool[ ,1],
                           entity.size.rank =  dat_abund_pool[ ,2])
    
-   div_indi <- join(div_indi, dat_head_t[,c("entity.id","entity.size","entity.type")], match="first")
+   div_indi <- left_join(div_indi, dat_head_t[,c("entity.id","entity.size","entity.type")], match="first")
    
    ### Check sampling design
    div_indi$sampling_units <- dat_n_sampling_units[,3]
@@ -259,46 +273,85 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
    ### Beta-diversity partitioning
    ### Estimate species turnover that is due to replacement (in contrast to nestedness)
    
-   div_indi$repl_part_BS_qF <- NA # "BS" – Baselga family, Sørensen-based indices, computes presence/absence form
-   div_indi$repl_part_BS_qT <- NA # computes quantitative form
+   J_qF <- beta.div.comp(t(dat_abund_pool2), coef = "J", quant = F)
+   S_qF <- beta.div.comp(t(dat_abund_pool2), coef = "S", quant = F)
+   BJ_qF <- beta.div.comp(t(dat_abund_pool2), coef = "BJ", quant = F)
+   BS_qF <- beta.div.comp(t(dat_abund_pool2), coef = "BS", quant = F)
    
-   # Check sampling design
-   range_sample_eff <- range(div_indi$sample_effort)
-   range_sample_units <- range(div_indi$sampling_units)
-   if (range_sample_eff[2] - range_sample_eff[1] == 0){
-      div_indi$sample_design <- "standardized"
-   } else {
-      if (range_sample_units[2] - range_sample_units[1] == 0) {
-         div_indi$sample_design <- "pooled"
-      } else {
-         div_indi$sample_design <- "subsamples_in_frag"
-      }
-   }
+   J_qT <- beta.div.comp(t(dat_abund_pool2), coef = "J", quant = T)
+   S_qT <- beta.div.comp(t(dat_abund_pool2), coef = "S", quant = T)
+   BJ_qT <- beta.div.comp(t(dat_abund_pool2), coef = "BJ", quant = T)
+   BS_qT <- beta.div.comp(t(dat_abund_pool2), coef = "BS", quant = T)
    
-   if (div_indi$sample_design[1] != "pooled"){
-      
-      # Select fragments with 
-      # Lower and upper quartile
-      q_ranks <- quantile(dat_ranks, prob = c(0.25, 0.75))
-      sub_ranks <- sort(dat_ranks[dat_ranks <= q_ranks[1] | dat_ranks >= q_ranks[2]])
-      
-      dat_abund_pool3 <- dat_abund_pool[dat_abund_pool[,2] %in% sub_ranks, ]
-      
-      size_class <- ifelse(dat_abund_pool3$Group.2 <= q_ranks[1], "Small", "Large")
-
-      # divide by sampling effort in case of non-standardized design
-      ncol1 <- ncol(dat_abund_pool3)
-      if (div_indi$sample_design[1] == "subsamples_in_frag")
-         dat_abund_pool3[,4:ncol1] <- dat_abund_pool3[,4:ncol1]/dat_abund_pool3$dat_sample_eff
-            
-      #Pool fragments with the same size rank
-      dat_abund_pool3a <- aggregate(dat_abund_pool3[, 4:ncol1],
-                                    by = list(size_class),
-                                    FUN = mean)
-      
-      div_indi$repl_part_BS_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = F)$part[4] # beta-div partitioning based on presence-absence, i.e. all species are equal regardless of their abundance
-      div_indi$repl_part_BS_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = T)$part[4] # beta-div partitioning based on abundance
-   }
+   beta_div_tab <- dist_to_dataframe(J_qF$repl)
+   names(beta_div_tab)[3] <- "J_qF_repl"
+   
+   beta_div_tab$J_qF_rich <- J_qF$rich
+   
+   beta_div_tab$S_qF_repl <- S_qF$repl
+   beta_div_tab$S_qF_rich <- S_qF$rich
+   
+   beta_div_tab$BJ_qF_repl <- BJ_qF$repl
+   beta_div_tab$BJ_qF_rich <- BJ_qF$rich
+   
+   beta_div_tab$BS_qF_repl <- BS_qF$repl
+   beta_div_tab$BS_qF_rich <- BS_qF$rich
+   
+   beta_div_tab$J_qT_repl <- J_qF$repl
+   beta_div_tab$J_qT_rich <- J_qF$rich
+   
+   beta_div_tab$S_qT_repl <- S_qT$repl
+   beta_div_tab$S_qT_rich <- S_qT$rich
+   
+   beta_div_tab$BJ_qT_repl <- BJ_qT$repl
+   beta_div_tab$BJ_qT_rich <- BJ_qT$rich
+   
+   beta_div_tab$BS_qT_repl <- BS_qT$repl
+   beta_div_tab$BS_qT_rich <- BS_qT$rich
+   
+   
+   
+   # # old version
+   # div_indi$repl_part_BS_qF <- NA # "BS" – Baselga family, Sørensen-based indices, computes presence/absence form
+   # div_indi$repl_part_BS_qT <- NA # computes quantitative form
+   # 
+   # # Check sampling design
+   # range_sample_eff <- range(div_indi$sample_effort)
+   # range_sample_units <- range(div_indi$sampling_units)
+   # if (range_sample_eff[2] - range_sample_eff[1] == 0){
+   #    div_indi$sample_design <- "standardized"
+   # } else {
+   #    if (range_sample_units[2] - range_sample_units[1] == 0) {
+   #       div_indi$sample_design <- "pooled"
+   #    } else {
+   #       div_indi$sample_design <- "subsamples_in_frag"
+   #    }
+   # }
+   # 
+   # if (div_indi$sample_design[1] != "pooled"){
+   #    
+   #    # Select fragments with 
+   #    # Lower and upper quartile
+   #    q_ranks <- quantile(dat_ranks, prob = c(0.25, 0.75))
+   #    sub_ranks <- sort(dat_ranks[dat_ranks <= q_ranks[1] | dat_ranks >= q_ranks[2]])
+   #    
+   #    dat_abund_pool3 <- dat_abund_pool[dat_abund_pool[,2] %in% sub_ranks, ]
+   #    
+   #    size_class <- ifelse(dat_abund_pool3$Group.2 <= q_ranks[1], "Small", "Large")
+   # 
+   #    # divide by sampling effort in case of non-standardized design
+   #    ncol1 <- ncol(dat_abund_pool3)
+   #    if (div_indi$sample_design[1] == "subsamples_in_frag")
+   #       dat_abund_pool3[,4:ncol1] <- dat_abund_pool3[,4:ncol1]/dat_abund_pool3$dat_sample_eff
+   #          
+   #    #Pool fragments with the same size rank
+   #    dat_abund_pool3a <- aggregate(dat_abund_pool3[, 4:ncol1],
+   #                                  by = list(size_class),
+   #                                  FUN = mean)
+   #    
+   #    div_indi$repl_part_BS_qF <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = F)$part[4] # beta-div partitioning based on presence-absence, i.e. all species are equal regardless of their abundance
+   #    div_indi$repl_part_BS_qT <- beta.div.comp(dat_abund_pool3a[,-1], coef = "BS", quant = T)$part[4] # beta-div partitioning based on abundance
+   # }
    
    # set indices to NA when they are Inf or NaN
    div_indi[,9:ncol(div_indi)] <- lapply(div_indi[,9:ncol(div_indi)], Inf_to_NA)
