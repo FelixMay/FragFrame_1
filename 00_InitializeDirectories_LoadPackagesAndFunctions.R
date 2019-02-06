@@ -14,8 +14,8 @@
    }  
    else {#FM
       path2wd <- "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1/" 
-      path2Dropbox <- "C:/Users/May/Dropbox (Privat)/Habitat loss meta-analysis/"
-      path2temp <- "C:/Users/May/Dropbox (Privat)/Habitat loss meta-analysis/analysis/"
+      path2Dropbox <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/"
+      path2temp <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/Analysis/"
    }
    return(list(path2temp,path2Dropbox,path2wd))
 }
@@ -37,23 +37,23 @@ is.error <- function(x) inherits(x, "try-error")
 ############################################################################
 ### Load and install all needed libraries
 ############################################################################
-needed_libs <- c("devtools", # download from github
+needed_libs <- c(#"devtools", # download from github
                  "mobr", # calculation of biodiversity indices
                  "vegan", # for diversity indices
                  "adespatial" , # for beta-diversity partitioning
-                 "car", # for logit transformation
+                 #"car", # for logit transformation
 #                 "metafor", # for meta-analysis 
                  "lme4", # for lmer
-                 "gridExtra", # for multiple plots using grid.arrange()
-                 "grid", # for extracting legends with grid.draw()
-                 "plot3D", # for multidimensional plotting
+                 #"gridExtra", # for multiple plots using grid.arrange()
+                 #"grid", # for extracting legends with grid.draw()
+                 #"plot3D", # for multidimensional plotting
                  "tidyverse",
-                 "reshape2", # for restructuring datasets with melt()
-                 "xlsx",  # for reading Excel spreadsheets
-                 "SpadeR",
-                 "RColorBrewer",
-                 "raster", # for trim()
-                 "iNEXT", # for overage standardized richness
+                 #"reshape2", # for restructuring datasets with melt()
+                 #"xlsx",  # for reading Excel spreadsheets
+                 #"SpadeR",
+                 #"RColorBrewer",
+                 #"raster", # for trim()
+                 #"iNEXT", # for overage standardized richness
                  "brms",
                  "cowplot"
 )

@@ -1,112 +1,68 @@
-# source code from iNEXT package
-###############################################
-# Abundance-based sample coverage
-# 
-# \code{Chat.Ind} Estimation of abundance-based sample coverage function
-# 
-# @param x a vector of species abundances
-# @param m a integer vector of rarefaction/extrapolation sample size
-# @return a vector of estimated sample coverage function
-# @export
-Chat.Ind <- function(x, m){
-   x <- x[x>0]
-   n <- sum(x)
-   f1 <- sum(x == 1)
-   f2 <- sum(x == 2)
-   f0.hat <- ifelse(f2 == 0, (n - 1) / n * f1 * (f1 - 1) / 2, (n - 1) / n * f1 ^ 2/ 2 / f2)  #estimation of unseen species via Chao1
-   A <- ifelse(f1>0, n*f0.hat/(n*f0.hat+f1), 1)
-   Sub <- function(m){
-      #if(m < n) out <- 1-sum(x / n * exp(lchoose(n - x, m)-lchoose(n - 1, m)))
-      if(m < n) {
-         xx <- x[(n-x)>=m]
-         out <- 1-sum(xx / n * exp(lgamma(n-xx+1)-lgamma(n-xx-m+1)-lgamma(n)+lgamma(n-m)))
-      }
-      if(m == n) out <- 1-f1/n*A
-      if(m > n) out <- 1-f1/n*A^(m-n+1)
-      out
-   }
-   sapply(m, Sub)		
-}
-
-######
-Inf_to_NA <- function(x)
-{
-   x <- as.numeric(x)
-   x[!is.finite(x)] <- NA
-   return(x)
-}
-
-#####
-# https://stackoverflow.com/questions/23474729/convert-object-of-class-dist-into-data-frame-in-r
-dist_to_dataframe <- function(inDist) {
-   if (class(inDist) != "dist") stop("wrong input type")
-   A <- attr(inDist, "Size")
-   B <- if (is.null(attr(inDist, "Labels"))) sequence(A) else attr(inDist, "Labels")
-   if (isTRUE(attr(inDist, "Diag"))) attr(inDist, "Diag") <- FALSE
-   if (isTRUE(attr(inDist, "Upper"))) attr(inDist, "Upper") <- FALSE
-   data.frame(
-      row = B[unlist(lapply(sequence(A)[-1], function(x) x:A))],
-      col = rep(B[-length(B)], (length(B)-1):1),
-      value = as.vector(inDist))
-}
-
 
 ############################################
-# Function to calculate biodiversity indices from every patch
+# Read files, transpose and switch to long format
 
-CalcBDfromAbundance <- function(filename, n_thres = 5){
+read_data_files <- function(filename){
    
    print(filename)
    
-   filename2 <- strsplit(filename, split = "[.]")[[1]][1]
-   
-   path2file <- path2Dropbox %+% "good_datasets/" %+% filename
-   
-   dat_head <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 2:4,
-                         header = F)
-   dat_head_t <- as.data.frame(t(dat_head[,-1]))
-   names(dat_head_t) <- dat_head[,1]
-   
-   ### revise entity.id for three datasets (check mail exchange from 28 Nov 2017)
-   ### combine edges and interior in Dauber2006 and Didham1998 
-   if(filename %in% c("Dauber_2006_rounded.xls","Didham_1998.xls")){
-      dat_head_t$entity.id <- sapply(as.character(dat_head_t$entity.id), function(x) strsplit(x,".",fixed=T)[[1]][1])
-   }
-   ### combine three sites per fragment in Schnitzler2008
-   if(filename == "Schnitzler_2008_Tab2.xlsx"){
-      dat_head_t$entity.id <- rep(paste0("fragment",1:10), times=c(rep(3,8),2,3))
-   }
+   # filename2 <- strsplit(filename, split = "[.]")[[1]][1]
 
+   path2file <- path2Dropbox %+% "files_datapaper/" %+% filename
    
-   ### extract fragment sizes and size ranks
-   dat_frag_size <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 5,
-                              stringsAsFactors = F, header = F)
-   dat_frag_size <- dat_frag_size[, -1]
+   # Sampling effort
+   sample_eff <- read.table(path2file, sep = ",", row.names = 1, nrows = 1)
+   sample_eff <- sample_eff[-length(sample_eff)]
+   sample_eff <- as.numeric(sample_eff)
    
-   dat_head_t$entity.size <- as.numeric(dat_frag_size[1,])
+   if (max(sample_eff) > 1) print(paste("Unequal sampling effort in", filename))
    
-   dat_ranks <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 6, header = F,
-                          stringsAsFactors = F)
+   # entity_id_orig
+   entity_id_orig <- read.table(path2file, sep = ",", row.names = 1, nrows = 1,
+                                skip = 1, stringsAsFactors = F)
+   entity_id_orig <- as.character(entity_id_orig[1,1:length(sample_eff)])
    
-   dat_ranks <- as.numeric(dat_ranks[1,-1])
-   dat_ranks[is.na(dat_ranks)] <- 0
+   # entity_id_plot
+   entity_id_plot <- read.table(path2file, sep = ",", row.names = 1, nrows = 1,
+                                skip = 2, stringsAsFactors = F)
+   entity_id_plot <- as.numeric(entity_id_plot[1,1:length(sample_eff)])
    
-   dat_head_t$entity.size.rank <- dat_ranks
+   # entity_size
+   entity_size <- read.table(path2file, sep = ",", row.names = 1, nrows = 1,
+                             skip = 3, stringsAsFactors = F)
+   entity_size <- as.numeric(entity_size[1,1:length(sample_eff)])
    
-   dat_head_t$entity.type <- factor("fragment", levels = c("fragment","continuous"))
-   dat_head_t$entity.type[dat_ranks == 9999] <- "continuous"
+   # abundance data
+   dat_abund <- read.table(path2file, sep = ",", row.names = 1,
+                           skip = 4, stringsAsFactors = F)
+   dat_abund <- dat_abund[,1:length(sample_eff)]
+   dat_abund_t <- as.data.frame(t(dat_abund))
    
-   ### extract sampling effort
-   dat_sample_eff <- read.xlsx(path2file, sheetIndex = 1, rowIndex = 1,
-                               header = F, stringsAsFactors = F)
-   dat_sample_eff <- as.numeric(dat_sample_eff[, -1])
-   dat_sample_eff[is.na(dat_sample_eff)] <- 1
+   # combine fragment-data
+   dat1 <- data.frame(entity_id_orig, entity_id_plot, entity_size, sample_eff)
    
-   if (max(dat_sample_eff) > 1) print(paste("Unequal sampling effort in", filename))
+   # determine sampling design
+   sample_eff_per_frag <- tapply(dat1$sample_eff, dat1$entity_id_orig, sum)
+   range_sample_eff <- range(sample_eff_per_frag)   
+   range_sample_units <- range(entity_id_plot)
+   
+   if (range_sample_eff[2] - range_sample_eff[1] == 0){
+      dat1$sample_design <- "standardized"
+   } else {
+      if (range_sample_units[2] - range_sample_units[1] == 0) {
+         dat1$sample_design <- "pooled"
+      } else {
+         dat1$sample_design <- "subsamples_in_frag"
+      }
+   }
+   
+   
+   
+   
    
    ### extract abundance data
    dat_abund <- read.xlsx(path2file, sheetIndex = 1, startRow = 7, header = F)
-   dat_abund <- dat_abund[, -1]
+   dat_abund <- as.data.frame(dat_abund[, -1])
    
    na_col <- apply(dat_abund, 1, function(x) sum(is.na(x)))
    na_row <- apply(dat_abund, 2, function(x) sum(is.na(x)))
@@ -366,10 +322,10 @@ CalcBDfromAbundance <- function(filename, n_thres = 5){
 
 div_list <- list()
 
-filenames <- list.files(path =  path2Dropbox %+% "good_datasets/",
-                        pattern="*.xls*", full.names = F)
+filenames <- list.files(path =  path2Dropbox %+% "files_datapaper/",
+                        pattern="*.csv", full.names = F)
 
-filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
+# filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
 
 for (i in 1:length(filenames)){
    temp <- try(CalcBDfromAbundance(filenames[i], n_thres = 5))
