@@ -39,9 +39,11 @@ read_data_files <- function(filename){
    
    # check duplicates in first column
    duplicated_species <- dat_abund[[1]][duplicated(dat_abund[[1]])]
-   if (length(duplicated_species) > 0)
-      warning(paste("Duplicated species", duplicated_species, sep = ", ")," in ", filename)
-   
+   if (length(duplicated_species) > 0){
+      names_duplicates <- paste(duplicated_species, collapse = ", ")
+      print(paste("Duplicated species in", filename, names_duplicates, sep = " "))
+   }
+     
    spec_names <- as.character(dat_abund[[1]])
    dat_abund <- dat_abund[, 2:(n_col + 1)]
    dat_abund_t <- as.data.frame(t(dat_abund))
@@ -78,7 +80,21 @@ read_data_files <- function(filename){
    path2outfile <- path2Dropbox %+% "files_datapaper/Sites_by_species_format/" %+% outfile %+% ".csv"
    write_csv(dat1, path2outfile)
    
-   return(dat1)
+   cat("\n")
+   
+   # convert to long format: one column with species name and one with species abundance
+   dat2 <- dat1 %>%
+      gather(-(entity_id_orig:sample_design), key = "species", value = "abundance") %>%
+      filter(abundance > 0) %>%
+      arrange(entity_id_orig, entity_id_plot, species)
+   
+   labels <- str_split(outfile, "_")
+   dat2$dataset_id <- labels[[1]][1]
+   dat2$dataset_label <- labels[[1]][2]
+   
+   dat2 <- select(dat2, dataset_id, dataset_label, everything())
+   
+   return(dat2)
 }    
 
 ################################################################################
@@ -87,19 +103,31 @@ read_data_files <- function(filename){
 filenames <- list.files(path =  path2Dropbox %+% "files_datapaper/",
                         pattern="*.csv", full.names = F)
 
-# filenames2 <- sapply(strsplit(filenames, split = "[.]"), "[[", 1)
+# Files with errors
+problem_files <- c("17_Bragagnolo et al. 2007 (harvestmen_in_Brazil).csv",
+                   "50_Gavish et al. 2012 (spiders-Galon_in_Israel).csv",
+                   "Kapoor 2008 (spiders_in_India).csv")
 
-for (i in 1:length(filenames)){
-   temp <- try(CalcBDfromAbundance(filenames[i], n_thres = 5))
-   if (!inherits(temp, "try-error")){
-      div_list[[filenames2[i]]] <- temp
-   }
-}
+good_files <- filenames[!filenames %in% problem_files]
 
-div_df <- bind_rows(div_list)
+length(good_files)
+dat_list <- lapply(good_files[80:99], read_data_files)
 
-### get rid of irrelevant data, e.g. matrix, clearcut
-div_df_nomatrix <- filter(div_df, entity.size.rank > 0)
+# #dat_list <- list()
+# 
+# for (i in 1:length(filenames)){
+#    temp <- try(read_data_files(filenames[i]))
+#    if (!inherits(temp, "try-error")){
+#       dat_list[[filenames[i]]] <- temp
+#    }
+# }
+
+dat_long <- bind_rows(dat_list)
+
+summary(dat_long)
+
+dat_long %>% filter(species == "entity.size.rank")
+unique(dat_long$species)
 
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ",", row.names = F)
