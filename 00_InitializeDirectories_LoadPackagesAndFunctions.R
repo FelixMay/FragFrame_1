@@ -29,7 +29,7 @@ path2wd <- set.list[[3]]
 ### some helper functions
 ############################################################################
 ### helper function to combine strings
-"%+%" <- function(x,y) paste(x,y,sep="")
+"%+%" <- function(x,y) paste(x, y, sep="")
 
 ### helper function to try things out
 is.error <- function(x) inherits(x, "try-error")
@@ -55,7 +55,9 @@ needed_libs <- c(#"devtools", # download from github
                  #"raster", # for trim()
                  #"iNEXT", # for overage standardized richness
                  "brms",
-                 "cowplot"
+                 "cowplot",
+                 "stringr"
+
 )
 
 usePackage <- function(p) {
@@ -71,7 +73,7 @@ usePackage <- function(p) {
 sapply(needed_libs, usePackage)
 
 ### document system properties
-session_info()
+# session_info() # devtools function maybe not needed here
 
 rm(needed_libs, usePackage)
 
