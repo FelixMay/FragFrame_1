@@ -132,3 +132,5 @@ unique(dat_long$species)
 write.table(div_df_nomatrix, file = paste(path2temp, "DiversityData.csv", sep = ""),
             sep = ",", row.names = F)
 
+# Check file by Nemesio
+
