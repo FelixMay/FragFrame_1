@@ -53,7 +53,7 @@ needed_libs <- c(#"devtools", # download from github
                  #"SpadeR",
                  #"RColorBrewer",
                  #"raster", # for trim()
-                 #"iNEXT", # for overage standardized richness
+                 "iNEXT", # for coverage standardized richness
                  "brms",
                  "cowplot",
                  "stringr"
