@@ -94,10 +94,44 @@ get_biodiv <- function(data_set), n_thres = 5){
    dat_biodiv$cov_base <- min(max(dat_biodiv$coverage, na.rm = T),
                               min(cov_extra, na.rm = T))
     
+   # get mobr indices
+   mob <- calc_biodiv(abund_mat = as.data.frame(dat_wide[,-1]),
+                      groups = rep("frag", nrow(dat_wide)),
+                      index = c("S", "S_n", "S_PIE"), 
+                      effort = dat_biodiv$n_base[1],
+                      extrapolate = T,
+                      return_NA = F)
+   
+   
+   # observed richness
+   dat_biodiv$S_obs <- mob$value[mob$index == "S"]
+   
+   # rarefied richness
+   if (dat_biodiv$n_base[1] >= n_thres){
+      dat_biodiv$S_n <- mob$value[mob$index  == "S_n"]
+   } else {
+      dat_biodiv$S_n <- NA
+   }
+   
+   # ENS PIE
+   dat_biodiv$S_PIE <- mob$value[mob$index == "S_PIE"]
+   
+   # coverage standardized richness
+   div_indi$S_cov <- rep(NA, nrow(div_indi)) 
+   
+   S_cov_std <- lapply(data.frame(t(dat_wide[,-1])),
+                       function(x) try(estimateD(x, datatype = "abundance",
+                                                 base = "coverage",
+                                                 level = dat_biodiv$cov_base[1],
+                                                 conf = NULL)))
+   succeeded <- !sapply(S_cov_std, is.error)
+   
+   if (sum(succeeded) > 0){
+      dat_biodiv$S_cov[succeeded] <- sapply(S_cov_std[succeeded],"[[","q = 0")
+   }
+   
+   
    #######################################################################
-   
-   
-  
    
    ### simple diversity indices
    
@@ -114,18 +148,6 @@ get_biodiv <- function(data_set), n_thres = 5){
    #div_indi$N_std <-  div_indi$N/div_indi$sample_effort ## standardize abundance by absolute sampling effort
    div_indi$N_std <-  div_indi$N/rel_sample_eff ## standardize abundance by relative sampling effort
    
-  
-   # get mobr indices
-   div_dat <- calc_biodiv(abund_mat = t(dat_abund_pool2),
-                          groups = rep("frag", ncol(dat_abund_pool2)),
-                          index = c("N", "S", "S_n", "S_asymp", "f_0", "S_PIE"), 
-                          effort = n_base,
-                          extrapolate = T,
-                          return_NA = F)
-   
-   # observed richness
-   div_indi$S_obs <- div_dat$value[div_dat$index == "S"]
-   
    # richness standardized by mean sampling effort in smallest sampling unit
    div_indi$S_std <- NA
    for (i in 1:nrow(div_indi)){
@@ -135,18 +157,7 @@ get_biodiv <- function(data_set), n_thres = 5){
                                           effort = round(div_indi$N_std[i]))        
    }
 
-   # rarefied richness
-   if (n_base >= n_thres){
-      div_indi$S_n <- div_dat$value[div_dat$index == "S_n"]
-   } else {
-      div_indi$S_n <- NA
-   }
-   
-   # asymptotic richness
-   div_indi$S_asymp <- div_dat$value[div_dat$index == "S_asymp"]
-   
-   # ENS PIE
-   div_indi$S_PIE <- div_dat$value[div_dat$index == "S_PIE"]
+  
    
    # div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
    
@@ -161,19 +172,7 @@ get_biodiv <- function(data_set), n_thres = 5){
    # multiple standardized subsamples within fragments
    #####################################################################
    
-   # Calculate coverage standardized richness
-   div_indi$S_cov <- rep(NA, nrow(div_indi)) 
-   
-   S_cov_std <- lapply(dat_abund_pool2,
-                       function(x) try(estimateD(x, datatype = "abundance",
-                                       base = "coverage",
-                                       level = cov_base,
-                                       conf = NULL)))
-   succeeded <- !sapply(S_cov_std, is.error)
-
-   if (sum(succeeded) > 0){
-      div_indi$S_cov[succeeded] <- sapply(S_cov_std[succeeded],"[[","q = 0")
-   }
+  
    
    # I am not sure these three lines are neede?
    # cov_eq_1 <- div_indi$coverage >= 1.0
@@ -205,7 +204,6 @@ str(dat_long)
 head(dat_long)
 
 data_set <- dat_long %>% filter(dataset_id == "53")
-
 
 
 
