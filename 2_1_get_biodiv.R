@@ -41,6 +41,8 @@ Inf_to_NA <- function(x)
 
 get_biodiv <- function(data_set, n_thres = 5){
    
+   print(data_set$dataset_label[1])
+   
    # sum abundances in same fragments
    dat_abund <- data_set %>%
       group_by(frag_id, species) %>%
@@ -136,7 +138,7 @@ get_biodiv <- function(data_set, n_thres = 5){
    # standardized abundance and richness
    if (data_set$sample_design[1] == "standardized_fragment"){ 
       dat_biodiv$N_std <- dat_biodiv$N
-      dat_biodiv$S_std_1 <- dat_biodiv$S_std_2 <- dat_biodiv$S_obs
+      dat_biodiv$S_std_2 <- dat_biodiv$S_std_1 <- dat_biodiv$S_obs
    } else {
    # pooled and standardized plots   
       rel_sample_eff <- dat_biodiv$sample_eff/min(dat_biodiv$sample_eff)
@@ -146,7 +148,7 @@ get_biodiv <- function(data_set, n_thres = 5){
          if (dat_biodiv$N_std[i] >= n_thres)
             dat_biodiv$S_std_1[i] <- rarefaction(dat_wide[i,-(1:2)],
                                                 method = "indiv",
-                                                effort = round(dat_biodiv$N_std_1[i]))
+                                                effort = round(dat_biodiv$N_std[i]))
       }
       
       if (data_set$sample_design[1] == "pooled"){
@@ -197,23 +199,27 @@ str(dat_long)
 
 head(dat_long)
 
-data_set <- dat_long %>% filter(dataset_id == "53")
+# data_set <- dat_long %>% filter(dataset_id == "4")
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
 #             FUN = get_biodiv)
 
 # class(out1) <- "list"
-# out2 <- bind_rows(out1)
+# out1 <- bind_rows(out1)
 
 # purrr version
 out1 <- dat_long %>%
    split(.$dataset_id) %>%
    map_dfr(get_biodiv)
 
-out2 %>% 
+out1 %>% 
    select(dataset_id, dataset_label, sample_design) %>% 
    distinct() %>%
    ungroup() %>%
    count(sample_design)
+
+# prepare output date
+path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/biodiv_fragment_level.csv"
+write_csv(out1, path2outfile)
 
