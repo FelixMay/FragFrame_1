@@ -55,16 +55,22 @@ get_biodiv <- function(data_set, n_thres = 5){
    
    dat_sample_eff <- dat_sample %>%
       group_by(frag_id) %>%
-      summarise(sample_eff = sum(sample_eff))
+      summarise(sample_eff = sum(sample_eff)) 
    
    dat_frag <- dat_sample %>% 
       select(-sample_id, -sample_eff) %>%
       distinct() %>%
       left_join(dat_sample_eff)
    
+   dat_wide <- dat_frag %>%
+      select(frag_id, sample_eff) %>%
+      left_join(dat_wide)
+   
+   
    # get biodiversity indices
    dat_biodiv <- data.frame(frag_id = dat_wide$frag_id,
-                            N = rowSums(dat_wide[,-1]),
+                            sample_eff = dat_wide$sample_eff,
+                            N = rowSums(dat_wide[,-(1:2)]),
                             stringsAsFactors = F)
    
    # Determine base sample size for the sample-size-based rarefaction and extrapolation
@@ -81,11 +87,11 @@ get_biodiv <- function(data_set, n_thres = 5){
    # Chao et al. 2014. Box 1
    
    # sample coverage
-   dat_biodiv$coverage <- apply(dat_wide[,-1], 1,
+   dat_biodiv$coverage <- apply(dat_wide[,-(1:2)], 1,
                                 function(x) {Chat.Ind(x, sum(x))} )
    
    # extrapolated coverage with sample size * 2
-   cov_extra <- apply(dat_biodiv[,-1], 1,
+   cov_extra <- apply(dat_biodiv[,-(1:2)], 1,
                       function(x) {Chat.Ind(x, 2*sum(x))})
    
    # base coverage 
@@ -93,7 +99,7 @@ get_biodiv <- function(data_set, n_thres = 5){
                               min(cov_extra, na.rm = T))
     
    # get mobr indices
-   mob <- calc_biodiv(abund_mat = as.data.frame(dat_wide[,-1]),
+   mob <- calc_biodiv(abund_mat = as.data.frame(dat_wide[,-(1:2)]),
                       groups = rep("frag", nrow(dat_wide)),
                       index = c("S", "S_n", "S_PIE"), 
                       effort = dat_biodiv$n_base[1],
@@ -116,7 +122,7 @@ get_biodiv <- function(data_set, n_thres = 5){
    # coverage standardized richness
    dat_biodiv$S_cov <- rep(NA, nrow(dat_biodiv)) 
    
-   S_cov_std <- lapply(data.frame(t(dat_wide[,-1])),
+   S_cov_std <- lapply(data.frame(t(dat_wide[,-(1:2)])),
                        function(x) try(estimateD(x, datatype = "abundance",
                                                  base = "coverage",
                                                  level = dat_biodiv$cov_base[1],
@@ -127,34 +133,44 @@ get_biodiv <- function(data_set, n_thres = 5){
       dat_biodiv$S_cov[succeeded] <- sapply(S_cov_std[succeeded],"[[","q = 0")
    }
    
+   # standardized abundance and richness
+   if (data_set$sample_design[1] == "standardized_fragment"){ 
+      dat_biodiv$N_std <- dat_biodiv$N
+      dat_biodiv$S_std_1 <- dat_biodiv$S_std_2 <- dat_biodiv$S_obs
+   } else {
+   # pooled and standardized plots   
+      rel_sample_eff <- dat_biodiv$sample_eff/min(dat_biodiv$sample_eff)
+      dat_biodiv$N_std <- dat_biodiv$N/rel_sample_eff
    
-   #######################################################################
-   
-   # ### simple diversity indices
-   # 
-   # # standardize sampling effort
-   # # smallest sampling unit:  sampling effort = 1
-   # rel_sample_eff <- div_indi$sample_effort/min(div_indi$sample_effort)
-   # 
-   # 
-   # 
-   # # n_min <- min(div_indi$N)
-   # 
-   # # No. of individuals standardized by sampling effort
-   # 
-   # #div_indi$N_std <-  div_indi$N/div_indi$sample_effort ## standardize abundance by absolute sampling effort
-   # div_indi$N_std <-  div_indi$N/rel_sample_eff ## standardize abundance by relative sampling effort
-   # 
-   # # richness standardized by mean sampling effort in smallest sampling unit
-   # div_indi$S_std <- NA
-   # for (i in 1:nrow(div_indi)){
-   #    if (div_indi$N_std[i] >= n_thres)   
-   #       div_indi$S_std[i] <- rarefaction(dat_abund_pool2[,i],
-   #                                        method = "indiv",
-   #                                        effort = round(div_indi$N_std[i]))        
-   # }
-   # 
-   # 
+      for (i in 1:nrow(dat_biodiv)){
+         if (dat_biodiv$N_std[i] >= n_thres)
+            dat_biodiv$S_std_1[i] <- rarefaction(dat_wide[i,-(1:2)],
+                                                method = "indiv",
+                                                effort = round(dat_biodiv$N_std_1[i]))
+      }
+      
+      if (data_set$sample_design[1] == "pooled"){
+         dat_biodiv$S_std_2 <- dat_biodiv$S_std_1
+      }
+      
+      if (data_set$sample_design[1] == "standardized_subsamples"){
+         # get abundance by subsample
+         dat_abund_sub <- data_set %>%
+            group_by(frag_id, sample_id, species) %>%
+            summarise(abundance = sum(abundance)) %>%
+            ungroup()
+         
+         dat_sub <- dat_abund_sub %>%
+            group_by(frag_id, sample_id) %>%
+            summarise(S = n()) %>% ungroup
+         
+         dat_frag_mean <- dat_sub %>%
+            group_by(frag_id) %>%
+            summarise(S_std_2 = mean(S))
+         
+         dat_biodiv <- left_join(dat_biodiv, dat_frag_mean)
+      }
+   }
    
    # set indices to NA when there are no individuals
    empty_plots <- dat_biodiv$N == 0
@@ -181,7 +197,7 @@ str(dat_long)
 
 head(dat_long)
 
-# data_set <- dat_long %>% filter(dataset_id == "53")
+data_set <- dat_long %>% filter(dataset_id == "53")
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
