@@ -36,13 +36,10 @@ Inf_to_NA <- function(x)
    return(x)
 }
 
-
-
-
 ############################################
 # Function to calculate biodiversity indices for every fragment
 
-get_biodiv <- function(data_set), n_thres = 5){
+get_biodiv <- function(data_set, n_thres = 5){
    
    # sum abundances in same fragments
    dat_abund <- data_set %>%
@@ -67,7 +64,8 @@ get_biodiv <- function(data_set), n_thres = 5){
    
    # get biodiversity indices
    dat_biodiv <- data.frame(frag_id = dat_wide$frag_id,
-                            N = rowSums(dat_wide[,-1]))
+                            N = rowSums(dat_wide[,-1]),
+                            stringsAsFactors = F)
    
    # Determine base sample size for the sample-size-based rarefaction and extrapolation
    # Chao et al. 2014. Box 1
@@ -102,7 +100,6 @@ get_biodiv <- function(data_set), n_thres = 5){
                       extrapolate = T,
                       return_NA = F)
    
-   
    # observed richness
    dat_biodiv$S_obs <- mob$value[mob$index == "S"]
    
@@ -117,7 +114,7 @@ get_biodiv <- function(data_set), n_thres = 5){
    dat_biodiv$S_PIE <- mob$value[mob$index == "S_PIE"]
    
    # coverage standardized richness
-   div_indi$S_cov <- rep(NA, nrow(div_indi)) 
+   dat_biodiv$S_cov <- rep(NA, nrow(dat_biodiv)) 
    
    S_cov_std <- lapply(data.frame(t(dat_wide[,-1])),
                        function(x) try(estimateD(x, datatype = "abundance",
@@ -133,62 +130,43 @@ get_biodiv <- function(data_set), n_thres = 5){
    
    #######################################################################
    
-   ### simple diversity indices
+   # ### simple diversity indices
+   # 
+   # # standardize sampling effort
+   # # smallest sampling unit:  sampling effort = 1
+   # rel_sample_eff <- div_indi$sample_effort/min(div_indi$sample_effort)
+   # 
+   # 
+   # 
+   # # n_min <- min(div_indi$N)
+   # 
+   # # No. of individuals standardized by sampling effort
+   # 
+   # #div_indi$N_std <-  div_indi$N/div_indi$sample_effort ## standardize abundance by absolute sampling effort
+   # div_indi$N_std <-  div_indi$N/rel_sample_eff ## standardize abundance by relative sampling effort
+   # 
+   # # richness standardized by mean sampling effort in smallest sampling unit
+   # div_indi$S_std <- NA
+   # for (i in 1:nrow(div_indi)){
+   #    if (div_indi$N_std[i] >= n_thres)   
+   #       div_indi$S_std[i] <- rarefaction(dat_abund_pool2[,i],
+   #                                        method = "indiv",
+   #                                        effort = round(div_indi$N_std[i]))        
+   # }
+   # 
+   # 
    
-   # standardize sampling effort
-   # smallest sampling unit:  sampling effort = 1
-   rel_sample_eff <- div_indi$sample_effort/min(div_indi$sample_effort)
-   
- 
-   
-   # n_min <- min(div_indi$N)
-   
-   # No. of individuals standardized by sampling effort
-   
-   #div_indi$N_std <-  div_indi$N/div_indi$sample_effort ## standardize abundance by absolute sampling effort
-   div_indi$N_std <-  div_indi$N/rel_sample_eff ## standardize abundance by relative sampling effort
-   
-   # richness standardized by mean sampling effort in smallest sampling unit
-   div_indi$S_std <- NA
-   for (i in 1:nrow(div_indi)){
-      if (div_indi$N_std[i] >= n_thres)   
-         div_indi$S_std[i] <- rarefaction(dat_abund_pool2[,i],
-                                          method = "indiv",
-                                          effort = round(div_indi$N_std[i]))        
-   }
-
-  
-   
-   # div_indi$ENS_pie <- diversity(t(dat_abund_pool2), index = "invsimpson")
-   
-   #####################################################################
-   # I do not remember when and how we defined the following calulation
-   # S_plot <- colSums(dat_abund > 0)    # observed species richness per plot before plots within the same fragments have been pooled
-   # div_indi$S_plot <- ifelse(div_indi$sample_design == "pooled", NA, aggregate(S_plot, 
-   #                          by = list(dat_head_t$entity.id,
-   #                                    dat_head_t$entity.size.rank),
-   #                          FUN = mean)$x) # mean of plot level species richness, comparison only meaningful 
-   # if sampling effort among plots is equal, i.e. sampling_design either standardized or
-   # multiple standardized subsamples within fragments
-   #####################################################################
-   
-  
-   
-   # I am not sure these three lines are neede?
-   # cov_eq_1 <- div_indi$coverage >= 1.0
-   # cov_eq_1[is.na(cov_eq_1)] <- FALSE
-   # div_indi$D0_hat[cov_eq_1] <- div_indi$S_obs[cov_eq_1]
-
    # set indices to NA when there are no individuals
-   empty_plots <- div_indi$N == 0
-   div_indi$S_asymp[empty_plots] <- NA
-   div_indi$S_PIE[empty_plots] <- NA
+   empty_plots <- dat_biodiv$N == 0
+   dat_biodiv$S_PIE[empty_plots] <- NA
 
-   
    # set indices to NA when they are Inf or NaN
-   div_indi[,9:ncol(div_indi)] <- lapply(div_indi[,9:ncol(div_indi)], Inf_to_NA)
+   dat_biodiv[,6:ncol(dat_biodiv)] <- lapply(dat_biodiv[,6:ncol(dat_biodiv)], Inf_to_NA)
    
-   return(div_indi)
+   # add fragment information
+   dat_out <- left_join(dat_frag, dat_biodiv)
+   
+   return(dat_out)
 }    
 
 ################################################################################
@@ -203,7 +181,23 @@ str(dat_long)
 
 head(dat_long)
 
-data_set <- dat_long %>% filter(dataset_id == "53")
+# data_set <- dat_long %>% filter(dataset_id == "53")
 
+# base R version
+# out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
+#             FUN = get_biodiv)
 
+# class(out1) <- "list"
+# out2 <- bind_rows(out1)
+
+# purrr version
+out1 <- dat_long %>%
+   split(.$dataset_id) %>%
+   map_dfr(get_biodiv)
+
+out2 %>% 
+   select(dataset_id, dataset_label, sample_design) %>% 
+   distinct() %>%
+   ungroup() %>%
+   count(sample_design)
 

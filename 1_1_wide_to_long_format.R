@@ -125,18 +125,7 @@ filenames <- list.files(path =  path2Dropbox %+% "files_datapaper/",
                         pattern="*.csv", full.names = F)
 
 # Files with errors
-problem_files <- c("17_Bragagnolo et al. 2007 (harvestmen_in_Brazil).csv",
-                   "35_Didham et al. 1999 (beetles_in_Brazil).csv",
-                   "50_Gavish et al. 2012 (spiders-Galon_in_Israel).csv",
-                   "45_da Fonesca and Robinson 1990 (small mammals_in_Brazil).csv",
-                   "65_Klein 1989 (beetles_in_Brazil).csv",
-                   "82_Nemesio and Silviera 2007 (bees_in_Brazil).csv",
-                   "88_Nyeko 2009 (beetles_in_Uganda).csv",
-                   "91_Paciencia and Prado 2005 (ferns_in_Brazil).csv",
-                   "92_Pardini 2004 (mammals_in_Brazil).csv",
-                   "Vasconcelos et al. 2006 (ants_in_brazil)(only with abundances).csv",
-                   "Vasconcelos et al. 2006 (ants_in_brazil)(presence-absence).csv",
-                   "16_Bossart and Antwi 2016 (butterflies_in_Ghana).csv")
+problem_files <- c()
 
 good_files <- filenames[!filenames %in% problem_files]
 
