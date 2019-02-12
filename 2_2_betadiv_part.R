@@ -8,7 +8,9 @@ dist_to_dataframe <- function(inDist) {
    data.frame(
       row = B[unlist(lapply(sequence(A)[-1], function(x) x:A))],
       col = rep(B[-length(B)], (length(B)-1):1),
-      value = as.vector(inDist))
+      value = as.vector(inDist),
+      stringsAsFactors = F
+   )
 }
 
 ############################################
@@ -25,6 +27,10 @@ get_beta_part <- function(data_set){
       summarise(abundance = sum(abundance))
    
    dat_wide <- dat_abund %>% spread(key = species, value = abundance, fill = 0)
+   
+   # add rownames for betadivpart
+   class(dat_wide) <- "data.frame"
+   rownames(dat_wide) <- dat_wide$frag_id
    
    # # prepare output data
    # dat_sample <- data_set %>%
@@ -59,7 +65,7 @@ get_beta_part <- function(data_set){
    BS_qT <- beta.div.comp(dat_wide[,-1], coef = "BS", quant = T)
    
    beta_div_tab <- dist_to_dataframe(J_qF$repl)
-   names(beta_div_tab)[3] <- "J_qF_repl"
+   names(beta_div_tab)[1:3] <- c("frag_x", "frag_y", "J_qF_repl")
    
    beta_div_tab$J_qF_rich <- J_qF$rich
    
@@ -84,7 +90,38 @@ get_beta_part <- function(data_set){
    beta_div_tab$BS_qT_repl <- BS_qT$repl
    beta_div_tab$BS_qT_rich <- BS_qT$rich
    
-   return(dat_out)
+   # add fragment areas
+   dat_frag <- data_set %>%
+      select(frag_id, frag_size_char, frag_size_num) %>%
+      distinct()
+
+   # dat_frag$site_label <- paste("Site", 1:nrow(dat_frag), sep = "")
+   beta_div_tab <- beta_div_tab %>%
+      left_join(dat_frag, by = c("frag_x" = "frag_id")) %>%
+      left_join(dat_frag, by = c("frag_y" = "frag_id")) %>%
+      mutate(diff_area = frag_size_num.y - frag_size_num.x,
+             log10_ratio_area = log10(frag_size_num.y/frag_size_num.x)
+             )
+   
+   beta_div_tab$dataset_id <- data_set$dataset_id[1]
+   beta_div_tab$dataset_label <- data_set$dataset_label[1]
+   beta_div_tab$sample_design <- data_set$sample_design[1]
+   
+   beta_div_tab <- beta_div_tab %>% 
+      select(dataset_id,
+             dataset_label,
+             sample_design,
+             frag_x,
+             frag_y,
+             frag_size_char.x,
+             frag_size_num.x,
+             frag_size_char.y,
+             frag_size_num.y,
+             diff_area,
+             log10_ratio_area,
+             everything())
+
+   return(beta_div_tab)
 }    
 
 ################################################################################
@@ -93,28 +130,40 @@ get_beta_part <- function(data_set){
 # read long format data file
 
 infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
-dat_long <- read.csv(infile, stringsAsFactors = F)
-dim(dat_long)
-str(dat_long)
+dat_long1 <- read.csv(infile, stringsAsFactors = F)
+dat_long2 <- read_csv(infile, quoted_na = FALSE,
+                      col_types = list(col_integer(),
+                                       col_character(),
+                                       col_character(),
+                                       col_integer(),
+                                       col_character(),
+                                       col_double(),
+                                       col_double(),
+                                       col_character(),
+                                       col_character(),
+                                       col_double()))
+                                       
+                        
+dim(dat_long1)
+dim(dat_long2)
+# str(dat_long)
 
-head(dat_long)
+# head(dat_long)
 
-data_set <- dat_long %>% filter(dataset_id == "4")
+# data_set <- dat_long %>% filter(dataset_id == "111")
 
-# base R version
-# out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
-#             FUN = get_biodiv)
+dat_long1 %>% filter(dataset_id == "111" & frag_id == "NA")
+dim(dat_long1 %>% filter(dataset_id == "111" & is.na(frag_id)))
 
-# class(out1) <- "list"
-# out1 <- bind_rows(out1)
+?dat_long2 %>% filter(dataset_id == "111" & frag_id == "NA")
+dat_long2 %>% filter(dataset_id == "111" & is.na(frag_id))
+is.na(data_set$frag_id)
 
 # purrr version
 out1 <- dat_long %>%
    split(.$dataset_id) %>%
-   map_dfr(get_biodiv)
+   map_dfr(get_beta_part)
 
-out1 %>% 
-   select(dataset_id, dataset_label, sample_design) %>% 
-   distinct() %>%
+
 
 
