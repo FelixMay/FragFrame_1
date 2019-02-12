@@ -101,8 +101,6 @@ read_data_files <- function(filename){
    path2outfile <- path2Dropbox %+% "files_datapaper/Sites_by_species_format/" %+% outfile %+% ".csv"
    write_csv(dat1, path2outfile)
    
-   cat("\n")
-   
    # convert to long format: one column with species name and one with species abundance
    dat2 <- dat1 %>%
       gather(-(frag_id:sample_design), key = "species", value = "abundance") %>%
@@ -114,6 +112,12 @@ read_data_files <- function(filename){
    dat2$dataset_label <- labels[[1]][2]
    
    dat2 <- select(dat2, dataset_id, dataset_label, everything())
+   
+   # check for non-integer abundances
+   if (!is.integer(dat2$abundance))
+      print(paste("Non-integer abundances in", filename, sep = " "))
+   
+   cat("\n")
    
    return(dat2)
 }    
