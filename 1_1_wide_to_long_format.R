@@ -97,7 +97,7 @@ read_data_files <- function(filename){
    dat1 <- cbind(dat1, dat_abund_t)
    
    # prepare output date
-   outfile <- str_split(filename, pattern = "\\s\\(")[[1]][1]
+   outfile <- str_split(filename, pattern = "_\\(")[[1]][1]
    path2outfile <- path2Dropbox %+% "files_datapaper/Sites_by_species_format/" %+% outfile %+% ".csv"
    write_csv(dat1, path2outfile)
    
@@ -107,11 +107,11 @@ read_data_files <- function(filename){
       filter(abundance > 0) %>%
       arrange(frag_id, sample_id, species)
    
-   labels <- str_split(outfile, "_")
-   dat2$dataset_id <- labels[[1]][1]
-   dat2$dataset_label <- labels[[1]][2]
+   # labels <- str_split(outfile, "_")
+   # dat2$dataset_id <- labels[[1]][1]
+   dat2$dataset_label <- outfile
    
-   dat2 <- select(dat2, dataset_id, dataset_label, everything())
+   dat2 <- select(dat2, dataset_label, everything())
    
    # check for non-integer abundances
    if (!is.integer(dat2$abundance))
@@ -140,10 +140,18 @@ dat_long <- bind_rows(dat_list)
 
 summary(dat_long)
 
-dat_long %>% filter(species == "entity.plot.id")
+#dat_long %>% filter(species == "entity.plot")
+dat_long %>% filter(frag_size_char == "Continuous")
 
 # prepare output date
 path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
 write_csv(dat_long, path2outfile)
 
+# save file labels
+labels <- dat_long %>%
+   select(dataset_label) %>%
+   distinct()
+
+path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/file_labels.csv"
+write_csv(labels, path2outfile)
 
