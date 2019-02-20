@@ -199,7 +199,7 @@ str(dat_long)
 
 head(dat_long)
 
-data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
+# data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
@@ -226,12 +226,12 @@ write_csv(out1, path2outfile)
 ##############################
 # check what happens with multiplication of abundances
 
-data_set1 <- dat_long %>% filter(dataset_label == "Dickman_1999")
-data_set3 <- data_set2 <- data_set1
-
-data_set2$abundance <- 10*data_set2$abundance
-data_set3$abundance <- 100*data_set1$abundance
-
-biodiv1 <- get_biodiv(data_set1)
-biodiv2 <- get_biodiv(data_set2)
-biodiv3 <- get_biodiv(data_set3)
+# data_set1 <- dat_long %>% filter(dataset_label == "Cosson_1999")
+# data_set3 <- data_set2 <- data_set1
+# 
+# data_set2$abundance <- 10*data_set2$abundance
+# data_set3$abundance <- 100*data_set1$abundance
+# 
+# biodiv1 <- get_biodiv(data_set1)
+# biodiv2 <- get_biodiv(data_set2)
+# biodiv3 <- get_biodiv(data_set3)
