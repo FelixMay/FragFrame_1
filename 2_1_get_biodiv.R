@@ -80,7 +80,7 @@ get_biodiv <- function(data_set, n_thres = 5){
    n_max <- max(dat_biodiv$N)
    n_min_r <- min(2 * dat_biodiv$N)
    
-   dat_biodiv$n_base <- min(n_max, n_min_r)   
+   dat_biodiv$n_base <- round(min(n_max, n_min_r))   
 
    # Chao et al. 2014 suggests using the maximum here,
    # we decided to go for a more conservative measure
@@ -93,7 +93,7 @@ get_biodiv <- function(data_set, n_thres = 5){
                                 function(x) {Chat.Ind(x, sum(x))} )
    
    # extrapolated coverage with sample size * 2
-   cov_extra <- apply(dat_biodiv[,-(1:2)], 1,
+   cov_extra <- apply(dat_wide[,-(1:2)], 1,
                       function(x) {Chat.Ind(x, 2*sum(x))})
    
    # base coverage 
@@ -199,7 +199,7 @@ str(dat_long)
 
 head(dat_long)
 
-# data_set <- dat_long %>% filter(dataset_id == "4")
+data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
@@ -223,3 +223,15 @@ out1 %>%
 path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/biodiv_fragment_level.csv"
 write_csv(out1, path2outfile)
 
+##############################
+# check what happens with multiplication of abundances
+
+data_set1 <- dat_long %>% filter(dataset_label == "Dickman_1999")
+data_set3 <- data_set2 <- data_set1
+
+data_set2$abundance <- 10*data_set2$abundance
+data_set3$abundance <- 100*data_set1$abundance
+
+biodiv1 <- get_biodiv(data_set1)
+biodiv2 <- get_biodiv(data_set2)
+biodiv3 <- get_biodiv(data_set3)
