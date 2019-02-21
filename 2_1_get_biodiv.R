@@ -181,6 +181,11 @@ get_biodiv <- function(data_set, n_thres = 5){
    # set indices to NA when they are Inf or NaN
    dat_biodiv[,6:ncol(dat_biodiv)] <- lapply(dat_biodiv[,6:ncol(dat_biodiv)], Inf_to_NA)
    
+   # set coverage standardized richness equal to observed
+   # when observed coverage and base coverage equal 1
+   coverage_eq_1 <- dat_biodiv$coverage == 1 & dat_biodiv$cov_base == 1
+   dat_biodiv$S_cov[coverage_eq_1] <- dat_biodiv$S_obs[coverage_eq_1]
+   
    # add fragment information
    dat_out <- left_join(dat_frag, dat_biodiv)
    
@@ -199,7 +204,7 @@ str(dat_long)
 
 head(dat_long)
 
-# data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
+# data_set <- dat_long %>% filter(dataset_label == "Lambert_2003")
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
@@ -210,11 +215,11 @@ head(dat_long)
 
 # purrr version
 out1 <- dat_long %>%
-   split(.$dataset_id) %>%
+   split(.$dataset_label) %>%
    map_dfr(get_biodiv)
 
 out1 %>% 
-   select(dataset_id, dataset_label, sample_design) %>% 
+   select(dataset_label, sample_design) %>% 
    distinct() %>%
    ungroup() %>%
    count(sample_design)
@@ -235,3 +240,5 @@ write_csv(out1, path2outfile)
 # biodiv1 <- get_biodiv(data_set1)
 # biodiv2 <- get_biodiv(data_set2)
 # biodiv3 <- get_biodiv(data_set3)
+
+# test <- out1 %>% filter(coverage == 1 & cov_base == 1)
