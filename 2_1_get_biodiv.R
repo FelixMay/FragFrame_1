@@ -227,9 +227,33 @@ str(dat_long)
 head(dat_long)
 
 
-data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
+# data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
 
+parset <- expand.grid(fac_cont = c(2,10,100),
+                      method_abund = c("as_is","round","ceiling","multiply"),
+                      stringsAsFactors = F)
 
+for (i in 1:nrow(parset)){
+   out1 <- dat_long %>%
+      split(.$dataset_label) %>%
+      map_dfr(get_biodiv,
+              fac_cont = parset$fac_cont[i],
+              method_abund = parset$method_abund[i])
+   
+   # prepare output date
+   outfile_name <- i %+% "_biodiv_frag_fcont_" %+% parset$fac_cont[i] %+%
+      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
+   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   write_csv(out1, path2outfile)
+}
+   
+# out1 %>% 
+#    select(dataset_label, sample_design) %>% 
+#    distinct() %>%
+#    ungroup() %>%
+#    count(sample_design)
+   
+ 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
 #             FUN = get_biodiv)
@@ -237,20 +261,20 @@ data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
 # class(out1) <- "list"
 # out1 <- bind_rows(out1)
 
-# purrr version
-out1 <- dat_long %>%
-   split(.$dataset_label) %>%
-   map_dfr(get_biodiv)
-
-out1 %>% 
-   select(dataset_label, sample_design) %>% 
-   distinct() %>%
-   ungroup() %>%
-   count(sample_design)
-
-# prepare output date
-path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/biodiv_fragment_level.csv"
-write_csv(out1, path2outfile)
+# # purrr version
+# out1 <- dat_long %>%
+#    split(.$dataset_label) %>%
+#    map_dfr(get_biodiv)
+# 
+# out1 %>% 
+#    select(dataset_label, sample_design) %>% 
+#    distinct() %>%
+#    ungroup() %>%
+#    count(sample_design)
+# 
+# # prepare output date
+# path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/biodiv_fragment_level.csv"
+# write_csv(out1, path2outfile)
 
 ##############################
 # check what happens with multiplication of abundances
