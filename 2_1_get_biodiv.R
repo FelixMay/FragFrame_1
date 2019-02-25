@@ -39,7 +39,7 @@ Inf_to_NA <- function(x)
 ############################################
 # Function to calculate biodiversity indices for every fragment
 
-get_biodiv <- function(data_set, n_thres = 5){
+get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10){
    
    print(data_set$dataset_label[1])
    
@@ -189,6 +189,12 @@ get_biodiv <- function(data_set, n_thres = 5){
    # add fragment information
    dat_out <- left_join(dat_frag, dat_biodiv)
    
+   # impute fragment size for continuous fragments
+   frag_cont <- dat_out$frag_size_char == "continuous" & is.na(dat_out$frag_size_num)
+   dat_out$frag_size_num[frag_cont] <- fac_cont * max(dat_out$frag_size_num, na.rm = T)
+   if (any(frag_cont))
+      print(paste("Imputed area of continuous habitat in ", data_set$dataset_label [1], sep = ""))
+   
    return(dat_out)
 }    
 
@@ -205,7 +211,7 @@ str(dat_long)
 head(dat_long)
 
 
-# data_set <- dat_long %>% filter(dataset_label == "Lambert_2003")
+data_set <- dat_long %>% filter(dataset_label == "Aizen_1994")
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
