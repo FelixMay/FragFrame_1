@@ -39,9 +39,25 @@ Inf_to_NA <- function(x)
 ############################################
 # Function to calculate biodiversity indices for every fragment
 
-get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10){
+get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("as_is","round","ceiling","multiply")){
+   
+   method_abund <- match.arg(method_abund)
    
    print(data_set$dataset_label[1])
+   
+   # test for non-integer abundances
+   if (any(data_set$abundance %% 1 > 0)){
+      print(paste("Non-integer abundances in ", data_set$dataset_label[1], sep = ""))
+      
+      if (method_abund == "round")
+         data_set$abundance <- round(data_set$abundance)
+      if (method_abund == "ceiling")
+         data_set$abundance <- ceiling(data_set$abundance)
+      if (method_abund == "multiply"){
+         min_abund <- min(data_set$abundance[data_set$abundance > 0])
+         data_set$abundance <- data_set$abundance / min_abund
+      }
+   }
    
    # sum abundances in same fragments
    dat_abund <- data_set %>%
@@ -211,7 +227,8 @@ str(dat_long)
 head(dat_long)
 
 
-data_set <- dat_long %>% filter(dataset_label == "Aizen_1994")
+data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
+
 
 # base R version
 # out1 <- by(dat_long, INDICES = list(dat_long$dataset_id)
