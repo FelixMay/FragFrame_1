@@ -1,6 +1,6 @@
 # source code from iNEXT package
-###############################################
-# Abundance-based sample coverage
+#
+# Abundance-based sample coverage -----------------------------------------
 # 
 # \code{Chat.Ind} Estimation of abundance-based sample coverage function
 # 
@@ -28,7 +28,7 @@ Chat.Ind <- function(x, m){
    sapply(m, Sub)		
 }
 
-######
+# Set infinity values to NA
 Inf_to_NA <- function(x)
 {
    x <- as.numeric(x)
@@ -36,9 +36,50 @@ Inf_to_NA <- function(x)
    return(x)
 }
 
-############################################
-# Function to calculate biodiversity indices for every fragment
+# https://stackoverflow.com/questions/23474729/convert-object-of-class-dist-into-data-frame-in-r
+dist_to_dataframe <- function(inDist) {
+   if (class(inDist) != "dist") stop("wrong input type")
+   A <- attr(inDist, "Size")
+   B <- if (is.null(attr(inDist, "Labels"))) sequence(A) else attr(inDist, "Labels")
+   if (isTRUE(attr(inDist, "Diag"))) attr(inDist, "Diag") <- FALSE
+   if (isTRUE(attr(inDist, "Upper"))) attr(inDist, "Upper") <- FALSE
+   data.frame(
+      row = B[unlist(lapply(sequence(A)[-1], function(x) x:A))],
+      col = rep(B[-length(B)], (length(B)-1):1),
+      value = as.vector(inDist),
+      stringsAsFactors = F
+   )
+}
 
+
+# Sample subplots from community matrix
+betapart_subplots <- function(index, dat1, n){
+   dat_sample <- dat1 %>%
+      sample_n(n)
+   class(dat_sample) <- "data.frame"
+   rownames(dat_sample) <- dat_sample$frag_id
+   
+   pars <- expand.grid(coef = c("S","J","BS","BJ"),
+                       quant = c(FALSE,TRUE), stringsAsFactors = F)
+   
+   beta_part_list <- list()
+   for (i in 1:nrow(pars)){
+      beta_part <- beta.div.comp(dat_sample[,-(1:2)],
+                                 coef = pars$coef[i],
+                                 quant = pars$quant[i])
+      beta_div_repl <- dist_to_dataframe(beta_part$repl)
+      beta_div_rich <- dist_to_dataframe(beta_part$rich)
+      beta_div_repl$part <- "repl"
+      beta_div_rich$part <- "rich"
+      beta_div <- rbind(beta_div_repl, beta_div_rich)
+      beta_div$coef <- pars$coef[i]
+      beta_div$quant <- pars$quant[i]
+      
+      beta_part_list[[i]] <- beta_div
+   }
+}
+
+# Function to calculate biodiversity indices for every fragment  ----------
 get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("as_is","round","ceiling","multiply")){
    
    method_abund <- match.arg(method_abund)
@@ -58,6 +99,12 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("a
          data_set$abundance <- data_set$abundance / min_abund
       }
    }
+   
+   # impute fragment size for continuous fragments
+   frag_cont <- data_set$frag_size_char == "continuous" & is.na(data_set$frag_size_num)
+   data_set$frag_size_num[frag_cont] <- fac_cont * max(data_set$frag_size_num, na.rm = T)
+   if (any(frag_cont))
+      print(paste("Imputed area of continuous habitat in ", data_set$dataset_label [1], sep = ""))
    
    # sum abundances in same fragments
    dat_abund <- data_set %>%
@@ -85,7 +132,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("a
       left_join(dat_wide)
    
    
-   # get biodiversity indices
+   # get biodiversity indices ----
    dat_biodiv <- data.frame(frag_id = dat_wide$frag_id,
                             sample_eff = dat_wide$sample_eff,
                             N = rowSums(dat_wide[,-(1:2)]),
@@ -204,21 +251,91 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("a
    
    # add fragment information
    dat_out <- left_join(dat_frag, dat_biodiv)
+
+   # beta-diversity partitioning ---------------------------------------------
    
-   # impute fragment size for continuous fragments
-   frag_cont <- dat_out$frag_size_char == "continuous" & is.na(dat_out$frag_size_num)
-   dat_out$frag_size_num[frag_cont] <- fac_cont * max(dat_out$frag_size_num, na.rm = T)
-   if (any(frag_cont))
-      print(paste("Imputed area of continuous habitat in ", data_set$dataset_label [1], sep = ""))
+   if (data_set$sample_design[1] == "standardized"){
+      
+      # add rownames for betadivpart
+      class(dat_wide) <- "data.frame"
+      rownames(dat_wide) <- dat_wide$frag_id
+      
+      J_qF <- beta.div.comp(dat_wide[,-(1:2)], coef = "J", quant = F)
+      
+      beta_div_tab <- dist_to_dataframe(J_qF$repl)
+      names(beta_div_tab)[1:3] <- c("frag_x", "frag_y", "J_qF_repl")
+      
+      # beta_part_study <- data.frame(dataset_label = data_set$dataset_label[1],
+      #                               repl_part = J_qF$part["Repl/BDtotal"],
+      #                               richdiff_part = J_qF$part["RichDif/BDtotal"],
+      #                               method = J_qF$Note,
+      #                               stringsAsFactors = F, row.names = NULL)
+   }
    
-   return(dat_out)
+   if (data_set$sample_design[1] == "standardized_subsamples"){
+      
+      # sum abundances in subsamples
+      dat_abund_sub <- data_set %>%
+         group_by(frag_id, sample_id, species) %>%
+         summarise(abundance = sum(abundance))
+      
+      dat_wide_sub <- dat_abund_sub %>% 
+         spread(key = species, value = abundance, fill = 0) %>%
+         group_by(frag_id)
+      
+      n_sub <- min(dat_wide_sub %>% 
+                      count() %>% 
+                      ungroup() %>%
+                      select(n)) 
+      
+      beta_part_sample <- map_dfr(1:100, betapart_subplots, dat1 = dat_wide_sub, n = n_sub)
+      
+      beta_part_sample %>% group_by(row, col, part) %>%
+         summarise(mean = mean(value))
+      
+     
+      
+      beta_div_tab <- dist_to_dataframe(J_qF$repl)
+      names(beta_div_tab)[1:3] <- c("frag_x", "frag_y", "J_qF_repl")
+   }
+   
+   dat_frag2 <- select(dat_frag, frag_id, frag_size_char, frag_size_num)
+   
+   # dat_frag$site_label <- paste("Site", 1:nrow(dat_frag), sep = "")
+   beta_div_tab <- beta_div_tab %>%
+      left_join(dat_frag2, by = c("frag_x" = "frag_id")) %>%
+      left_join(dat_frag2, by = c("frag_y" = "frag_id")) %>%
+      mutate(diff_area = frag_size_num.y - frag_size_num.x,
+             log10_ratio_area = log10(frag_size_num.y/frag_size_num.x)
+      )
+   
+   # adjust dataframe
+   beta_div_tab$dataset_id <- data_set$dataset_id[1]
+   beta_div_tab$dataset_label <- data_set$dataset_label[1]
+   beta_div_tab$sample_design <- data_set$sample_design[1]
+   
+   beta_div_tab <- beta_div_tab %>% 
+      select(dataset_label,
+             sample_design,
+             frag_x,
+             frag_y,
+             frag_size_char.x,
+             frag_size_num.x,
+             frag_size_char.y,
+             frag_size_num.y,
+             diff_area,
+             log10_ratio_area,
+             everything())
+   
+   out_list <- list("biodiv" = dat_out,
+                    "betapart" = beta_div_tab)
+   
+   return(out_list)
 }    
 
-################################################################################
-# execution of script
+# execution of script -----------------------------------------------------
 
 # read long format data file
-
 infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
 dat_long <- read.csv(infile, stringsAsFactors = F)
 dim(dat_long)
@@ -227,7 +344,9 @@ str(dat_long)
 head(dat_long)
 
 
-# data_set <- dat_long %>% filter(dataset_label == "Cosson_1999")
+data_set <- dat_long %>% filter(dataset_label == "Nogueira_2016")
+
+get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
@@ -236,15 +355,18 @@ parset <- expand.grid(fac_cont = c(2,10,100),
 for (i in 1:nrow(parset)){
    out1 <- dat_long %>%
       split(.$dataset_label) %>%
-      map_dfr(get_biodiv,
-              fac_cont = parset$fac_cont[i],
-              method_abund = parset$method_abund[i])
+      map(get_biodiv,
+          fac_cont = parset$fac_cont[i],
+          method_abund = parset$method_abund[i])
+   
+   out_biodiv <- out1 %>% map_dfr("biodiv")
+   out_betapart <- out1 %>% map_dfr("betapart")
    
    # prepare output date
    outfile_name <- i %+% "_biodiv_frag_fcont_" %+% parset$fac_cont[i] %+%
       "_mabund_"%+% parset$method_abund[i] %+% ".csv"
    path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
-   write_csv(out1, path2outfile)
+   write_csv(out_biodiv, path2outfile)
 }
    
 # out1 %>% 
@@ -276,7 +398,7 @@ for (i in 1:nrow(parset)){
 # path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/biodiv_fragment_level.csv"
 # write_csv(out1, path2outfile)
 
-##############################
+###
 # check what happens with multiplication of abundances
 
 # data_set1 <- dat_long %>% filter(dataset_label == "Cosson_1999")
@@ -290,3 +412,4 @@ for (i in 1:nrow(parset)){
 # biodiv3 <- get_biodiv(data_set3)
 
 # test <- out1 %>% filter(coverage == 1 & cov_base == 1)
+
