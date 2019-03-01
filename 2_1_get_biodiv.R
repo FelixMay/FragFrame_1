@@ -51,33 +51,61 @@ dist_to_dataframe <- function(inDist) {
    )
 }
 
+# calculate all beta-diversity partitioning indices from sites x species table
+get_beta_part <- function(comat){
+   class(comat) <- "data.frame"
+   rownames(comat) <- comat$frag_id
+   
+   pars <- expand.grid(coef = c("S","J","BS","BJ"),
+                       quant = c(FALSE,TRUE), stringsAsFactors = F)
+   
+   frag_pairs <- list()
+   study_level <- list()
+   
+   for (i in 1:nrow(pars)){
+      beta_part <- beta.div.comp(comat[,-(1:2)],
+                                 coef = pars$coef[i],
+                                 quant = pars$quant[i])
+      beta_tab <- dist_to_dataframe(beta_part$repl)
+      names(beta_tab)[1:3] <- c("frag_x", "frag_y", "repl")
+      
+      beta_tab$rich <- dist_to_dataframe(beta_part$rich)[[3]]
+     
+      beta_tab$coef <- pars$coef[i]
+      beta_tab$quant <- pars$quant[i]
+      beta_tab$method <- beta_part$Note
+      
+      frag_pairs[[i]] <- beta_tab
+      
+      study_level[[i]] <- data.frame(coef = pars$coef[i],
+                                     quant = pars$quant[i],
+                                     prop_repl = beta_part$part["Repl/BDtotal"],
+                                     prop_rich = beta_part$part["RichDif/BDtotal"],
+                                     method =  beta_part$Note,
+                                     stringsAsFactors = F, row.names = NULL)
+   }
+   
+   return(list(fragments = bind_rows(frag_pairs), study = bind_rows(study_level)))
+}
 
 # Sample subplots from community matrix
 betapart_subplots <- function(index, dat1, n){
    dat_sample <- dat1 %>%
       sample_n(n)
-   class(dat_sample) <- "data.frame"
-   rownames(dat_sample) <- dat_sample$frag_id
    
-   pars <- expand.grid(coef = c("S","J","BS","BJ"),
-                       quant = c(FALSE,TRUE), stringsAsFactors = F)
-   
-   beta_part_list <- list()
-   for (i in 1:nrow(pars)){
-      beta_part <- beta.div.comp(dat_sample[,-(1:2)],
-                                 coef = pars$coef[i],
-                                 quant = pars$quant[i])
-      beta_div_repl <- dist_to_dataframe(beta_part$repl)
-      beta_div_rich <- dist_to_dataframe(beta_part$rich)
-      beta_div_repl$part <- "repl"
-      beta_div_rich$part <- "rich"
-      beta_div <- rbind(beta_div_repl, beta_div_rich)
-      beta_div$coef <- pars$coef[i]
-      beta_div$quant <- pars$quant[i]
-      
-      beta_part_list[[i]] <- beta_div
-   }
+   beta_part <- get_beta_part(dat_sample)
 }
+
+# resample fragment with given N
+resample_fragment <- function(dat1, N){
+   dat_sample <- dat1[sample(1:nrow(dat1), size = N, prob = dat1$abundance, replace = T), 1:2]
+   dat_sample2 <- dat_sample %>%
+      group_by(frag_id, species) %>%
+      count() %>%
+      arrange(desc(n))
+   names(dat_sample2) <- names(dat_sample)
+}
+
 
 # Function to calculate biodiversity indices for every fragment  ----------
 get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("as_is","round","ceiling","multiply")){
@@ -130,7 +158,6 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("a
    dat_wide <- dat_frag %>%
       select(frag_id, sample_eff) %>%
       left_join(dat_wide)
-   
    
    # get biodiversity indices ----
    dat_biodiv <- data.frame(frag_id = dat_wide$frag_id,
@@ -254,24 +281,22 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("a
 
    # beta-diversity partitioning ---------------------------------------------
    
-   if (data_set$sample_design[1] == "standardized"){
+   # standardized sampling ----
+   if (data_set$sample_design[1] == "standardized_fragment"){
+      beta_div_comp <- get_beta_part(dat_wide) 
       
-      # add rownames for betadivpart
-      class(dat_wide) <- "data.frame"
-      rownames(dat_wide) <- dat_wide$frag_id
+      beta_part_frag <- beta_div_comp$fragments %>%
+         group_by(frag_x, frag_y, coef, quant, method) %>%
+         summarise(repl = mean (repl),
+                   rich = mean (rich))
       
-      J_qF <- beta.div.comp(dat_wide[,-(1:2)], coef = "J", quant = F)
-      
-      beta_div_tab <- dist_to_dataframe(J_qF$repl)
-      names(beta_div_tab)[1:3] <- c("frag_x", "frag_y", "J_qF_repl")
-      
-      # beta_part_study <- data.frame(dataset_label = data_set$dataset_label[1],
-      #                               repl_part = J_qF$part["Repl/BDtotal"],
-      #                               richdiff_part = J_qF$part["RichDif/BDtotal"],
-      #                               method = J_qF$Note,
-      #                               stringsAsFactors = F, row.names = NULL)
+      beta_part_study <- beta_div_comp$study %>%
+         group_by(coef, quant, method) %>%
+         summarise(prop_repl = mean(prop_repl, na.rm = F),
+                   prop_rich = mean(prop_rich, na.rm = F))
    }
    
+   # standardized subplots ----
    if (data_set$sample_design[1] == "standardized_subsamples"){
       
       # sum abundances in subsamples
@@ -288,15 +313,28 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10, method_abund = c("a
                       ungroup() %>%
                       select(n)) 
       
-      beta_part_sample <- map_dfr(1:100, betapart_subplots, dat1 = dat_wide_sub, n = n_sub)
+      beta_part_samples <- map(1:100, betapart_subplots, dat1 = dat_wide_sub, n = n_sub)
       
-      beta_part_sample %>% group_by(row, col, part) %>%
-         summarise(mean = mean(value))
+      beta_part_frag <- beta_part_samples %>%
+         map_dfr("fragments") %>%
+         group_by(frag_x, frag_y, coef, quant, method) %>%
+         summarise(repl = mean (repl),
+                   rich = mean (rich))
+      
+      beta_part_study <- beta_part_samples %>%
+         map_dfr("study") %>%
+         group_by(coef, quant, method) %>%
+         summarise(prop_repl = mean(prop_repl, na.rm = F),
+                   prop_rich = mean(prop_rich, na.rm = F))
+   }
+   
+   # pooled samples ----
+   if (data_set$sample_design[1] == "pooled"){
+      
+      split(dat_abund, dat_abund$frag_id)
+        
       
      
-      
-      beta_div_tab <- dist_to_dataframe(J_qF$repl)
-      names(beta_div_tab)[1:3] <- c("frag_x", "frag_y", "J_qF_repl")
    }
    
    dat_frag2 <- select(dat_frag, frag_id, frag_size_char, frag_size_num)
@@ -344,9 +382,9 @@ str(dat_long)
 head(dat_long)
 
 
-data_set <- dat_long %>% filter(dataset_label == "Nogueira_2016")
+data_set <- dat_long %>% filter(dataset_label == "Giladi_2011_a")
 
-get_biodiv(data_set)
+# get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
