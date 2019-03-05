@@ -147,7 +147,7 @@ resample_fragment <- function(dat1, N){
 # Function to calculate biodiversity indices for every fragment
 get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
                        method_abund = c("as_is","round","ceiling","multiply"),
-                       n_resamples = 20){
+                       n_resamples = 100){
    
    method_abund <- match.arg(method_abund)
    
