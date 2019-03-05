@@ -95,7 +95,22 @@ betapart_subplots <- function(index, dat1, n){
    dat_sample <- dat1 %>%
       group_by(frag_id) %>%
       sample_n(n)
-   beta_part <- get_beta_part(dat_sample)
+   
+   dat_frag <- dat_sample %>%
+      select(frag_id, frag_size_num) %>%
+      distinct
+   
+   # sum abundances in the same fragment
+   dat_sample2 <- dat_sample %>%
+      select(-frag_size_num, - sample_id) %>%
+      group_by(frag_id) %>%
+      summarise_all(sum)
+   
+   dat_sample3 <- dat_frag %>%
+      left_join(dat_sample2) %>%
+      arrange(frag_size_num)
+   
+   beta_part <- get_beta_part(dat_sample3)
    return(beta_part)
 }
 
@@ -177,7 +192,8 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    dat_frag <- dat_sample %>% 
       select(-sample_id, -sample_eff) %>%
       distinct() %>%
-      left_join(dat_sample_eff)
+      left_join(dat_sample_eff) %>%
+      arrange(frag_size_num)
    
    dat_wide <- dat_frag %>%
       select(frag_id, sample_eff) %>%
@@ -416,9 +432,8 @@ head(dat_long)
 
 dat_long %>% select(dataset_label, sample_design) %>% distinct()
 
-data_set <- dat_long %>% filter(dataset_label == "Benedick_2006")
-
-test <- get_biodiv(data_set)
+# data_set <- dat_long %>% filter(dataset_label == "Schnitzler_2008_b")
+# test <- get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
@@ -431,14 +446,25 @@ for (i in 1:nrow(parset)){
           fac_cont = parset$fac_cont[i],
           method_abund = parset$method_abund[i])
    
-   out_biodiv <- out1 %>% map_dfr("biodiv")
-   out_betapart <- out1 %>% map_dfr("betapart")
+   out_biodiv_frag <- out1 %>% map_dfr("biodiv_frag")
+   out_betapart_frag <- out1 %>% map_dfr("betapart_frag")
+   out_betapart_study <- out1 %>% map_dfr("betapart_study")
    
-   # prepare output date
+   # prepare output
    outfile_name <- i %+% "_biodiv_frag_fcont_" %+% parset$fac_cont[i] %+%
       "_mabund_"%+% parset$method_abund[i] %+% ".csv"
    path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
-   write_csv(out_biodiv, path2outfile)
+   write_csv(out_biodiv_frag, path2outfile)
+   
+   outfile_name <- i %+% "_betapart_frag_fcont_" %+% parset$fac_cont[i] %+%
+      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
+   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   write_csv(out_betapart_frag, path2outfile)
+   
+   outfile_name <- i %+% "_betapart_study_fcont_" %+% parset$fac_cont[i] %+%
+      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
+   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   write_csv(out_betapart_study, path2outfile)
 }
    
 # out1 %>% 
