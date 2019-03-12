@@ -48,7 +48,8 @@ caceres2 %>% select(frag_id, frag_size_num, sample_eff) %>% distinct
 caceres2$sample_design <- "pooled"
 
 caceres2 <- caceres2 %>%
-   select(names(dat_long))
+   select(names(dat_long)) %>%
+   mutate(sample_eff = sample_eff/min(sample_eff))
 
 # Ewers 2007 ------------------------------------------------------------
 predicts_path <- path2Dropbox %+% "From PREDICTS/Ewers_et_al_2007.csv" 
@@ -79,14 +80,28 @@ ewers2 <- ewers2 %>%
       frag_size_char = as.character(frag_size_num)
    )
 
-# Deduce sampling design
-ewers2 %>% select(frag_id, frag_size_num, sample_eff) %>%
-   distinct() %>% arrange(frag_size_num)
+# calculate species abundances in each fragment
+ewers_abund <- ewers2 %>%
+   group_by(frag_size_char, species) %>%
+   summarise(abundance = sum(abundance))
 
-# different effort in different fragments!!!
-ewers2$sample_design <- "pooled"
+ewers_sample_eff <- ewers2 %>%
+   select(frag_id, frag_size_char, sample_eff) %>%
+   distinct() %>%
+   group_by(frag_size_char) %>%
+   summarise(sample_eff = sum(sample_eff))
 
-ewers2 <- ewers2 %>%
+ewers_frag <- ewers2 %>%
+   select(frag_size_num, dataset_label, sample_id, frag_size_char) %>%
+   distinct() %>%
+   left_join(ewers_sample_eff) %>%
+   arrange(desc(frag_size_num))
+ewers_frag$frag_id <- paste("Site",1:nrow(ewers_frag), sep = "")
+ewers_frag$sample_design <- "pooled"
+
+ewers3 <- left_join(ewers_frag, ewers_abund)
+
+ewers3 <- ewers3 %>%
    select(names(dat_long))
 
 # Fernandez 2013 ------------------------------------------------------------
