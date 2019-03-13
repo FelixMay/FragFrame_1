@@ -42,7 +42,11 @@ caceres2$frag_size_num  <- caceres2$frag_size_num/10000
 caceres2$frag_size_char <- as.character(caceres2$frag_size_num)
 
 # Deduce sampling design
-caceres2 %>% select(frag_id, frag_size_num, sample_eff) %>% distinct
+# Compare to Table 1 in Caceres et al. 2010
+caceres2 %>% 
+   select(frag_id, frag_size_num, sample_eff) %>% 
+   distinct() %>%
+   arrange(frag_size_num)
 
 # different effort in different fragments!!!
 caceres2$sample_design <- "pooled"
@@ -55,8 +59,16 @@ caceres2 <- caceres2 %>%
 predicts_path <- path2Dropbox %+% "From PREDICTS/Ewers_et_al_2007.csv" 
 ewers1 <- read.csv(predicts_path, stringsAsFactors = F)
 
+# No. of species
+length(unique(ewers1$Taxon_name_entered))
+
 distinct(ewers1,Habitat_as_described)
-ewers1 <- ewers1 %>% filter(Habitat_as_described != "grassland matrix")
+ewers1 <- ewers1 %>% 
+   filter(Habitat_as_described != "grassland matrix" & Measurement > 0)
+   
+length(unique(ewers1$Taxon_name_entered))
+
+
 
 ewers2 <- ewers1 %>%
    select(Site_name,
@@ -70,6 +82,9 @@ ewers2 <- ewers1 %>%
           species       = Taxon,
           abundance     = Measurement) %>%
    filter(abundance > 0)
+
+length(unique(ewers2$species))
+
 
 # Add or convert columns
 ewers2 <- ewers2 %>%
@@ -85,6 +100,7 @@ ewers_abund <- ewers2 %>%
    group_by(frag_size_char, species) %>%
    summarise(abundance = sum(abundance))
 
+# sampling effort in each fragment (sum over sites)
 ewers_sample_eff <- ewers2 %>%
    select(frag_id, frag_size_char, sample_eff) %>%
    distinct() %>%
@@ -96,10 +112,18 @@ ewers_frag <- ewers2 %>%
    distinct() %>%
    left_join(ewers_sample_eff) %>%
    arrange(desc(frag_size_num))
-ewers_frag$frag_id <- paste("Site",1:nrow(ewers_frag), sep = "")
+
+# compare to Table in Ewers et al. 2007
+ewers_frag
+
+# Add new fragment IDs
+ewers_frag$frag_id <- paste("Fragment" ,1:nrow(ewers_frag), sep = "")
 ewers_frag$sample_design <- "pooled"
 
 ewers3 <- left_join(ewers_frag, ewers_abund)
+
+length(unique(ewers3$species))
+# just 127 compared to 893 in the paper
 
 ewers3 <- ewers3 %>%
    select(names(dat_long))
@@ -108,7 +132,12 @@ ewers3 <- ewers3 %>%
 predicts_path <- path2Dropbox %+% "From PREDICTS/Fernandez_&_Simonetti_2013.csv" 
 fernandez1 <- read.csv(predicts_path, stringsAsFactors = F)
 
-distinct(fernandez1, Habitat_as_described)
+unique(fernandez1$Diversity_metric_type)
+fernandez1 <- filter(fernandez1, Diversity_metric_type == "Abundance")
+
+fernandez1 %>%
+   select(Site_name, Habitat_as_described, Habitat_patch_area_square_metres, Sampling_effort) %>%
+   distinct()
 
 fernandez2 <- fernandez1 %>%
    select(Site_name,
@@ -122,7 +151,7 @@ fernandez2 <- fernandez1 %>%
           sample_eff    = Sampling_effort,
           species       = Taxon,
           abundance     = Measurement) %>%
-   filter(abundance > 0)
+   filter(abundance > 0 & !is.na( Habitat_as_described))
 
 # Add or convert columns
 fernandez2 <- fernandez2 %>%
@@ -130,15 +159,17 @@ fernandez2 <- fernandez2 %>%
       dataset_label  = "Fernandez_2013",
       sample_id      = 1,
       frag_size_num  = frag_size_num/10000,
-      frag_size_char = as.character(frag_size_num)
-   )
+      frag_size_char = as.character(frag_size_num),
+      log_frag_size  = log10(frag_size_num)
+   ) %>%
+   arrange(frag_size_num, frag_id)
 
 # Deduce sampling design
-fernandez2 %>% select(frag_id, frag_size_num, sample_eff) %>% distinct
+fernandez2 %>% 
+   select(frag_id, frag_size_num, log_frag_size, sample_eff) %>% distinct
 
 # different effort in different fragments!!!
-fernandez2$sample_design <- "pooled"
-
+fernandez2$sample_design <- "standardized"
 
 fernandez2_rural <- filter(fernandez2, Habitat_as_described == "fragments similar in area and habitat characteristics with those of urban area, but surrounded by a rural matrix")
 fernandez2_urban <- filter(fernandez2, Habitat_as_described == "remnant fragments within an urban matrix")
@@ -152,12 +183,17 @@ fernandez2_rural <- fernandez2_rural %>%
 fernandez2_urban <- fernandez2_urban %>%
    select(names(dat_long))
 
-
 # Garmendia 2013 ------------------------------------------------------------
 predicts_path <- path2Dropbox %+% "From PREDICTS/Garmendia_et_al_2013.csv" 
 garmendia1 <- read.csv(predicts_path, stringsAsFactors = F)
 
 garmendia1 %>% distinct(Predominant_land_use)
+garmendia1 %>%
+   select(Site_name, Predominant_land_use, Habitat_patch_area_square_metres) %>%
+   distinct() %>%
+   arrange(Predominant_land_use)
+
+unique(garmendia1$Site_name) # less sites than in paper
 
 garmendia1 <- filter(garmendia1, Predominant_land_use == "Primary vegetation")
 
@@ -198,6 +234,7 @@ predicts_path <- path2Dropbox %+% "From PREDICTS/Stouffer_et_al_2011.csv"
 stouffer1 <- read.csv(predicts_path, stringsAsFactors = F)
 
 stouffer1 %>% distinct(Predominant_land_use)
+stouffer1 %>% distinct(Habitat_patch_area_square_metres)
 
 stouffer2 <- stouffer1 %>%
    select(Site_name,
@@ -233,5 +270,13 @@ stouffer2 <- stouffer2 %>%
 stouffer2$frag_id <- as.character(stouffer2$frag_id)
 
 # Combine and save studies
-predicts_dat <- bind_rows(caceres2, ewers2, fernandez2_rural, fernandez2_urban, garmendia2, stouffer2)
+predicts_dat <- bind_rows(caceres2, ewers3, fernandez2_rural, fernandez2_urban, garmendia2, stouffer2)
 
+# Remember to standardize sampling effort within studies!!! 
+predict_dat2 <- predicts_dat %>% 
+   group_by(dataset_label) %>%
+   mutate(sample_eff = sample_eff/min(sample_eff))
+
+View(predict_dat2 %>% 
+   group_by(dataset_label) %>%
+   select(dataset_label, frag_id, sample_eff) %>% distinct())
