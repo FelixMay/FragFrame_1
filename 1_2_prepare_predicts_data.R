@@ -188,7 +188,7 @@ fernandez3a %>%
    select(frag_id, frag_size_num, log_frag_size, sample_eff) %>% distinct
 
 # different effort in different fragments!!!
-fernandez3a$sample_design <- "standardized"
+fernandez3a$sample_design <- "standardized_fragment"
 
 dim(fernandez3a)
 dim(distinct(fernandez3a))

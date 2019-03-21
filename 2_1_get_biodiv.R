@@ -234,7 +234,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    # get mobr indices
    mob <- calc_biodiv(abund_mat = as.data.frame(dat_wide[,-(1:3)]),
                       groups = rep("frag", nrow(dat_wide)),
-                      index = c("S", "S_n", "S_PIE"), 
+                      index = c("S", "S_n", "S_asymp", "S_PIE"), 
                       effort = dat_biodiv$n_base[1],
                       extrapolate = T,
                       return_NA = F)
@@ -272,6 +272,9 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
       dat_biodiv$S_std_2 <- dat_biodiv$S_std_1 <- dat_biodiv$S_obs
    } else {
    # pooled and standardized plots   
+      
+      dat_biodiv$S_std_1 <- NA
+      
       rel_sample_eff <- dat_biodiv$sample_eff/min(dat_biodiv$sample_eff)
       dat_biodiv$N_std <- dat_biodiv$N/rel_sample_eff
    
@@ -423,7 +426,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
 # Execution of script -----------------------------------------------------
 
 # read long format data file
-infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
+infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_and_predicts.csv"
 dat_long <- read.csv(infile, stringsAsFactors = F)
 dim(dat_long)
 str(dat_long)
@@ -432,8 +435,8 @@ head(dat_long)
 
 dat_long %>% select(dataset_label, sample_design) %>% distinct()
 
-# data_set <- dat_long %>% filter(dataset_label == "Schnitzler_2008_b")
-# test <- get_biodiv(data_set)
+#data_set <- dat_long %>% filter(dataset_label == "Garmendia_2013")
+#test <- get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
