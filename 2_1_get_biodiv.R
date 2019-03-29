@@ -255,6 +255,8 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    # coverage standardized richness
    dat_biodiv$S_cov <- rep(NA, nrow(dat_biodiv)) 
    
+   dat_biodiv$S_chao <- mob$value[mob$index == "S_asymp"] 
+   
    S_cov_std <- lapply(data.frame(t(dat_wide[,-(1:3)])),
                        function(x) try(estimateD(x, datatype = "abundance",
                                                  base = "coverage",
@@ -433,10 +435,10 @@ str(dat_long)
 
 head(dat_long)
 
-dat_long %>% select(dataset_label, sample_design) %>% distinct()
-
-#data_set <- dat_long %>% filter(dataset_label == "Garmendia_2013")
-#test <- get_biodiv(data_set)
+# dat_long %>% select(dataset_label, sample_design) %>% distinct()
+# 
+# data_set <- dat_long %>% filter(dataset_label == "Garmendia_2013")
+# test <- get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
