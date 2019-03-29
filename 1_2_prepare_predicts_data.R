@@ -77,23 +77,26 @@ distinct(ewers1,Habitat_as_described)
 
 ewers2 <- ewers1 %>% 
    filter(Habitat_as_described != "grassland matrix" & Measurement > 0)
+rm(ewers1)
    
 length(unique(ewers2$Taxon_name_entered))
 
 ewers3 <- ewers2 %>%
    select(Site_name,
+          Habitat_as_described,
           Habitat_patch_area_square_metres,
           Sampling_effort,
-          Taxon,
+          Taxon_name_entered,
           Measurement) %>%
    rename(frag_id       = Site_name,
           frag_size_num = Habitat_patch_area_square_metres,
           sample_eff    = Sampling_effort,
-          species       = Taxon,
+          species       = Taxon_name_entered,
           abundance     = Measurement) %>%
    filter(abundance > 0)
 
 length(unique(ewers3$species))
+rm(ewers2)
 
 # Add or convert columns
 ewers3a <- ewers3 %>%
@@ -106,24 +109,26 @@ ewers3a <- ewers3 %>%
 
 # calculate species abundances in each fragment
 ewers3a_abund <- ewers3a %>%
-   group_by(frag_size_char, species) %>%
+   group_by(Habitat_as_described, frag_size_char, species) %>%
    summarise(abundance = sum(abundance))
 
 # sampling effort in each fragment (sum over sites)
 ewers3a_sample_eff <- ewers3a %>%
-   select(frag_id, frag_size_char, sample_eff) %>%
+   select(Habitat_as_described, frag_id, frag_size_char, sample_eff) %>%
    distinct() %>%
-   group_by(frag_size_char) %>%
+   group_by(Habitat_as_described, frag_size_char) %>%
    summarise(sample_eff = sum(sample_eff))
 
 ewers3a_frag <- ewers3a %>%
-   select(frag_size_num, dataset_label, sample_id, frag_size_char) %>%
+   select(Habitat_as_described, frag_size_num, dataset_label, sample_id, frag_size_char) %>%
    distinct() %>%
    left_join(ewers3a_sample_eff) %>%
    arrange(desc(frag_size_num))
 
 # compare to Table in Ewers et al. 2007
 ewers3a_frag
+outfile <- path2Dropbox %+% "From PREDICTS/Ewers_tab_predicts.csv" 
+write_csv(ewers3a_frag, outfile )
 
 # Add new fragment IDs
 ewers3a_frag$frag_id <- paste("Fragment" ,1:nrow(ewers3a_frag), sep = "")
@@ -158,13 +163,13 @@ fernandez3 <- fernandez2 %>%
    select(Site_name,
           Habitat_patch_area_square_metres,
           Sampling_effort,
-          Taxon,
+          Taxon_name_entered,
           Measurement,
           Habitat_as_described) %>%
    rename(frag_id       = Site_name,
           frag_size_num = Habitat_patch_area_square_metres,
           sample_eff    = Sampling_effort,
-          species       = Taxon,
+          species       = Taxon_name_entered,
           abundance     = Measurement) %>%
    filter(abundance > 0 & !is.na( Habitat_as_described))
 
@@ -199,10 +204,15 @@ fernandez3b <- fernandez3a %>%
    summarise(abundance = sum(abundance)) %>% 
    ungroup() %>%
    arrange(frag_id, species)
-
-
-
 rm(fernandez3a)
+
+# create sites by species table
+fernandez4 <- fernandez3b %>%
+   select(frag_id, frag_size_num, species, abundance) %>%
+   spread(key = species , value = abundance, fill = 0)
+
+predicts_path <- path2Dropbox %+% "From PREDICTS/Fernandez_Simonetti_Table_3.csv" 
+write_csv(fernandez4, predicts_path)
 
 fernandez3b_rural <- filter(fernandez3b, Habitat_as_described == "fragments similar in area and habitat characteristics with those of urban area, but surrounded by a rural matrix")
 fernandez3b_urban <- filter(fernandez3b, Habitat_as_described == "remnant fragments within an urban matrix")
@@ -238,25 +248,25 @@ garmendia1 %>%
 unique(garmendia1$Site_name) # less sites than in paper
 
 # Filter for primarey vegetation patches
-garmendia2 <- filter(garmendia1, Predominant_land_use == "Primary vegetation")
-rm(garmendia1)
+# Not necessary according to Info from Victor Arroyo-Rdriguez (e-mail from March 22nd 2019)
+# garmendia2 <- filter(garmendia1, Predominant_land_use == "Primary vegetation")
 
 # Select and rename columns and filter positive abundances
 # filter distinct rows
-garmendia3 <- garmendia2 %>%
+garmendia3 <- garmendia1 %>%
    select(Site_name,
           Habitat_patch_area_square_metres,
           Sampling_effort,
-          Taxon,
+          Taxon_name_entered,
           Measurement) %>%
    rename(frag_id       = Site_name,
           frag_size_num = Habitat_patch_area_square_metres,
           sample_eff    = Sampling_effort,
-          species       = Taxon,
+          species       = Taxon_name_entered,
           abundance     = Measurement) %>%
    filter(abundance > 0) %>%
    distinct()
-rm(garmendia2)
+rm(garmendia1)
 
 # Add or convert columns
 garmendia3a <- garmendia3 %>%
@@ -309,12 +319,12 @@ stouffer2 <- stouffer1 %>%
    select(Site_name,
           Habitat_patch_area_square_metres,
           Sampling_effort,
-          Taxon,
+          Taxon_name_entered,
           Measurement) %>%
    rename(frag_id       = Site_name,
           frag_size_num = Habitat_patch_area_square_metres,
           sample_eff    = Sampling_effort,
-          species       = Taxon,
+          species       = Taxon_name_entered,
           abundance     = Measurement) %>%
    filter(abundance > 0)
 rm(stouffer1)
