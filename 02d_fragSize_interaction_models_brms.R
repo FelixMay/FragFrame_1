@@ -1,11 +1,11 @@
 # code to fit models for fragmentation synthesis
 # so far: bayesian framework for approximately ML-like results (i.e.,
 # with non-informative priors - against the science of Gelman)
-
+library(tidyverse)
+library(brms)
 
 # load the data
 # frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
-
 frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
 
 
@@ -355,3 +355,28 @@ ggplot() +
   theme(plot.caption = element_text(hjust = 0))
 
 # ggsave('two_way_interactions.pdf', width = 330, height = 200, units = 'mm')
+
+# regression style plots of the interactions
+# for plotting fixed effects
+lSstd_fS_taxa_fitted <- cbind(lS_std_fS_taxa$data,
+                               fitted(lS_std_fS_taxa, re_formula = NA)) %>% 
+  as_tibble() %>% 
+  inner_join(frag2 %>% distinct(filename, c.lfs, taxa, entity.size),
+             by = c('filename', 'c.lfs', 'taxa'))
+
+ggplot() +
+  geom_point(data = frag2 %>% filter(!filename %in% problems$filename) %>% 
+               filter(!is.na(taxa)),
+             aes(x = entity.size, y = S_std, colour = taxa)) +
+  geom_line(data = lSstd_fS_taxa_fitted,
+            aes(x = entity.size, y = exp(Estimate), colour = taxa),
+            size = 1.5) +
+  # fixed effect uncertainty
+  geom_ribbon(data = lSstd_fS_taxa_fitted,
+              aes(x = entity.size,
+                  ymin = exp(Q2.5),
+                  ymax = exp(Q97.5), fill = taxa, linetype = NA),
+              alpha = 0.3) +
+  scale_x_continuous(trans = 'log', breaks = c(1e-1, 1e2, 1e5)) +
+  scale_y_continuous(name = 'Species richness (standardised)', trans = 'log', breaks = c(2,20,200)) +
+  theme_bw()
