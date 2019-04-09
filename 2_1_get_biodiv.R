@@ -102,7 +102,7 @@ betapart_subplots <- function(index, dat1, n){
    
    # sum abundances in the same fragment
    dat_sample2 <- dat_sample %>%
-      select(-frag_size_num, - sample_id) %>%
+      select(-frag_size_num, -sample_id) %>%
       group_by(frag_id) %>%
       summarise_all(sum)
    
@@ -428,7 +428,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
 # Execution of script -----------------------------------------------------
 
 # read long format data file
-infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_and_predicts.csv"
+infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_predicts_ewers.csv"
 dat_long <- read.csv(infile, stringsAsFactors = F)
 dim(dat_long)
 str(dat_long)
@@ -437,7 +437,7 @@ head(dat_long)
 
 # dat_long %>% select(dataset_label, sample_design) %>% distinct()
 # 
-# data_set <- dat_long %>% filter(dataset_label == "Garmendia_2013")
+# data_set <- dat_long %>% filter(dataset_label == "Ewers_2007")
 # test <- get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
