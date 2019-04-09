@@ -63,84 +63,84 @@ caceres2a <- caceres2 %>%
    select(names(dat_long))
 rm(caceres2)
 
-# Ewers 2007 ------------------------------------------------------------
-predicts_path <- path2Dropbox %+% "From PREDICTS/Ewers_et_al_2007.csv" 
-
-ewers1 <- read.csv(predicts_path, stringsAsFactors = F)
-dim(ewers1)
-dim(distinct(ewers1))
-
-# No. of species
-length(unique(ewers1$Taxon_name_entered))
-
-distinct(ewers1,Habitat_as_described)
-
-ewers2 <- ewers1 %>% 
-   filter(Habitat_as_described != "grassland matrix" & Measurement > 0)
-rm(ewers1)
-   
-length(unique(ewers2$Taxon_name_entered))
-
-ewers3 <- ewers2 %>%
-   select(Site_name,
-          Habitat_as_described,
-          Habitat_patch_area_square_metres,
-          Sampling_effort,
-          Taxon_name_entered,
-          Measurement) %>%
-   rename(frag_id       = Site_name,
-          frag_size_num = Habitat_patch_area_square_metres,
-          sample_eff    = Sampling_effort,
-          species       = Taxon_name_entered,
-          abundance     = Measurement) %>%
-   filter(abundance > 0)
-
-length(unique(ewers3$species))
-rm(ewers2)
-
-# Add or convert columns
-ewers3a <- ewers3 %>%
-   mutate(
-      dataset_label  = "Ewers_2007",
-      sample_id      = 1,
-      frag_size_num  = frag_size_num/10000,
-      frag_size_char = as.character(frag_size_num)
-   )
-
-# calculate species abundances in each fragment
-ewers3a_abund <- ewers3a %>%
-   group_by(Habitat_as_described, frag_size_char, species) %>%
-   summarise(abundance = sum(abundance))
-
-# sampling effort in each fragment (sum over sites)
-ewers3a_sample_eff <- ewers3a %>%
-   select(Habitat_as_described, frag_id, frag_size_char, sample_eff) %>%
-   distinct() %>%
-   group_by(Habitat_as_described, frag_size_char) %>%
-   summarise(sample_eff = sum(sample_eff))
-
-ewers3a_frag <- ewers3a %>%
-   select(Habitat_as_described, frag_size_num, dataset_label, sample_id, frag_size_char) %>%
-   distinct() %>%
-   left_join(ewers3a_sample_eff) %>%
-   arrange(desc(frag_size_num))
-
-# compare to Table in Ewers et al. 2007
-ewers3a_frag
-outfile <- path2Dropbox %+% "From PREDICTS/Ewers_tab_predicts.csv" 
-write_csv(ewers3a_frag, outfile )
-
-# Add new fragment IDs
-ewers3a_frag$frag_id <- paste("Fragment" ,1:nrow(ewers3a_frag), sep = "")
-ewers3a_frag$sample_design <- "pooled"
-
-ewers3b <- left_join(ewers3a_frag, ewers3a_abund)
-
-length(unique(ewers3$species))
-# just 127 compared to 893 in the paper
-
-ewers3c <- ewers3b %>%
-   select(names(dat_long))
+# # Ewers 2007 ------------------------------------------------------------
+# predicts_path <- path2Dropbox %+% "From PREDICTS/Ewers_et_al_2007.csv" 
+# 
+# ewers1 <- read.csv(predicts_path, stringsAsFactors = F)
+# dim(ewers1)
+# dim(distinct(ewers1))
+# 
+# # No. of species
+# length(unique(ewers1$Taxon_name_entered))
+# 
+# distinct(ewers1,Habitat_as_described)
+# 
+# ewers2 <- ewers1 %>% 
+#    filter(Habitat_as_described != "grassland matrix" & Measurement > 0)
+# rm(ewers1)
+#    
+# length(unique(ewers2$Taxon_name_entered))
+# 
+# ewers3 <- ewers2 %>%
+#    select(Site_name,
+#           Habitat_as_described,
+#           Habitat_patch_area_square_metres,
+#           Sampling_effort,
+#           Taxon_name_entered,
+#           Measurement) %>%
+#    rename(frag_id       = Site_name,
+#           frag_size_num = Habitat_patch_area_square_metres,
+#           sample_eff    = Sampling_effort,
+#           species       = Taxon_name_entered,
+#           abundance     = Measurement) %>%
+#    filter(abundance > 0)
+# 
+# length(unique(ewers3$species))
+# rm(ewers2)
+# 
+# # Add or convert columns
+# ewers3a <- ewers3 %>%
+#    mutate(
+#       dataset_label  = "Ewers_2007",
+#       sample_id      = 1,
+#       frag_size_num  = frag_size_num/10000,
+#       frag_size_char = as.character(frag_size_num)
+#    )
+# 
+# # calculate species abundances in each fragment
+# ewers3a_abund <- ewers3a %>%
+#    group_by(Habitat_as_described, frag_size_char, species) %>%
+#    summarise(abundance = sum(abundance))
+# 
+# # sampling effort in each fragment (sum over sites)
+# ewers3a_sample_eff <- ewers3a %>%
+#    select(Habitat_as_described, frag_id, frag_size_char, sample_eff) %>%
+#    distinct() %>%
+#    group_by(Habitat_as_described, frag_size_char) %>%
+#    summarise(sample_eff = sum(sample_eff))
+# 
+# ewers3a_frag <- ewers3a %>%
+#    select(Habitat_as_described, frag_size_num, dataset_label, sample_id, frag_size_char) %>%
+#    distinct() %>%
+#    left_join(ewers3a_sample_eff) %>%
+#    arrange(desc(frag_size_num))
+# 
+# # compare to Table in Ewers et al. 2007
+# ewers3a_frag
+# outfile <- path2Dropbox %+% "From PREDICTS/Ewers_tab_predicts.csv" 
+# write_csv(ewers3a_frag, outfile )
+# 
+# # Add new fragment IDs
+# ewers3a_frag$frag_id <- paste("Fragment" ,1:nrow(ewers3a_frag), sep = "")
+# ewers3a_frag$sample_design <- "pooled"
+# 
+# ewers3b <- left_join(ewers3a_frag, ewers3a_abund)
+# 
+# length(unique(ewers3$species))
+# # just 127 compared to 893 in the paper
+# 
+# ewers3c <- ewers3b %>%
+#    select(names(dat_long))
 
 # Fernandez 2013 ------------------------------------------------------------
 predicts_path <- path2Dropbox %+% "From PREDICTS/Fernandez_&_Simonetti_2013.csv" 

@@ -6,12 +6,14 @@ site <- site %>%
    mutate(Area = 10^log10Area - 1) %>%
    arrange(Site)
 
-# Add unique fragment IDS
+n_frag <- length(unique(site$Area))
+
+# Add unique fragment IDs
 frag <- site %>% 
    select(Area) %>%
    distinct(Area) %>%
    arrange(Area) %>%
-   mutate(frag_id = paste("frag", 1:nrow(frag), sep = ""))
+   mutate(frag_id = paste("frag", 1:n_frag, sep = ""))
 frag$frag_id[frag$Area > 1000000] <- "continuous1"
 
 site <- left_join(site, frag)
@@ -32,6 +34,8 @@ any(duplicated(sample_days))
 site$sample_eff <- sample_days$SampDays[1:nrow(site)]
 site$Site2      <- sample_days$NewSite[1:nrow(site)]
 site <- select(site, Site, Site2, everything())
+head(site)
+tail(site)
 
 # read abundance data
 infile <- path2Dropbox %+% "From PREDICTS/Ewers_et_al_2007/HRFFPbeetledata_rawdata.csv"
@@ -53,6 +57,10 @@ site_abund %>%
    select(Site, sample_eff) %>%
    distinct()
 
+# filter samples within forest fragments
+site_abund2 <- site_abund %>%
+   filter(DistCode < 0)
+
 # adjust to structure of exiting data base
 infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_and_predicts.csv"
 dat_long <- read.csv(infile, stringsAsFactors = F)
@@ -60,20 +68,20 @@ dim(dat_long)
 str(dat_long)
 dat_long$sample_id <- as.character(dat_long$sample_id)
 
-site_abund2 <- site_abund %>%
+site_abund3 <- site_abund2 %>%
    rename(sample_id = Site,
           frag_size_num = Area) %>%
    mutate(dataset_label = "Ewers_2007",
           frag_size_char = as.character(frag_size_num),
           sample_design  = "pooled") %>%
    select(names(dat_long))
-head(site_abund2)
+head(site_abund3)
 
 # Remember to standardize sampling effort within studies!!!
-site_abund2 <- site_abund2 %>%
+site_abund3 <- site_abund3 %>%
    mutate(sample_eff = sample_eff/min(sample_eff) )
 
-fragsad_predicts_ewers <- bind_rows(dat_long, site_abund2)
+fragsad_predicts_ewers <- bind_rows(dat_long, site_abund3)
 
 # read long format data file
 outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_predicts_ewers.csv"

@@ -57,7 +57,7 @@ read_data_files <- function(filename){
    # 4. sample ID
    sample_id <- read.table(path2infile, sep = ",", row.names = 1, nrows = 1,
                                 skip = 2, stringsAsFactors = F)
-   sample_id <- as.numeric(sample_id[, 1:n_col])
+   sample_id <- as.character(sample_id[, 1:n_col])
    
    # 5. Fragment size
    frag_size <- read.table(path2infile, sep = ",", row.names = 1, nrows = 1,
@@ -147,11 +147,11 @@ dat_long %>% filter(frag_size_char == "Continuous")
 path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
 write_csv(dat_long, path2outfile)
 
-# save file labels
-labels <- dat_long %>%
-   select(dataset_label) %>%
-   distinct()
-
-path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/file_labels.csv"
-write_csv(labels, path2outfile)
+# # save file labels
+# labels <- dat_long %>%
+#    select(dataset_label) %>%
+#    distinct()
+# 
+# path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/file_labels.csv"
+# write_csv(labels, path2outfile)
 
