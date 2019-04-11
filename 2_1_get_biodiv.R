@@ -450,7 +450,7 @@ for (i in 1:nrow(parset)){
       map(get_biodiv,
           fac_cont = parset$fac_cont[i],
           method_abund = parset$method_abund[i],
-          n_resamples = 10)
+          n_resamples = 100)
    
    out_biodiv_frag <- out1 %>% map_dfr("biodiv_frag")
    out_betapart_frag <- out1 %>% map_dfr("betapart_frag")
