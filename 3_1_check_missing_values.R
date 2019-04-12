@@ -27,3 +27,17 @@ summary(na_S_n)
 
 frag_div %>% filter(dataset_label == "Ewers_2007")
 
+hist(unique(frag_div$cov_base))
+
+# check base coverage
+frag_div_cov_base <- frag_div %>%
+   select(dataset_label, cov_base) %>%
+   distinct() %>%
+   arrange(cov_base) 
+
+frag_div_cov <- frag_div %>%
+   select(dataset_label, coverage, cov_base) %>%
+   distinct() %>%
+   arrange(cov_base) 
+plot(coverage ~ cov_base, data = frag_div_cov)
+hist(frag_div_cov$coverage)
