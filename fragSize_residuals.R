@@ -13,8 +13,10 @@ S_std_resid <- residuals(Sstd2_lognorm_fragSize,
             by = 'dataset_label')
 
 par(mfrow=c(3,3))
+# can we do a better job with the ones and twos?
 with(S_std_resid, plot(Estimate ~ S_std_2,
-                       ylab = 'Pearson residual'));abline(h=0, lty=2)
+                       ylab = 'Pearson residual',
+                       log = 'x'));abline(h=0, lty=2)
 with(S_std_resid, plot(Estimate ~ c.lfs,
                        ylab = 'Pearson residual'));abline(h=0, lty=2)
 with(S_std_resid, boxplot(Estimate ~ dataset_label,
