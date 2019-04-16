@@ -4,6 +4,7 @@ library(brms)
 library(ggridges)
 
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
+
 # get the metadata (I want to group the posteriors)
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 

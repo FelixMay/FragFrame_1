@@ -526,16 +526,120 @@ S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>%
     mutate(S_std2_slope = Slope,
            S_std2_lower = Slope_lower,
            S_std2_upper = Slope_upper) %>% 
-    select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper)
+    select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper) %>% 
+  left_join(meta,
+            by = 'dataset_label')
 
 Sn_study_slope<- Sn_lognorm_fragSize_group_coefs %>% 
     mutate(S_n_slope = Slope,
            S_n_lower = Slope_lower,
            S_n_upper = Slope_upper) %>% 
-    select(dataset_label, S_n_slope, S_n_lower, S_n_upper)
+    select(dataset_label, S_n_slope, S_n_lower, S_n_upper) %>% 
+  left_join(meta,
+            by = 'dataset_label')
 
 Scov_study_slope<- Scov_lognorm_fragSize_group_coefs %>% 
   mutate(S_cov_slope = Slope,
          S_cov_lower = Slope_lower,
          S_cov_upper = Slope_upper) %>% 
-  select(dataset_label, S_cov_slope, S_cov_lower, S_cov_upper)
+  select(dataset_label, S_cov_slope, S_cov_lower, S_cov_upper) %>% 
+  left_join(meta,
+            by = 'dataset_label')
+
+Schao_study_slope<- Schao_lognorm_fragSize_group_coefs %>% 
+  mutate(S_chao_slope = Slope,
+         S_chao_lower = Slope_lower,
+         S_chao_upper = Slope_upper) %>% 
+  select(dataset_label, S_chao_slope, S_chao_lower, S_chao_upper) %>% 
+  left_join(meta,
+            by = 'dataset_label')
+
+Spie_study_slope<- S_PIE_fragSize_group_coefs %>% 
+  mutate(S_PIE_slope = Slope,
+         S_PIE_lower = Slope_lower,
+         S_PIE_upper = Slope_upper) %>% 
+  select(dataset_label, S_PIE_slope, S_PIE_lower, S_PIE_upper) %>% 
+  left_join(meta,
+            by = 'dataset_label')
+
+Nstd_study_slope <- Nstd_fragSize_group_coefs %>% 
+  mutate(N_std_slope = Slope,
+         N_std_lower = Slope_lower,
+         N_std_upper = Slope_upper) %>% 
+  select(dataset_label, N_std_slope, N_std_lower, N_std_upper) %>% 
+  left_join(meta,
+            by = 'dataset_label')
+
+# delta S_std ~ delta N
+inner_join(S_std_study_slope %>% 
+             select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper),
+           Nstd_study_slope,
+           by = 'dataset_label') %>% 
+  # mutate(Sstd_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
+  #        N_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
+  ggplot() +
+  # facet_wrap(time.since.fragmentation ~ taxa) +
+  geom_point(aes(x = N_std_slope, y = S_std2_slope),#, colour = interaction(Scov_change, Sn_change)
+             size = 2) +
+  geom_linerange(aes(x = N_std_slope, ymin = S_std2_lower, ymax = S_std2_upper),
+                 size = 0.25,
+                 alpha = 0.2) +
+  geom_errorbarh(aes(xmin = N_std_lower, xmax = N_std_upper, y = S_std2_slope ),
+                 size = 0.25,
+                 alpha = 0.2) +
+  geom_abline(intercept = 0, 
+              slope = 1) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+
+# delta S_std ~ delta S_PIE
+inner_join(S_std_study_slope %>% 
+             select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper),
+           Spie_study_slope,
+           by = 'dataset_label') %>% 
+  # mutate(Sstd_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
+  #        N_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
+  ggplot() +
+  # facet_wrap(time.since.fragmentation ~ taxa) +
+  geom_point(aes(x = S_PIE_slope, y = S_std2_slope),#, colour = interaction(Scov_change, Sn_change)
+             size = 2) +
+  geom_linerange(aes(x = S_PIE_slope, ymin = S_std2_lower, ymax = S_std2_upper),
+                 size = 0.25,
+                 alpha = 0.2) +
+  geom_errorbarh(aes(xmin = S_PIE_lower, xmax = S_PIE_upper, y = S_std2_slope ),
+                 size = 0.25,
+                 alpha = 0.2) +
+  geom_abline(intercept = 0, 
+              slope = 1) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+
+# what about Scov ~ Sn: difference between these two is due to deltaN
+inner_join(Sn_study_slope %>% 
+             select(dataset_label, S_n_slope, S_n_lower, S_n_upper),
+           Scov_study_slope,
+           by = 'dataset_label') %>% 
+  mutate(Scov_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
+         Sn_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
+  ggplot() +
+  facet_wrap(time.since.fragmentation ~ taxa) +
+  geom_point(aes(x = S_n_slope, y = S_cov_slope, colour = interaction(Scov_change, Sn_change)),
+             size = 2) +
+  geom_linerange(aes(x = S_n_slope, ymin = S_cov_lower, ymax = S_cov_upper),
+                 size = 0.25,
+                 alpha = 0.2) +
+  geom_errorbarh(aes(xmin = S_n_lower, xmax = S_n_upper, y = S_cov_slope ),
+                 size = 0.25,
+                 alpha = 0.2) +
+  geom_abline(intercept = 0, 
+              slope = 1) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+  
+
