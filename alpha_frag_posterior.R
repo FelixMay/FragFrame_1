@@ -10,8 +10,8 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
-# study-levels (use model with fewest missing values)
-study_levels <- S_PIE_lognorm_fragSize$data %>% 
+# study-levels (no studies are missing N_std)
+study_levels <- Nstd_lognorm_fragSize$data %>% 
   as_tibble() %>% 
   distinct(dataset_label) %>% 
   mutate(level = dataset_label) %>%
@@ -32,6 +32,10 @@ study_sample_posterior <- study_levels %>%
                                                   pars = paste('r_dataset_label[', as.character(.x$level), ',c.lfs]', sep=''),
                                                   exact = TRUE,
                                                   subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()),
+         Schao = purrr::map(data, ~posterior_samples(S_chao_lognorm_fragSize,
+                                                  pars = paste('r_dataset_label[', as.character(.x$level), ',c.lfs]', sep=''),
+                                                  exact = TRUE,
+                                                  subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()),
          S_PIE = purrr::map(data, ~posterior_samples(S_PIE_lognorm_fragSize,
                                                      pars = paste('r_dataset_label[', as.character(.x$level), ',c.lfs]', sep=''),
                                                      exact = TRUE,
@@ -44,7 +48,9 @@ study_sample_posterior <- study_levels %>%
 
 Sstd2_lognorm_fragSize_fixef <- fixef(Sstd2_lognorm_fragSize)
 S_PIE_lognorm_fragSize_fixef <- fixef(S_PIE_lognorm_fragSize)
+Scov_lognorm_fragSize_fixef <- fixef(Scov_lognorm_fragSize)
 Sn_lognorm_fragSize_fixef <- fixef(Sn_lognorm_fragSize)
+Schao_lognorm_fragSize_fixef <- fixef(S_chao_lognorm_fragSize)
 Nstd_lognorm_fragSize_fixef <- fixef(Nstd_lognorm_fragSize)
 
 Sstd_posterior <- study_sample_posterior  %>% 
@@ -83,7 +89,7 @@ Spie_posterior$time.since.fragmentation <- factor(Spie_posterior$time.since.frag
                                                              'Intermediate (20-100 years)',
                                                              'Long (100+ years)'))
 ggplot() +
-  facet_grid( ~ biome, scale = 'free') +
+  facet_grid(continent ~ biome, scale = 'free') +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.3) +

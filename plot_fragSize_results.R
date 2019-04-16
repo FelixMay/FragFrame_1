@@ -1,5 +1,6 @@
 # code to plot results of fragment size (only) models
 library(tidyverse)
+library(brms)
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
 
 #------wrangle for plotting
