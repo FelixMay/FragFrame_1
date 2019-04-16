@@ -13,7 +13,7 @@ S_std_resid <- residuals(Sstd2_lognorm_fragSize,
             by = 'dataset_label')
 
 par(mfrow=c(3,3))
-# can we do a better job with the ones and twos?
+# can we do a better job with the ones and twos? Probably not. Error distribution? Model?
 with(S_std_resid, plot(Estimate ~ S_std_2,
                        ylab = 'Pearson residual',
                        log = 'x'));abline(h=0, lty=2)
@@ -31,4 +31,4 @@ with(S_std_resid, boxplot(Estimate ~ time.since.fragmentation,
                           ylab = 'Pearson residual'));abline(h=0, lty=2)
 with(S_std_resid, boxplot(Estimate ~ continent,
                           ylab = 'Pearson residual'));abline(h=0, lty=2)
-# would be good to look at the different types of data here...how what the standardisation done?
+# would be good to look at the different types of data here...how was the standardisation done?
