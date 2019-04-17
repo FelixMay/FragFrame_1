@@ -5,23 +5,16 @@ library(tidyverse)
 library(brms)
 
 # load the data
-# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
-frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
+frag <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_biodiv_frag_fcont_10_mabund_as_is.csv')
 
+# load the meta data
+meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
+  as_tibble() %>% 
+  dplyr::rename(dataset_label = dataset_id)
 
-# remove observations without fragment size (for now...)
-frag2 <- frag %>% 
-  filter(!is.na(entity.size))
-
-# what has this filtering done to the range of entity.size?
-problems <- frag2 %>% 
-  group_by(filename) %>% 
-  summarise(min.size = min(entity.size), 
-            max.size = max(entity.size)) %>% 
-  filter(min.size==max.size)
-# & !is.na(taxa) & !is.na(veg.fragment) & !is.na(matrix.category) &
-#            !is.na(time.since.fragmentation))
-
+frag <- left_join(frag, 
+                  meta,
+                  by = 'dataset_label')
 ##--create some covariates for easier workflow--
 # mean-centred log(fragment.size)
 frag2$c.lfs <- log(frag2$entity.size) - mean(log(frag2$entity.size))
