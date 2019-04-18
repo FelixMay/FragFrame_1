@@ -8,6 +8,8 @@ library(brms)
 
 # load the data
 frag_beta <- read_csv('/gpfs1/data/idiv_chase/sablowes/fragmentation/data/2_betapart_frag_fcont_10_mabund_as_is.csv')
+# to fit locally: EVE (having older version of brms package does not start sampling for the zi models of nestedness component)
+frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
 
 # want to add a grouping variable for the pairwise comparisons
 frag_beta <- frag_beta %>% 
