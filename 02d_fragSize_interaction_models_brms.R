@@ -15,361 +15,176 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
 frag <- left_join(frag, 
                   meta,
                   by = 'dataset_label')
+
 ##--create some covariates for easier workflow--
 # mean-centred log(fragment.size)
-frag2$c.lfs <- log(frag2$entity.size) - mean(log(frag2$entity.size))
-frag2$lSstd <- log(frag2$S_std)
-frag2$lSn <- log(frag2$S_n)
-frag2$lScov <- log(frag2$S_cov)
-frag2$lS_PIE <- log(frag2$S_PIE)
-frag2$lNstd <- log(frag2$N_std)
+frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
 # # set the reference levels for the categorical covariates of interest
-frag2$matrix.category <- factor(frag2$matrix.category, levels = c('light filter', 'medium filter', 'harsh filter'))
-frag2$time.since.fragmentation <- factor(frag2$time.since.fragmentation,
-                                         levels = c("recent (less than 20 years)", "intermediate (20-100 years)", "long (100+ years)"))
-
-# fit two-way interaction between fragment size and: taxa, veg.fragment, matrix category and time since fragmentation
-# S_std
-lS_std_fS_taxa <- brm(lSstd ~ -1 + c.lfs*taxa + (c.lfs | filename), 
-                   data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                     filter(!is.na(taxa)),
-                   cores = 4, chains = 4)
-
-lS_std_fS_veg <- brm(lSstd ~ c.lfs*veg.fragment + (c.lfs | filename), 
-                  data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                    # leave out the one mangrove study, and those without data
-                    filter(veg.fragment!='mangrove' & !is.na(veg.fragment)),
-                  cores = 4, chains = 4)
-
-lS_std_fS_matrix <- brm(lSstd ~ c.lfs*matrix.category + (c.lfs | filename), 
-                     data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                       # leave out studies without data
-                       filter(!is.na(matrix.category)),
-                     cores = 4, chains = 4)
-
-lS_std_fS_time <- brm(lSstd ~ c.lfs*time.since.fragmentation + (c.lfs | filename), 
-                   data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                     # leave out studies without data
-                     filter(!is.na(time.since.fragmentation)),
-                   cores = 4, chains = 4)
-
-lS_std_fS_2way_all <- brm(lSstd ~ c.lfs + taxa + veg.fragment + matrix.category + time.since.fragmentation +
-                            c.lfs:taxa + c.lfs:veg.fragment + c.lfs:matrix.category + c.lfs:time.since.fragmentation + 
-                            (c.lfs | filename), 
-                      data = frag2 %>% filter(!filename %in% problems$filename & veg.fragment!='mangrove') %>% 
-                        # leave out studies without data
-                        filter(!is.na(taxa) & !is.na(veg.fragment) & 
-                                 !is.na(matrix.category) & !is.na(time.since.fragmentation)),
-                      cores = 4, chains = 4)
-
-# S_n
-lSn_fS_taxa <- brm(lSn ~ c.lfs*taxa + (c.lfs | filename), 
-                   data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                     filter(!is.na(taxa)),
-                   cores = 4, chains = 4)
-
-lSn_fS_veg <- brm(lSn ~ c.lfs*veg.fragment + (c.lfs | filename), 
-                  data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                    # leave out the one mangrove study, and those without data
-                    filter(veg.fragment!='mangrove' & !is.na(veg.fragment)),
-                  cores = 4, chains = 4)
-
-lSn_fS_matrix <- brm(lSn ~ c.lfs*matrix.category + (c.lfs | filename), 
-                     data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                       # leave out studies without data
-                       filter(!is.na(matrix.category)),
-                     cores = 4, chains = 4)
-
-lSn_fS_time <- brm(lSn ~ c.lfs*time.since.fragmentation + (c.lfs | filename), 
-                   data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                     # leave out studies without data
-                     filter(!is.na(time.since.fragmentation)),
-                   cores = 4, chains = 4)
-
-lSn_fS_2way_all <- brm(lSn ~ c.lfs + taxa + veg.fragment + matrix.category + time.since.fragmentation +
-                            c.lfs:taxa + c.lfs:veg.fragment + c.lfs:matrix.category + c.lfs:time.since.fragmentation + 
-                            (c.lfs | filename), 
-                          data = frag2 %>% filter(!filename %in% problems$filename & veg.fragment!='mangrove') %>% 
-                            # leave out studies without data
-                            filter(!is.na(taxa) & !is.na(veg.fragment) & 
-                                     !is.na(matrix.category) & !is.na(time.since.fragmentation)),
-                          cores = 4, chains = 4)
-
-# repeat for S_PIE
-lS_PIE_fS_taxa <- brm(lS_PIE ~ c.lfs*taxa + (c.lfs | filename), 
-                   data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                     # leave out studies without data
-                     filter(!is.na(taxa)),
-                   cores = 4, chains = 4)
-
-lS_PIE_fS_veg <- brm(lS_PIE ~ c.lfs*veg.fragment + (c.lfs | filename), 
-                  data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                    # leave out the one mangrove study, and those without data
-                    filter(veg.fragment!='mangrove' & !is.na(veg.fragment)),
-                  cores = 4, chains = 4)
-
-lS_PIE_fS_matrix <- brm(lS_PIE ~ c.lfs*matrix.category + (c.lfs | filename), 
-                     data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                       # leave out studies without data
-                       filter(!is.na(matrix.category)),
-                     cores = 4, chains = 4)
-
-lS_PIE_fS_time <- brm(lS_PIE ~ c.lfs*time.since.fragmentation + (c.lfs | filename), 
-                   data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                     # leave out studies without data
-                     filter(!is.na(time.since.fragmentation)),
-                   cores = 4, chains = 4)
-
-lS_PIE_fS_2way_all <- brm(lS_PIE ~ c.lfs + taxa + veg.fragment + matrix.category + time.since.fragmentation +
-                         c.lfs:taxa + c.lfs:veg.fragment + c.lfs:matrix.category + c.lfs:time.since.fragmentation + 
-                         (c.lfs | filename), 
-                       data = frag2 %>% filter(!filename %in% problems$filename & veg.fragment!='mangrove') %>% 
-                         # leave out studies without data
-                         filter(!is.na(taxa) & !is.na(veg.fragment) & 
-                                  !is.na(matrix.category) & !is.na(time.since.fragmentation)),
-                       cores = 4, chains = 4)
-
-# repeat for N_std
-Nstd_lognorm_fS_taxa <- brm(N_std ~ c.lfs*taxa + (c.lfs | filename), 
-                      data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                        # leave out studies without data
-                        filter(!is.na(taxa) & N_std > 0),
-                      family = 'lognormal',
-                      cores = 4, chains = 4)
-
-Nstd_lognorm_fS_veg <- brm(N_std ~ c.lfs*veg.fragment + (c.lfs | filename), 
-                     data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                       # leave out the one mangrove study, and those without data
-                       filter(veg.fragment!='mangrove' & !is.na(veg.fragment) & N_std > 0),
-                     family = 'lognormal',
-                     cores = 4, chains = 4)
-
-Nstd_lognorm_fS_matrix <- brm(N_std ~ c.lfs*matrix.category + (c.lfs | filename), 
-                        data = frag2 %>% filter(!filename %in% problems$filename & N_std > 0) %>% 
-                          # leave out studies without data
-                          filter(!is.na(matrix.category)),
-                        family = 'lognormal',
-                        cores = 4, chains = 4)
-
-Nstd_lognorm_fS_time <- brm(N_std ~ c.lfs*time.since.fragmentation + (c.lfs | filename), 
-                      data = frag2 %>% filter(!filename %in% problems$filename & N_std > 0) %>% 
-                        # leave out studies without data
-                        filter(!is.na(time.since.fragmentation)),
-                      family = 'lognormal',
-                      cores = 4, chains = 4)
-
-Nstd_lognorm_fS_2way_all <- brm(N_std ~ c.lfs + taxa + veg.fragment + matrix.category + time.since.fragmentation +
-                            c.lfs:taxa + c.lfs:veg.fragment + c.lfs:matrix.category + c.lfs:time.since.fragmentation + 
-                            (c.lfs | filename), 
-                          data = frag2 %>% filter(!filename %in% problems$filename & veg.fragment!='mangrove' & N_std > 0) %>% 
-                            # leave out studies without data
-                            filter(!is.na(taxa) & !is.na(veg.fragment) & 
-                                     !is.na(matrix.category) & !is.na(time.since.fragmentation)),
-                          family = 'lognormal',
-                          cores = 4, chains = 4)
-
-#refit N_std models with log-transformed response for compatibility with other models
-# repeat for N_std
-lNstd_fS_taxa <- brm(lNstd ~ c.lfs*taxa + (c.lfs | filename), 
-                            data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                              # leave out studies without data
-                              filter(!is.na(taxa) & N_std > 0),
-                            cores = 4, chains = 4)
-
-lNstd_fS_veg <- brm(lNstd ~ c.lfs*veg.fragment + (c.lfs | filename), 
-                           data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-                             # leave out the one mangrove study, and those without data
-                             filter(veg.fragment!='mangrove' & !is.na(veg.fragment) & N_std > 0),
-                           cores = 4, chains = 4)
-
-lNstd_fS_matrix <- brm(lNstd ~ c.lfs*matrix.category + (c.lfs | filename), 
-                              data = frag2 %>% filter(!filename %in% problems$filename & N_std > 0) %>% 
-                                # leave out studies without data
-                                filter(!is.na(matrix.category)),
-                              cores = 4, chains = 4)
-
-lNstd_fS_time <- brm(lNstd ~ c.lfs*time.since.fragmentation + (c.lfs | filename), 
-                            data = frag2 %>% filter(!filename %in% problems$filename & N_std > 0) %>% 
-                              # leave out studies without data
-                              filter(!is.na(time.since.fragmentation)),
-                            cores = 4, chains = 4)
-
-setwd('~/Dropbox/1current/fragmentation_synthesis/results/')
-save(lS_std_fS_taxa, lS_std_fS_veg, lS_std_fS_matrix, lS_std_fS_time, lSn_fS_2way_all,
-     lSn_fS_taxa, lSn_fS_veg, lSn_fS_matrix, lSn_fS_time, lSn_fS_2way_all,
-     lS_PIE_fS_taxa, lS_PIE_fS_veg, lS_PIE_fS_matrix, lS_PIE_fS_time, lS_PIE_fS_2way_all,
-     Nstd_lognorm_fS_taxa, Nstd_lognorm_fS_veg, Nstd_lognorm_fS_matrix, Nstd_lognorm_fS_time, Nstd_lognorm_fS_2way_all,
-     lNstd_fS_taxa, lNstd_fS_veg, lNstd_fS_matrix, lNstd_fS_time,
-     file = 'two_interactions_brms_fits.Rdata')
-
-##----load model fits-----
-load('~/Dropbox/1current/fragmentation_synthesis/results/two_interactions_brms_fits.Rdata')
-
-# coefficient plots
-two_way_fixed_coefs <- bind_rows(fixef(lS_std_fS_taxa) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_std',
-                                       model = 'fS_x_taxa',
-                                       coef = rownames(fixef(lS_std_fS_taxa))),
-                              fixef(lS_std_fS_matrix) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_std',
-                                       model = 'fS_x_matrix',
-                                       coef = rownames(fixef(lS_std_fS_matrix))),
-                              fixef(lS_std_fS_time) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_std',
-                                       model = 'fS_x_time',
-                                       coef = rownames(fixef(lS_std_fS_time))),
-                              fixef(lS_std_fS_veg) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_std',
-                                       model = 'fS_x_vegFrag',
-                                       coef = rownames(fixef(lS_std_fS_veg))),
-                              # Sn
-                              fixef(lSn_fS_taxa) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'Sn',
-                                       model = 'fS_x_taxa',
-                                       coef = rownames(fixef(lSn_fS_taxa))),
-                              fixef(lSn_fS_matrix) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'Sn',
-                                       model = 'fS_x_matrix',
-                                       coef = rownames(fixef(lSn_fS_matrix))),
-                              fixef(lSn_fS_time) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'Sn',
-                                       model = 'fS_x_time',
-                                       coef = rownames(fixef(lSn_fS_time))),
-                              fixef(lSn_fS_veg) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'Sn',
-                                       model = 'fS_x_vegFrag',
-                                       coef = rownames(fixef(lSn_fS_veg))),
-                              # S_PIE
-                              fixef(lS_PIE_fS_taxa) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_PIE',
-                                       model = 'fS_x_taxa',
-                                       coef = rownames(fixef(lS_PIE_fS_taxa))),
-                              fixef(lS_PIE_fS_matrix) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_PIE',
-                                       model = 'fS_x_matrix',
-                                       coef = rownames(fixef(lS_PIE_fS_matrix))),
-                              fixef(lS_PIE_fS_time) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_PIE',
-                                       model = 'fS_x_time',
-                                       coef = rownames(fixef(lS_PIE_fS_time))),
-                              fixef(lS_PIE_fS_veg) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'S_PIE',
-                                       model = 'fS_x_vegFrag',
-                                       coef = rownames(fixef(lS_PIE_fS_veg))),
-                              # N_std
-                              fixef(lNstd_fS_taxa) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'N_std',
-                                       model = 'fS_x_taxa',
-                                       coef = rownames(fixef(Nstd_lognorm_fS_taxa))),
-                              fixef(lNstd_fS_matrix) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'N_std',
-                                       model = 'fS_x_matrix',
-                                       coef = rownames(fixef(Nstd_lognorm_fS_matrix))),
-                              fixef(lNstd_fS_time) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'N_std',
-                                       model = 'fS_x_time',
-                                       coef = rownames(fixef(Nstd_lognorm_fS_time))),
-                              fixef(lNstd_fS_veg) %>% 
-                                as_tibble() %>% 
-                                mutate(response = 'N_std',
-                                       model = 'fS_x_vegFrag',
-                                       coef = rownames(fixef(Nstd_lognorm_fS_veg)))) %>% 
-  # add indicator for CIs that differ from zero
-  mutate(overlap_0 = ifelse((Q2.5 < 0 & Q97.5 <0) |
-                              (Q2.5 > 0 & Q97.5 > 0),
-                            '1', '0'),
-         labels = coef)
-# fix labels for plotting
-two_way_fixed_coefs$model <- factor(two_way_fixed_coefs$model,
-                                    levels = c("fS_x_taxa", "fS_x_matrix", "fS_x_time", "fS_x_vegFrag"),
-                                    labels = c('Frag. size x taxa', 'Frag. size x matrix harshness', 'Frag. size x time since frag.', 'Frag. size x frag. vegetation'))
-two_way_fixed_coefs$labels <- factor(two_way_fixed_coefs$labels,
-                                     levels = c('Intercept', 'c.lfs',
-                                                'taxabirds', 'taxainvertebrates', 'taxamammals', 'taxaplants',
-                                                'veg.fragmentgrassland', 'veg.fragmentshrublandDsteppe',
-                                                'time.since.fragmentationintermediate20M100years',  'time.since.fragmentationlong100Pyears', 
-                                                'c.lfs:taxabirds', 'c.lfs:taxainvertebrates', 'c.lfs:taxamammals', 'c.lfs:taxaplants', 
-                                                'matrix.categorymediumfilter', 'matrix.categoryharshfilter',
-                                                'c.lfs:matrix.categorymediumfilter',  'c.lfs:matrix.categoryharshfilter', 
-                                                'c.lfs:time.since.fragmentationintermediate20M100years', 'c.lfs:time.since.fragmentationlong100Pyears',
-                                                'c.lfs:veg.fragmentgrassland', 'c.lfs:veg.fragmentshrublandDsteppe'),
-                                     labels = c('Intercept', 'Fragment size (log)',
-                                                'Birds', 'Invertebrates', 'Mammals', 'Plants',
-                                                'Grassland', 'Shrubland / steppe',
-                                                'Time since fragmentation (20-100 years)',  'Time since fragmentation (>100 years)', 
-                                                'Frag. size x birds', 'Frag. size x invertebrates', 'Frag. size x mammals', 'Frag. size x plants', 
-                                                'Medium matrix', 'Harsh matrix',
-                                                'Frag. size x medium matrix',  'Frag. size x harsh matrix', 
-                                                'Frag. size x Time since fragmentation (20-100 years)',  'Frag. size x Time since fragmentation (>100 years)', 
-                                                'Frag size x grassland', 'Frag. size x Shrubland / steppe'))
+frag %>% distinct(Matrix.category)
+frag$Matrix.category <- factor(frag$Matrix.category, levels = c('light filter', 'intermediate', 'harsh filter'))
+frag %>% distinct(time.since.fragmentation)
+frag$time.since.fragmentation <- factor(frag$time.since.fragmentation,
+                                         levels = c("Recent (less than 20 years)", "Intermediate (20-100 years)", "long (100+ years)"))
 
 
-setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/')
-ggplot() +
-  facet_wrap(~model, scales = 'free') +
-  geom_point(data = two_way_fixed_coefs,
-             aes(x = labels, y = Estimate, group = response,
-                 colour = response, shape = overlap_0),
-             position = position_dodge(width = 0.8),
-             size = 2) +
-  geom_errorbar(data = two_way_fixed_coefs,
-                aes(x = labels, ymin = Q2.5, ymax = Q97.5,
-                    colour = response, group = response, linetype = overlap_0),
-                width = 0,
-                position = position_dodge(width = 0.8)) +
-  scale_shape_manual(guide = F, values = c('1' = 19, '0' = 1)) +
-  scale_linetype_manual(guide = F, values = c('1' = 1, '0' = 2)) +
-  geom_hline(yintercept = 0, lty = 2) +
-  labs(x = 'Coefficient', 
-       y = 'Coefficient estimate',
-       caption = 'Coefficient estimates for models with two-way interactions. 
-       Intercept and Frag. size effect in all panels is for the reference level of the term:
-       taxa = amphibians/reptiles, matrix harshness = light,
-       time since frag. = short (< 20 years), frag. vegetation = forest.
-       Filled symbols and solid lines represent coefficients that differ from zero.') +
-  coord_flip() +
-  theme_bw() +
-  theme(plot.caption = element_text(hjust = 0))
+# two-way interactions: matrix permeability first
+Sstd2_ln_fS_matrix <- update(Sstd2_lognorm_fragSize,
+                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)
 
-# ggsave('two_way_interactions.pdf', width = 330, height = 200, units = 'mm')
+Sn_ln_fS_matrix <- update(Sn_lognorm_fragSize, 
+                          formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                          newdata = frag, cores = 4)
 
-# regression style plots of the interactions
-# for plotting fixed effects
-lSstd_fS_taxa_fitted <- cbind(lS_std_fS_taxa$data,
-                               fitted(lS_std_fS_taxa, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag2 %>% distinct(filename, c.lfs, taxa, entity.size),
-             by = c('filename', 'c.lfs', 'taxa'))
+Scov_ln_fS_matrix <- update(Scov_lognorm_fragSize, 
+                          formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                          newdata = frag, cores = 4)
 
-ggplot() +
-  geom_point(data = frag2 %>% filter(!filename %in% problems$filename) %>% 
-               filter(!is.na(taxa)),
-             aes(x = entity.size, y = S_std, colour = taxa)) +
-  geom_line(data = lSstd_fS_taxa_fitted,
-            aes(x = entity.size, y = exp(Estimate), colour = taxa),
-            size = 1.5) +
-  # fixed effect uncertainty
-  geom_ribbon(data = lSstd_fS_taxa_fitted,
-              aes(x = entity.size,
-                  ymin = exp(Q2.5),
-                  ymax = exp(Q97.5), fill = taxa, linetype = NA),
-              alpha = 0.3) +
-  scale_x_continuous(trans = 'log', breaks = c(1e-1, 1e2, 1e5)) +
-  scale_y_continuous(name = 'Species richness (standardised)', trans = 'log', breaks = c(2,20,200)) +
-  theme_bw()
+Schao_ln_fS_matrix <- update(S_chao_lognorm_fragSize, 
+                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)
+
+S_PIE_ln_fS_matrix <- update(S_PIE_lognorm_fragSize, 
+                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)
+
+N_std_ln_fS_matrix <- update(Nstd_lognorm_fragSize, 
+                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)  
+
+# repeat for taxa
+Sstd2_ln_fS_taxa <- update(Sstd2_lognorm_fragSize, 
+                          formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                          newdata = frag, cores = 4)
+
+Sn_ln_fS_taxa <- update(Sn_lognorm_fragSize, 
+                          formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                          newdata = frag, cores = 4)
+
+Scov_ln_fS_taxa <- update(Scov_lognorm_fragSize, 
+                            formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                            newdata = frag, cores = 4)
+
+Schao_ln_fS_taxa <- update(S_chao_lognorm_fragSize, 
+                             formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)
+
+S_PIE_ln_fS_taxa <- update(S_PIE_lognorm_fragSize, 
+                             formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)
+
+N_std_ln_fS_taxa <- update(Nstd_lognorm_fragSize, 
+                             formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                             newdata = frag, cores = 4)  
+
+# repeat for time since fragmentation
+Sstd2_ln_fS_tsf <- update(Sstd2_lognorm_fragSize, 
+                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                           newdata = frag, cores = 4)
+
+Sn_ln_fS_tsf <- update(Sn_lognorm_fragSize, 
+                        formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                        newdata = frag, cores = 4)
+
+Scov_ln_fS_tsf <- update(Scov_lognorm_fragSize, 
+                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                          newdata = frag, cores = 4)
+
+Schao_ln_fS_tsf <- update(S_chao_lognorm_fragSize, 
+                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                           newdata = frag, cores = 4)
+
+S_PIE_ln_fS_tsf <- update(S_PIE_lognorm_fragSize, 
+                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                           newdata = frag, cores = 4)
+
+N_std_ln_fS_tsf <- update(Nstd_lognorm_fragSize, 
+                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                           newdata = frag, cores = 4)  
+
+# repeat for biome (remove the single wetland study)
+Sstd2_ln_fS_biome <- update(Sstd2_lognorm_fragSize, 
+                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
+                          newdata = frag, #%>% filter(biome!='wetland'),
+                          cores = 4)
+
+Sn_ln_fS_biome <- update(Sn_lognorm_fragSize, 
+                       formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
+                       newdata = frag, #%>% filter(biome!='wetland'), 
+                       cores = 4)
+
+Scov_ln_fS_biome <- update(Scov_lognorm_fragSize, 
+                         formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
+                         newdata = frag,# %>% filter(biome!='wetland'), 
+                         cores = 4)
+
+Schao_ln_fS_biome <- update(S_chao_lognorm_fragSize, 
+                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
+                          newdata = frag,# %>% filter(biome!='wetland'), 
+                          cores = 4)
+
+S_PIE_ln_fS_biome <- update(S_PIE_lognorm_fragSize, 
+                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
+                          newdata = frag, #%>% filter(biome!='wetland'), 
+                          cores = 4)
+
+N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize, 
+                            formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
+                            newdata = frag,# %>% filter(biome!='wetland'), 
+                            cores = 4)
+
+# I initially fit the biome models without the wetland study
+save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome,
+     Sn_ln_fS_matrix, Sn_ln_fS_taxa, Sn_ln_fS_tsf, Sn_ln_fS_biome,
+     Scov_ln_fS_matrix, Scov_ln_fS_taxa, Scov_ln_fS_tsf, Scov_ln_fS_biome,
+     Schao_ln_fS_matrix, Schao_ln_fS_taxa, Schao_ln_fS_tsf, Schao_ln_fS_biome,
+     S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome,
+     N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome,
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
+
+# refit biome models with wetland
+save(Sstd2_ln_fS_biome,
+     Sn_ln_fS_biome,
+     Scov_ln_fS_biome,
+     Schao_ln_fS_biome,
+     S_PIE_ln_fS_biome,
+     N_std_ln_fS_biome,
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')
+
+# compare the model fits (with versus without interactions)
+waic(Sstd2_lognorm_fragSize, 
+     Sstd2_ln_fS_matrix,
+     Sstd2_ln_fS_taxa,
+     Sstd2_ln_fS_tsf,
+     Sstd2_ln_fS_biome)
+
+waic(Sn_lognorm_fragSize,
+     Sn_ln_fS_matrix,
+     Sn_ln_fS_taxa,
+     Sn_ln_fS_tsf,
+     Sn_ln_fS_biome)
+
+waic(Scov_lognorm_fragSize,
+     Scov_ln_fS_matrix,
+     Scov_ln_fS_taxa,
+     Scov_ln_fS_tsf,
+     Scov_ln_fS_biome)
+
+waic(S_chao_lognorm_fragSize,
+     Schao_ln_fS_matrix,
+     Schao_ln_fS_taxa,
+     Schao_ln_fS_tsf,
+     Schao_ln_fS_biome)
+
+waic(S_PIE_lognorm_fragSize,
+     S_PIE_ln_fS_matrix,
+     S_PIE_ln_fS_taxa,
+     S_PIE_ln_fS_tsf,
+     S_PIE_ln_fS_biome)
+
+waic(Nstd_lognorm_fragSize,
+     N_std_ln_fS_matrix,
+     N_std_ln_fS_taxa,
+     N_std_ln_fS_tsf,
+     N_std_ln_fS_biome)
