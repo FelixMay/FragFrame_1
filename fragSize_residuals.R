@@ -20,13 +20,35 @@ S_std_resid <- residuals(Sstd2_lognorm_fragSize,
   left_join(meta,
             by = 'dataset_label')
   
+S_std_resid3 <- residuals(Sstd2_lognorm_fragSize3, 
+                         type = 'pearson',
+                         method = 'fitted') %>% 
+  as_tibble() %>% 
+  bind_cols(Sstd2_lognorm_fragSize3$data) %>% 
+  left_join(meta,
+            by = 'dataset_label')
+
 # join with the sample_design column
 S_std_resid <- left_join(S_std_resid, frag %>% distinct(dataset_label, sample_design),
             by = 'dataset_label')
+S_std_resid3 <- left_join(S_std_resid3, frag %>% distinct(dataset_label, sample_design),
+                         by = 'dataset_label')
+
+fit1 <- fitted(Sstd2_lognorm_fragSize, re_formula = NA)
+predict1 <- predict(Sstd2_lognorm_fragSize)
+
+fit3 <- fitted(Sstd2_lognorm_fragSize3, re_formula = NA)
+predict3 <- predict(Sstd2_lognorm_fragSize3)
+
+S_std_resid$fitted <- fit1[,'Estimate']
+S_std_resid$predicted <- predict1[,'Estimate']
+
+S_std_resid3$fitted <- fit3[,'Estimate']
+S_std_resid3$predicted <- predict3[,'Estimate']
 
 par(mfrow=c(3,3))
 # can we do a better job with the ones and twos? Probably not. Error distribution? Model?
-with(S_std_resid, plot(Estimate ~ S_std_2,
+with(S_std_resid3, plot(Estimate ~ S_std_2,
                        ylab = 'Pearson residual',
                        log = 'x'));abline(h=0, lty=2)
 with(S_std_resid, plot(Estimate ~ c.lfs,

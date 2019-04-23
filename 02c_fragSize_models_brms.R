@@ -74,9 +74,36 @@ Sstd2_lognorm_fragSize <- brm(S_std_2 ~ c.lfs + (c.lfs | dataset_label),
                               family = 'lognormal',
                               cores = 4, chains = 4)
 
-pp_check(Sstd2_lognorm_fragSize) +
+# create new grouping covariate: concatenate matrix_time_taxa_biome
+frag <- frag %>% 
+  unite(bmtt, c(biome, Matrix.category, time.since.fragmentation, taxa),
+        remove = F)
+
+frag <- frag %>% 
+  unite(cbmtt, c(continent, biome, Matrix.category, time.since.fragmentation, taxa),
+        remove = F)
+
+Sstd2_lognorm_fragSize3 <- update(Sstd2_lognorm_fragSize,
+                                  formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+                                  newdata = frag,
+                                  # prior = rp,
+                                  family = 'lognormal',
+                                  cores = 4, chains = 4)
+
+Sstd2_lognorm_fragSize4 <- update(Sstd2_lognorm_fragSize,
+                                  formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                                  newdata = frag,
+                                  # prior = rp,
+                                  family = 'lognormal',
+                                  cores = 4, chains = 4)
+waic(Sstd2_lognorm_fragSize,
+     Sstd2_lognorm_fragSize3,
+     Sstd2_lognorm_fragSize4)
+
+pp_check(Sstd2_lognorm_fragSize4) +
   scale_x_continuous(trans = 'log', 
                      breaks = c(1,8,16,32,64,128))
+
 
 Sn_lognorm_fragSize <- brm(S_n ~ c.lfs + (c.lfs | dataset_label), 
                            data = frag,
@@ -84,7 +111,17 @@ Sn_lognorm_fragSize <- brm(S_n ~ c.lfs + (c.lfs | dataset_label),
                            family = 'lognormal',
                            cores = 4, chains = 4)
 
-pp_check(Sn_lognorm_fragSize) +
+Sn_lognorm_fragSize4 <- update(Sn_lognorm_fragSize,
+                                  formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                                  newdata = frag,
+                                  # prior = rp,
+                                  family = 'lognormal',
+                                  cores = 4, chains = 4)
+
+waic(Sn_lognorm_fragSize,
+     Sn_lognorm_fragSize4)
+
+pp_check(Sn_lognorm_fragSize4) +
   scale_x_continuous(trans = 'log', 
                      breaks = c(1,8,16,32,64,128))
 
@@ -93,6 +130,16 @@ Scov_lognorm_fragSize <- brm(S_cov ~ c.lfs + (c.lfs | dataset_label),
                              prior = rp,
                              family = hurdle_lognormal(),
                              cores = 4, chains = 4)
+
+Scov_lognorm_fragSize4 <- update(Scov_lognorm_fragSize,
+                               formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                               newdata = frag,
+                               # prior = rp,
+                               family = hurdle_lognormal(),
+                               cores = 4, chains = 4)
+
+waic(Scov_lognorm_fragSize,
+     Scov_lognorm_fragSize4)
 
 pp_check(Scov_lognorm_fragSize) +
   scale_x_continuous(trans = 'log', 
@@ -104,6 +151,16 @@ S_PIE_lognorm_fragSize <- brm(S_PIE ~ c.lfs + (c.lfs | dataset_label),
                               family = 'lognormal',
                               cores = 4, chains = 4)
 
+S_PIE_lognorm_fragSize4 <- update(S_PIE_lognorm_fragSize,
+                                 formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                                 newdata = frag,
+                                 # prior = rp,
+                                 family = 'lognormal',
+                                 cores = 4, chains = 4)
+
+waic(S_PIE_lognorm_fragSize,
+     S_PIE_lognorm_fragSize4)
+
 pp_check(S_PIE_lognorm_fragSize) +
   scale_x_continuous(trans = 'log', 
                      breaks = c(1,8,16,32,64,128))
@@ -114,7 +171,17 @@ S_chao_lognorm_fragSize <- brm(S_chao ~ c.lfs + (c.lfs | dataset_label),
                                family = 'lognormal',
                                cores = 4, chains = 4)
 
-pp_check(S_chao_lognorm_fragSize) +
+S_chao_lognorm_fragSize4 <- update(S_chao_lognorm_fragSize,
+                                  formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                                  newdata = frag,
+                                  # prior = rp,
+                                  family = 'lognormal',
+                                  cores = 4, chains = 4)
+
+waic(S_chao_lognorm_fragSize,
+     S_chao_lognorm_fragSize4)
+
+pp_check(S_chao_lognorm_fragSize4) +
   scale_x_continuous(trans = 'log', 
                      breaks = c(1,8,16,32,64,128))
 
@@ -131,7 +198,17 @@ Nstd_lognorm_fragSize <- brm(N_std ~ c.lfs + (c.lfs | dataset_label),
                              family = 'lognormal',
                              cores = 4, chains = 4)
 
-pp_check(Nstd_lognorm_fragSize) +
+Nstd_lognorm_fragSize4 <- update(Nstd_lognorm_fragSize,
+                                   formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                                   newdata = frag,
+                                   # prior = rp,
+                                   family = 'lognormal',
+                                   cores = 4, chains = 4)
+
+waic(Nstd_lognorm_fragSize,
+     Nstd_lognorm_fragSize4)
+
+pp_check(Nstd_lognorm_fragSize4) +
   scale_x_continuous(trans = 'log') # 
 
 save(Sstd1_lognorm_fragSize, 
@@ -143,6 +220,26 @@ save(Sstd1_lognorm_fragSize,
      Nstd_lognorm_fragSize,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
 
+save(Sstd2_lognorm_fragSize4,
+     Sn_lognorm_fragSize4,
+     S_PIE_lognorm_fragSize4,
+     Scov_lognorm_fragSize4,
+     S_chao_lognorm_fragSize4,
+     Nstd_lognorm_fragSize4,
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize4_brms.Rdata')
 
 
 
+Nstd_lognorm_fragSize2 <- update(Nstd_lognorm_fragSize,
+                                 formula. = ~ c.lfs + (c.lfs | Matrix.category/dataset_label) +
+                                   (c.lfs | taxa/dataset_label) +
+                                   (c.lfs | time.since.fragmentation/dataset_label) +
+                                   (c.lfs | biome/dataset_label), 
+                             newdata = frag,
+                             # prior = rp,
+                             family = 'lognormal',
+                             cores = 4, chains = 4)
+
+waic(Nstd_lognorm_fragSize,
+     Nstd_lognorm_fragSize2)
+pp_check(Nstd_lognorm_fragSize2)

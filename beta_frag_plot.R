@@ -3,8 +3,8 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i_frag_beta-5098650.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i_frag_beta-5098692.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i_frag_beta-5148470.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i_frag_beta-5148421.Rdata')
 
 load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize.Rdata')
 load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize.Rdata')
@@ -367,7 +367,9 @@ annotate('text', x = 10^3.5, y = 0.95,
 cowplot::plot_grid(turnover_regression, 
                    nestedness_regression, nrow = 1)
 
-# ggsave('~/Dropbox/1current/fragmentation_synthesis/results/figures/results/beta_frag.png', width = 250, height = 125, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/beta_frag.png', width = 250, height = 125, units = 'mm')
 
+# there is > 2x the variation in study-level slope variation for nestedness
+par(mfrow=c(1,2))
 hist(Jtu_z1i_group_coefs$Slope)
 hist(Jne_zi_group_coefs$Slope)

@@ -10,6 +10,14 @@ library(brms)
 frag_beta <- read_csv('/gpfs1/data/idiv_chase/sablowes/fragmentation/data/2_betapart_frag_fcont_10_mabund_as_is.csv')
 # to fit locally: EVE (having older version of brms package does not start sampling for the zi models of nestedness component)
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
+# load the meta data
+meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
+  as_tibble() %>% 
+  dplyr::rename(dataset_label = dataset_id)
+
+frag_beta <- left_join(frag_beta,
+                  meta,
+                  by = 'dataset_label')
 
 # want to add a grouping variable for the pairwise comparisons
 frag_beta <- frag_beta %>% 
@@ -34,9 +42,9 @@ rp <- c(prior(normal(0,2), class = Intercept),
         prior(exponential(1), class = sd))
 
 # fit models to baselga's components of jaccard 
-Jne_zi_fragSize <- brm(bf(rich ~ cl10ra + 
+Jne_zi_fS_taxa <- brm(bf(rich ~ cl10ra*taxa + 
                              (cl10ra | dataset_label / pair_group), 
-                           zi ~ cl10ra + 
+                           zi ~ cl10ra*taxa + 
                              (cl10ra | dataset_label / pair_group),
                            family = zero_inflated_beta()),
                         # fit to data with variation in frag_size_num
@@ -44,12 +52,12 @@ Jne_zi_fragSize <- brm(bf(rich ~ cl10ra +
                         prior = rp,
                         cores = 4, chains = 4, iter = 2000)
 
-save(Jne_zi_fragSize, file='~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize.Rdata')
-plot(Jne_zi_fragSize)
+save(Jne_zi_fS_taxa, file='~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fS_taxa.Rdata')
+# plot(Jne_zi_fragSize)
 
-Rne_zi_fragSize <- brm(bf(rich ~ cl10ra + 
+Rne_zi_fS_taxa <- brm(bf(rich ~ cl10ra*taxa + 
                             (cl10ra | dataset_label / pair_group), 
-                          zi ~ cl10ra + 
+                          zi ~ cl10ra*taxa + 
                             (cl10ra | dataset_label / pair_group),
                           family = zero_inflated_beta()),
                        # fit to data with variation in frag_size_num
@@ -57,5 +65,14 @@ Rne_zi_fragSize <- brm(bf(rich ~ cl10ra +
                        prior = rp,
                        cores = 4, chains = 4, iter = 2000)
 
-save(Rne_zi_fragSize, file='~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize.Rdata')
-plot(Rne_zi_fragSize)
+save(Rne_zi_fS_taxa, file='~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fS_taxa.Rdata')
+# plot(Rne_zi_fragSize)
+
+# 1) taxa, 2) matrix, 3) no interaction (~5 waics difference between each)
+waic(Jne_zi_fragSize,
+     Jne_zi_fS_matrix,
+     Jne_zi_fS_taxa)
+# 1) no interaction, 2) matrix, 3) taxa (~3, then 6 more waics difference between each)
+waic(Rne_zi_fragSize,
+     Rne_zi_fS_matrix,
+     Rne_zi_fS_taxa)
