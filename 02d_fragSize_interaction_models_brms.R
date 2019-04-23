@@ -153,37 +153,37 @@ save(Sstd2_ln_fS_biome,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')
 
 # compare the model fits (with versus without interactions)
-waic(Sstd2_lognorm_fragSize, 
+sstd_waic <- waic(Sstd2_lognorm_fragSize, 
      Sstd2_ln_fS_matrix,
      Sstd2_ln_fS_taxa,
      Sstd2_ln_fS_tsf,
      Sstd2_ln_fS_biome)
 
-waic(Sn_lognorm_fragSize,
+sn_waic <- waic(Sn_lognorm_fragSize,
      Sn_ln_fS_matrix,
      Sn_ln_fS_taxa,
      Sn_ln_fS_tsf,
      Sn_ln_fS_biome)
 
-waic(Scov_lognorm_fragSize,
+scov_waic <- waic(Scov_lognorm_fragSize,
      Scov_ln_fS_matrix,
      Scov_ln_fS_taxa,
      Scov_ln_fS_tsf,
      Scov_ln_fS_biome)
 
-waic(S_chao_lognorm_fragSize,
+schao_waic <- waic(S_chao_lognorm_fragSize,
      Schao_ln_fS_matrix,
      Schao_ln_fS_taxa,
      Schao_ln_fS_tsf,
      Schao_ln_fS_biome)
 
-waic(S_PIE_lognorm_fragSize,
+spie_waic <- waic(S_PIE_lognorm_fragSize,
      S_PIE_ln_fS_matrix,
      S_PIE_ln_fS_taxa,
      S_PIE_ln_fS_tsf,
      S_PIE_ln_fS_biome)
 
-waic(Nstd_lognorm_fragSize,
+nstd_waic <- waic(Nstd_lognorm_fragSize,
      N_std_ln_fS_matrix,
      N_std_ln_fS_taxa,
      N_std_ln_fS_tsf,
