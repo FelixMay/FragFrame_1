@@ -1,5 +1,6 @@
 # code to plot results from the models with interactions....
-
+library(tidyverse)
+library(brms)
 ##----load model fits-----
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')

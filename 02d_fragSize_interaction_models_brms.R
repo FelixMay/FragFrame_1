@@ -134,7 +134,7 @@ N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize,
                             newdata = frag,# %>% filter(biome!='wetland'), 
                             cores = 4)
 
-# I initially fit the biome models without the wetland study
+#
 save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome,
      Sn_ln_fS_matrix, Sn_ln_fS_taxa, Sn_ln_fS_tsf, Sn_ln_fS_biome,
      Scov_ln_fS_matrix, Scov_ln_fS_taxa, Scov_ln_fS_tsf, Scov_ln_fS_biome,
@@ -143,48 +143,61 @@ save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
 
-# refit biome models with wetland
-save(Sstd2_ln_fS_biome,
-     Sn_ln_fS_biome,
-     Scov_ln_fS_biome,
-     Schao_ln_fS_biome,
-     S_PIE_ln_fS_biome,
-     N_std_ln_fS_biome,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')
-
 # compare the model fits (with versus without interactions)
 sstd_waic <- waic(Sstd2_lognorm_fragSize, 
      Sstd2_ln_fS_matrix,
      Sstd2_ln_fS_taxa,
      Sstd2_ln_fS_tsf,
-     Sstd2_ln_fS_biome)
+     Sstd2_ln_fS_biome) # matrix wins (deltaWAIC ~2)
 
 sn_waic <- waic(Sn_lognorm_fragSize,
      Sn_ln_fS_matrix,
      Sn_ln_fS_taxa,
      Sn_ln_fS_tsf,
-     Sn_ln_fS_biome)
+     Sn_ln_fS_biome) # matrix wins (deltaWAIC ~7)
 
 scov_waic <- waic(Scov_lognorm_fragSize,
      Scov_ln_fS_matrix,
      Scov_ln_fS_taxa,
      Scov_ln_fS_tsf,
-     Scov_ln_fS_biome)
+     Scov_ln_fS_biome) # matrix wins (deltaWAIC ~5)
 
 schao_waic <- waic(S_chao_lognorm_fragSize,
      Schao_ln_fS_matrix,
      Schao_ln_fS_taxa,
      Schao_ln_fS_tsf,
-     Schao_ln_fS_biome)
+     Schao_ln_fS_biome) # no interaction is best
 
 spie_waic <- waic(S_PIE_lognorm_fragSize,
      S_PIE_ln_fS_matrix,
      S_PIE_ln_fS_taxa,
      S_PIE_ln_fS_tsf,
-     S_PIE_ln_fS_biome)
+     S_PIE_ln_fS_biome) # tsf wins (deltaWAIC ~ 3)
 
 nstd_waic <- waic(Nstd_lognorm_fragSize,
      N_std_ln_fS_matrix,
      N_std_ln_fS_taxa,
      N_std_ln_fS_tsf,
-     N_std_ln_fS_biome)
+     N_std_ln_fS_biome) # biome wins (deltaWAIC ~ 5)
+
+# check tsf model: want to know if the slopes differ from zero for long time since fragmentation
+hypothesis(Sstd2_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
+hypothesis(Sn_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
+hypothesis(Scov_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
+hypothesis(Schao_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
+hypothesis(S_PIE_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
+hypothesis(N_std_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
+
+
+plot(hypothesis(Sstd2_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Sstd_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
+plot(hypothesis(Sn_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Sn_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
+plot(hypothesis(Scov_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Scov_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
+plot(hypothesis(Schao_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Schao_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
+plot(hypothesis(S_PIE_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Spie_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
+plot(hypothesis(N_std_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Nstd_long_slope_posterior.png', width = 170, height = 100, units = 'mm')

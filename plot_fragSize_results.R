@@ -1,229 +1,7 @@
-# code to plot results of fragment size (only) models
+# code to plot regressions for all metrics (no interaction models)
 library(tidyverse)
 library(brms)
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
-
-#------wrangle for plotting
-# for plotting fixed effects----------------
-Sstd1_fS_fitted <- cbind(Sstd1_lognorm_fragSize$data,
-                               fitted(Sstd1_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Sstd1_lognorm_fragSize_fixef <- fixef(Sstd1_lognorm_fragSize)
-
-Sstd2_fS_fitted <- cbind(Sstd2_lognorm_fragSize$data,
-                         fitted(Sstd2_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Sstd2_lognorm_fragSize_fixef <- fixef(Sstd2_lognorm_fragSize)
-
-Sn_fS_fitted <- cbind(Sn_lognorm_fragSize$data,
-                             fitted(Sn_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Sn_lognorm_fragSize_fixef <- fixef(Sn_lognorm_fragSize)
-
-Scov_fS_fitted <- cbind(Scov_lognorm_fragSize$data,
-                      fitted(Scov_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Scov_lognorm_fragSize_fixef <- fixef(Scov_lognorm_fragSize)
-
-Schao_fS_fitted <- cbind(S_chao_lognorm_fragSize$data,
-                        fitted(S_chao_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Schao_lognorm_fragSize_fixef <- fixef(S_chao_lognorm_fragSize)
-
-S_PIE_fS_fitted <- cbind(S_PIE_lognorm_fragSize$data,
-                                fitted(S_PIE_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-S_PIE_lognorm_fragSize_fixef <- fixef(S_PIE_lognorm_fragSize)
-
-Nstd_fS_fitted <- cbind(Nstd_lognorm_fragSize$data,
-                               fitted(Nstd_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Nstd_lognorm_fragSize_fixef <- fixef(Nstd_lognorm_fragSize)
-
-
-# for plotting the random-effects----------------
-Sstd1_lognorm_fragSize_coef <- coef(Sstd1_lognorm_fragSize)
-Sstd2_lognorm_fragSize_coef <- coef(Sstd2_lognorm_fragSize)
-Sn_lognorm_fragSize_coef <- coef(Sn_lognorm_fragSize)
-Scov_lognorm_fragSize_coef <- coef(Scov_lognorm_fragSize)
-Schao_lognorm_fragSize_coef <- coef(S_chao_lognorm_fragSize)
-S_PIE_fS_coef <- coef(S_PIE_lognorm_fragSize)
-Nstd_fS_coef <- coef(Nstd_lognorm_fragSize)
-
-Sstd1_lognorm_fragSize_group_coefs <- bind_cols(Sstd1_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
-                                          as_tibble() %>% 
-                                          mutate(Intercept = Estimate,
-                                                 Intercept_lower = Q2.5,
-                                                 Intercept_upper = Q97.5,
-                                                 dataset_label = rownames(Sstd1_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                        Sstd1_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
-                                          as_tibble() %>% 
-                                          mutate(Slope = Estimate,
-                                                 Slope_lower = Q2.5,
-                                                 Slope_upper = Q97.5) %>% 
-                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
-
-Sstd2_lognorm_fragSize_group_coefs <- bind_cols(Sstd2_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
-                                                  as_tibble() %>% 
-                                                  mutate(Intercept = Estimate,
-                                                         Intercept_lower = Q2.5,
-                                                         Intercept_upper = Q97.5,
-                                                         dataset_label = rownames(Sstd2_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                                  dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                                Sstd2_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
-                                                  as_tibble() %>% 
-                                                  mutate(Slope = Estimate,
-                                                         Slope_lower = Q2.5,
-                                                         Slope_upper = Q97.5) %>% 
-                                                  dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
-
-Sn_lognorm_fragSize_group_coefs <- bind_cols(Sn_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
-                                        as_tibble() %>% 
-                                        mutate(Intercept = Estimate,
-                                               Intercept_lower = Q2.5,
-                                               Intercept_upper = Q97.5,
-                                               dataset_label = rownames(Sn_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                        dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                      Sn_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
-                                        as_tibble() %>% 
-                                        mutate(Slope = Estimate,
-                                               Slope_lower = Q2.5,
-                                               Slope_upper = Q97.5) %>% 
-                                        dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
-
-Scov_lognorm_fragSize_group_coefs <- bind_cols(Scov_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
-                                               as_tibble() %>% 
-                                               mutate(Intercept = Estimate,
-                                                      Intercept_lower = Q2.5,
-                                                      Intercept_upper = Q97.5,
-                                                      dataset_label = rownames(Scov_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                               dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                               Scov_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
-                                               as_tibble() %>% 
-                                               mutate(Slope = Estimate,
-                                                      Slope_lower = Q2.5,
-                                                      Slope_upper = Q97.5) %>% 
-                                               dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
-
-Schao_lognorm_fragSize_group_coefs <- bind_cols(Schao_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
-                                                 as_tibble() %>% 
-                                                 mutate(Intercept = Estimate,
-                                                        Intercept_lower = Q2.5,
-                                                        Intercept_upper = Q97.5,
-                                                        dataset_label = rownames(Schao_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                                 dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                                Schao_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
-                                                 as_tibble() %>% 
-                                                 mutate(Slope = Estimate,
-                                                        Slope_lower = Q2.5,
-                                                        Slope_upper = Q97.5) %>% 
-                                                 dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
-
-S_PIE_fragSize_group_coefs <- bind_cols(S_PIE_fS_coef[[1]][,,'Intercept'] %>% 
-                                           as_tibble() %>% 
-                                           mutate(Intercept = Estimate,
-                                                  Intercept_lower = Q2.5,
-                                                  Intercept_upper = Q97.5,
-                                                  dataset_label = rownames(S_PIE_fS_coef[[1]][,,'Intercept'])) %>% 
-                                           dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                        S_PIE_fS_coef[[1]][,,'c.lfs'] %>% 
-                                           as_tibble() %>% 
-                                           mutate(Slope = Estimate,
-                                                  Slope_lower = Q2.5,
-                                                  Slope_upper = Q97.5) %>% 
-                                           dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
-
-Nstd_fragSize_group_coefs <- bind_cols(Nstd_fS_coef[[1]][,,'Intercept'] %>% 
-                                          as_tibble() %>% 
-                                          mutate(Intercept = Estimate,
-                                                 Intercept_lower = Q2.5,
-                                                 Intercept_upper = Q97.5,
-                                                 dataset_label = rownames(Nstd_fS_coef[[1]][,,'Intercept'])) %>% 
-                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                       Nstd_fS_coef[[1]][,,'c.lfs'] %>% 
-                                          as_tibble() %>% 
-                                          mutate(Slope = Estimate,
-                                                 Slope_lower = Q2.5,
-                                                 Slope_upper = Q97.5) %>% 
-                                          dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/fragSize_coef_wrangle.R')
 
 #---- regression plots showing study-level slopes-----
 # setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/')
@@ -495,23 +273,23 @@ Nstd_regPlot <- ggplot() +
   theme(legend.position = 'none')
 
 S_std_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_std_fragSize.png', 
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_std_fragSize.png',
 #        width = 200, height = 200, units = 'mm')
 Sn_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_n_fragSize.png', 
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_n_fragSize.png',
 #        width = 200, height = 200, units = 'mm')
 Scov_regPlot
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_cov_fragSize.png', 
 #        width = 200, height = 200, units = 'mm')
 Schao_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_chao_fragSize.png', 
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_chao_fragSize.png',
 #        width = 200, height = 200, units = 'mm')
 Spie_regPlot
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_PIE_fragSize.png', 
 #        width = 200, height = 200, units = 'mm')
 
 Nstd_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/N_std_fragSize.png', 
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/N_std_fragSize.png',
 #        width = 200, height = 200, units = 'mm')
 
 # ggsave('~/fragmentation/figs/fragSize_regression.pdf', width = 250, height = 220, units = 'mm')
