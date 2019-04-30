@@ -24,22 +24,81 @@ frag %>%
   scale_x_continuous(trans = 'log')
 
 # visual inspection 2: missing some S_std_1 and S_std_2 values
-frag %>% 
+inspect_lat <- frag %>% 
   ggplot() +
-  geom_point(aes(x = frag_size_num, y = S_std_1)) +
-  stat_smooth(method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_std_1),
-              col = 'black') +
-  geom_point(aes(x = frag_size_num, y = S_std_2),
-             col = 'red') +
-  stat_smooth(method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_std_2),
-              col = 'red') +
+  geom_point(aes(x = frag_size_num, y = S_std_2,
+                 colour = climate)) +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num, y = S_std_2,
+                  colour = climate)) +
   scale_x_continuous(trans = 'log') +
   scale_y_continuous(trans = 'log') +
+  scale_color_brewer(name = '', 
+                     type = 'qual', palette = 'Set1') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1),
+        legend.direction = 'horizontal')
 
+inspect_continent8 <- frag %>% 
+  ggplot() +
+  geom_point(aes(x = frag_size_num, y = S_std_2,
+                 colour = continent8)) +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num, y = S_std_2,
+                  colour = continent8)) +
+  scale_x_continuous(trans = 'log') +
+  scale_y_continuous(trans = 'log') +
+  scale_color_brewer(name = '', 
+                     type = 'qual', palette = 'Set3') +
+  theme_bw() +
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1),
+        legend.direction = 'horizontal')
+
+# inspect_continent8 <- 
+frag %>% 
+  ggplot() +
+  facet_wrap(~climate, nrow = 2) +
+  geom_point(aes(x = frag_size_num, y = S_std_2,
+                 colour = continent8)) +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num, y = S_std_2),
+              colour = 'black') +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num, y = S_std_2,
+                  colour = continent8)) +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num, y = S_std_2,
+                  colour = continent8,
+                  group = dataset_label),
+              size = 0.25) +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+  scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
+  scale_color_brewer(name = '', 
+                     type = 'qual', palette = 'Set3') +
+  theme_bw() +
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1),
+        legend.direction = 'horizontal',
+        legend.background = element_blank()) +
+  guides(colour = guide_legend(nrow = 4))
+
+cowplot::plot_grid(inspect_lat, inspect_continent7, inspect_continent8, NULL, nrow = 2)
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/geo_inspect4.pdf', width = 160, height = 220, units = 'mm')
+
+# single temperate study in Africa
+frag %>% filter(continent8=='Africa') %>% 
+  distinct(dataset_label, climate, biome, Matrix.category, time.since.fragmentation, taxa)
+# single tropical study in Oceania
+frag %>% filter(continent8=='Oceania') %>% 
+  distinct(dataset_label, climate, biome, Matrix.category, time.since.fragmentation, taxa)
+# multiple in each for asia (~50:50) and sth america (majority tropical)
+frag %>% filter(continent8=='Asia') %>% 
+  distinct(dataset_label, climate, biome, Matrix.category, time.since.fragmentation, taxa)
+frag %>% filter(continent8=='South America') %>% 
+  distinct(dataset_label, climate, biome, Matrix.category, time.since.fragmentation, taxa)
 
 ##--create some covariates for easier workflow--
 # mean-centred log(fragment.size)
@@ -54,7 +113,26 @@ frag$lS_chao <- log(frag$S_chao)
 frag$lNstd <- log(frag$N_std)
 
 # how steep is the slope? Think about regularising prior (plot for completeness)
-with(frag, summary(lm(lSstd1~c.lfs)))
+with(frag, summary(lm(lSstd2~c.lfs)))
+with(frag, summary(lm(lSstd2~c.lfs*continent7)))
+with(frag, car::Anova(lm(lSstd2~c.lfs*continent7)))
+with(frag, car::Anova(lm(lSstd2~c.lfs*continent8)))
+with(frag, car::Anova(lm(lSstd2~c.lfs*climate)))
+with(frag, AIC(lm(lSstd1~c.lfs*continent7)))
+with(frag, AIC(lm(lSstd1~c.lfs*continent8))) # deltaAIC ~ -7: support for central and north america being separate
+with(frag, AIC(lm(lSstd1~c.lfs*climate))) # oversimplification: deltaAIC ~ +40
+
+# how many studies per continent8
+frag %>% 
+  group_by(continent8) %>% 
+  summarise(n_study = n_distinct(dataset_label))
+
+# create new grouping covariates: concatenate continent8_matrix_time_taxa_biome
+frag <- frag %>% 
+  unite(cbmtt, c(continent8, biome, Matrix.category, time.since.fragmentation, taxa),
+        remove = F) %>% 
+  unite(bmtt, c(biome, Matrix.category, time.since.fragmentation, taxa),
+        remove = F)
 
 #----- simplest model: diversity as a function of fragment size; allow fragment size to vary by study----
 get_prior(S_std_2 ~ c.lfs + (c.lfs | dataset_label),
@@ -65,17 +143,17 @@ rp <- c(prior(normal(0,2), class = Intercept),
         prior(normal(0,1), class = b),
         prior(exponential(1), class = sd))
 
-# not sure which of the standardised richness values to model, do both
-Sstd1_lognorm_fragSize <- brm(S_std_1 ~ c.lfs + (c.lfs | dataset_label), 
-                              # fit to data with variation in frag_size_num
-                              data = frag,
-                              prior = rp,
-                              family = 'lognormal',
-                              cores = 4, chains = 4)
-
-pp_check(Sstd1_lognorm_fragSize) +
-  scale_x_continuous(trans = 'log', 
-                     breaks = c(1,8,16,32,64,128))
+# not sure which of the standardised richness values to model: Felix say Sstd2
+# Sstd1_lognorm_fragSize <- brm(S_std_1 ~ c.lfs + (c.lfs | dataset_label), 
+#                               # fit to data with variation in frag_size_num
+#                               data = frag,
+#                               prior = rp,
+#                               family = 'lognormal',
+#                               cores = 4, chains = 4)
+# 
+# pp_check(Sstd1_lognorm_fragSize) +
+#   scale_x_continuous(trans = 'log', 
+#                      breaks = c(1,8,16,32,64,128))
 
 Sstd2_lognorm_fragSize <- brm(S_std_2 ~ c.lfs + (c.lfs | dataset_label), 
                               # fit to data with variation in frag_size_num
@@ -84,24 +162,66 @@ Sstd2_lognorm_fragSize <- brm(S_std_2 ~ c.lfs + (c.lfs | dataset_label),
                               family = 'lognormal',
                               cores = 4, chains = 4)
 
-# create new grouping covariates: concatenate matrix_time_taxa_biome
-frag <- frag %>% 
-  unite(bmtt, c(biome, Matrix.category, time.since.fragmentation, taxa),
-        remove = F)
 
-frag <- frag %>% 
-  unite(cbmtt, c(continent, biome, Matrix.category, time.since.fragmentation, taxa),
-        remove = F)
+Sstd2_lognorm_fS_climate <- update(Sstd2_lognorm_fragSize,
+                                 formula. = ~ c.lfs*climate + (c.lfs*climate | dataset_label), 
+                                 newdata = frag,
+                                 # prior = rp,
+                                 family = 'lognormal',
+                                 cores = 4, chains = 4)
 
-Sstd2_lognorm_fragSize3 <- update(Sstd2_lognorm_fragSize,
-                                  formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+Sstd2_lognorm_fS_climate2 <- update(Sstd2_lognorm_fragSize,
+                                 formula. = ~ c.lfs*climate + (c.lfs*climate | continent8/bmtt/dataset_label), 
+                                 newdata = frag,
+                                 # prior = rp,
+                                 family = 'lognormal',
+                                 cores = 4, chains = 4)
+
+Sstd2_lognorm_fS_climate3 <- update(Sstd2_lognorm_fragSize,
+                                  formula. = ~ c.lfs + (c.lfs | climate/continent8/bmtt/dataset_label), 
                                   newdata = frag,
                                   # prior = rp,
                                   family = 'lognormal',
                                   cores = 4, chains = 4)
 
-Sstd2_lognorm_fragSize4 <- update(Sstd2_lognorm_fragSize,
-                                  formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+Sstd2_lognorm_fS_continent <- update(Sstd2_lognorm_fragSize,
+                                    formula. = ~ c.lfs + (c.lfs | continent8/dataset_label), 
+                                    newdata = frag,
+                                    # prior = rp,
+                                    family = 'lognormal',
+                                    cores = 4, chains = 4)
+
+Sstd2_lognorm_fS_continent2 <- update(Sstd2_lognorm_fragSize,
+                                     formula. = ~ c.lfs + (c.lfs | continent8/bmtt/dataset_label), 
+                                     newdata = frag,
+                                     # prior = rp,
+                                     family = 'lognormal',
+                                     cores = 4, chains = 4)
+
+Sstd2_lognorm_fS_continent3 <- update(Sstd2_lognorm_fragSize,
+                                      formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
+                                      newdata = frag,
+                                      # prior = rp,
+                                      family = 'lognormal',
+                                      cores = 4, chains = 4)
+
+Sstd2_lognorm_fS_continent4 <- update(Sstd2_lognorm_fragSize,
+                                      formula. = ~ c.lfs + (c.lfs | climate/cbmtt/dataset_label), 
+                                      newdata = frag,
+                                      # prior = rp,
+                                      family = 'lognormal',
+                                      cores = 4, chains = 4)
+waic(Sstd2_lognorm_fragSize,
+     Sstd2_lognorm_fS_climate,
+     Sstd2_lognorm_fS_climate2,
+     Sstd2_lognorm_fS_climate3,
+     Sstd2_lognorm_fS_continent,
+     Sstd2_lognorm_fS_continent2,
+     Sstd2_lognorm_fS_continent3,
+     Sstd2_lognorm_fS_continent4) 
+
+Sstd2_lognorm_fS_cont2 <- update(Sstd2_lognorm_fragSize,
+                                  formula. = ~ 1 + (c.lfs*climate | cbmtt / dataset_label), 
                                   newdata = frag,
                                   # prior = rp,
                                   family = 'lognormal',
@@ -113,8 +233,8 @@ Sn_lognorm_fragSize <- brm(S_n ~ c.lfs + (c.lfs | dataset_label),
                            family = 'lognormal',
                            cores = 4, chains = 4)
 
-Sn_lognorm_fragSize3 <- update(Sn_lognorm_fragSize,
-                                  formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+Sn_lognorm_fragSize2 <- update(Sn_lognorm_fragSize,
+                                  formula. = ~ c.lfs*cbmtt + (c.lfs | dataset_label),
                                   newdata = frag,
                                   # prior = rp,
                                   family = 'lognormal',
@@ -135,8 +255,8 @@ Scov_lognorm_fragSize <- brm(S_cov ~ c.lfs + (c.lfs | dataset_label),
                              family = hurdle_lognormal(),
                              cores = 4, chains = 4)
 
-Scov_lognorm_fragSize3 <- update(Scov_lognorm_fragSize,
-                                 formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+Scov_lognorm_fragSize2 <- update(Scov_lognorm_fragSize,
+                                 formula. = ~ c.lfs*cbmtt + (c.lfs | dataset_label),
                                  newdata = frag,
                                  # prior = rp,
                                  family = hurdle_lognormal(),
@@ -155,12 +275,12 @@ S_PIE_lognorm_fragSize <- brm(S_PIE ~ c.lfs + (c.lfs | dataset_label),
                               family = 'lognormal',
                               cores = 4, chains = 4)
 
-S_PIE_lognorm_fragSize3 <- update(S_PIE_lognorm_fragSize,
-                                 formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
-                                 newdata = frag,
-                                 # prior = rp,
-                                 family = 'lognormal',
-                                 cores = 4, chains = 4)
+# S_PIE_lognorm_fragSize3 <- update(S_PIE_lognorm_fragSize,
+#                                  formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+#                                  newdata = frag,
+#                                  # prior = rp,
+#                                  family = 'lognormal',
+#                                  cores = 4, chains = 4)
 
 S_PIE_lognorm_fragSize4 <- update(S_PIE_lognorm_fragSize,
                                   formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
@@ -177,12 +297,12 @@ S_chao_lognorm_fragSize <- brm(S_chao ~ c.lfs + (c.lfs | dataset_label),
                                family = 'lognormal',
                                cores = 4, chains = 4)
 
-S_chao_lognorm_fragSize3 <- update(S_chao_lognorm_fragSize,
-                                   formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
-                                   newdata = frag,
-                                   # prior = rp,
-                                   family = 'lognormal',
-                                   cores = 4, chains = 4)
+# S_chao_lognorm_fragSize3 <- update(S_chao_lognorm_fragSize,
+#                                    formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+#                                    newdata = frag,
+#                                    # prior = rp,
+#                                    family = 'lognormal',
+#                                    cores = 4, chains = 4)
 
 S_chao_lognorm_fragSize4 <- update(S_chao_lognorm_fragSize,
                                   formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
@@ -199,12 +319,12 @@ Nstd_lognorm_fragSize <- brm(N_std ~ c.lfs + (c.lfs | dataset_label),
                              family = 'lognormal',
                              cores = 4, chains = 4)
 
-Nstd_lognorm_fragSize3 <- update(Nstd_lognorm_fragSize,
-                                 formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
-                                 newdata = frag,
-                                 # prior = rp,
-                                 family = 'lognormal',
-                                 cores = 4, chains = 4)
+# Nstd_lognorm_fragSize3 <- update(Nstd_lognorm_fragSize,
+#                                  formula. = ~ c.lfs + (c.lfs | bmtt/dataset_label), 
+#                                  newdata = frag,
+#                                  # prior = rp,
+#                                  family = 'lognormal',
+#                                  cores = 4, chains = 4)
 
 Nstd_lognorm_fragSize4 <- update(Nstd_lognorm_fragSize,
                                    formula. = ~ c.lfs + (c.lfs | cbmtt/dataset_label), 
@@ -231,14 +351,15 @@ save(Sstd1_lognorm_fragSize,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
 
 waic(Sstd2_lognorm_fragSize,
-     Sstd2_lognorm_fragSize3,
-     Sstd2_lognorm_fragSize4) # slight improvement (3.7) for cbmtt
+     Sstd2_lognorm_fS_cont1,
+     Sstd2_lognorm_fragSize4) # slight improvement (3.7) for cbmtt as grouping variable
 
 pp_check(Sstd2_lognorm_fragSize4) +
   scale_x_continuous(trans = 'log', 
                      breaks = c(1,8,16,32,64,128))
 
 waic(Sn_lognorm_fragSize,
+     Sn_lognorm_fragSize3,
      Sn_lognorm_fragSize4) # including group slightly worse 2.5
 # 
 pp_check(Sn_lognorm_fragSize4) +

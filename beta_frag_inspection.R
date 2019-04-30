@@ -5,12 +5,16 @@ library(tidyverse)
 
 # load the data
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
-study_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_study_fcont_10_mabund_as_is.csv')
+# study_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_study_fcont_10_mabund_as_is.csv')
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
 str(frag_beta)
+
+frag_beta <- left_join(frag_beta, 
+                  meta,
+                  by = 'dataset_label')
 
 frag_beta %>% distinct(method)
 frag_beta <- frag_beta %>% 
@@ -267,3 +271,64 @@ ggplot() +
         panel.grid = element_blank())
 
 hist(frag_beta$log10_ratio_area - median(frag_beta$log10_ratio_area))
+
+
+inspect_continent8_jtu <- 
+  frag_beta %>% 
+    filter(method=='Baselga family, Jaccard') %>% 
+  ggplot() +
+  facet_grid(.~climate) +
+  # geom_point(aes(x = frag_size_num.x/frag_size_num.y, y = rich,
+  #                colour = continent8)) +
+  # stat_smooth(method = 'gam', se = F,
+  #             aes(x = frag_size_num.x/frag_size_num.y, y = rich,
+  #                 colour = continent8)) +
+  geom_point(aes(x = frag_size_num.x/frag_size_num.y, y = repl,
+                 colour = continent8),
+             size = 0.3, alpha = 0.1) +
+    stat_smooth(method = 'gam', se = F,
+                aes(x = frag_size_num.x/frag_size_num.y, y = repl),
+                colour = 'black') +
+    stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num.x/frag_size_num.y, y = repl,
+                  colour = continent8)) +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+  scale_color_brewer(name = '', 
+                     type = 'qual', palette = 'Set3') +
+  labs(x = 'Ratio of fragment sizes (log-scale)',
+       y = 'Turnover component of Jaccard dissimilarity') +
+  theme_bw() +
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1),
+        legend.direction = 'horizontal')
+
+inspect_continent8_jne <- 
+  frag_beta %>% 
+  filter(method=='Baselga family, Jaccard') %>% 
+  ggplot() +
+  facet_grid(.~climate) +
+  geom_point(aes(x = frag_size_num.x/frag_size_num.y, y = rich,
+                 colour = continent8),
+             size = 0.3, alpha = 0.1) +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num.x/frag_size_num.y, y = rich,
+                  colour = continent8)) +
+  stat_smooth(method = 'gam', se = F,
+              aes(x = frag_size_num.x/frag_size_num.y, y = rich),
+              colour = 'black') +
+  scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
+                labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+  scale_color_brewer(name = '', 
+                     type = 'qual', palette = 'Set3') +
+  labs(x = 'Ratio of fragment sizes (log-scale)',
+       y = 'Nestedness component of Jaccard dissimilarity') +
+  theme_bw() +
+  theme(legend.position = c(1,1),
+        legend.justification = c(1,1),
+        legend.direction = 'horizontal')
+
+cowplot::plot_grid(inspect_continent8_jtu, 
+                   inspect_continent8_jne, 
+                   nrow = 2)
+ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/geo_inspect4_beta.pdf', width = 290, height = 200, units = 'mm')

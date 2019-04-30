@@ -43,9 +43,43 @@ Sstd_beta_coefs <- Jtu_z1i_group_coefs %>%
 Sstd_beta_coefs$time.since.fragmentation <- factor(Sstd_beta_coefs$time.since.fragmentation,
                                                    levels = c('Recent (less than 20 years)', 'Intermediate (20-100 years)', 'long (100+ years)'),
                                                    labels = c('< 20 years', '20-100 years', '> 100 years'))
-ggplot() +
+beta_turnover_sstd_slope <- ggplot() +
+  facet_grid(.~climate) +
   geom_point(data = Sstd_beta_coefs,
-             aes(x = jtu_slope, y = Sstd, colour = time.since.fragmentation),
+             aes(x = jtu_slope, y = Sstd),
+             size = 2) +
+  # geom_linerange(data = Sstd_beta_coefs,
+  #                aes(x = jtu_slope, ymin = Sstd_lower, ymax = Sstd_upper,
+  #                    colour = time.since.fragmentation),
+  #                lwd = 0.1, alpha = 0.5) +
+  # geom_errorbarh(data = Sstd_beta_coefs,
+  #                aes(xmin = jtu_lower, xmax = jtu_upper, y = Sstd,
+  #                    colour = time.since.fragmentation),
+  #                lwd = 0.1, height = 0, alpha = 0.5) +
+  # geom_point(data = Sstd_beta_coefs,
+  #            aes(x = rtu_slope, y = Sstd, colour = time.since.fragmentation),
+  #            shape = 2) +
+stat_smooth(data = Sstd_beta_coefs,
+            aes(x = jtu_slope, y = Sstd),
+            method = 'gam', se = F) +
+  stat_smooth(data = Sstd_beta_coefs,
+              aes(x = jtu_slope, y = Sstd, colour = continent8),
+              method = 'lm', se = F,
+              linetype = 2) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = 'Study-level turnover slope',
+       y = expression(paste('Study-level ', S[std], ' slope'))) +
+  theme_bw() +
+  theme(legend.position = c(0, 0),
+        legend.justification = c(0,0),
+        legend.direction = 'horizontal',
+        legend.background = element_blank())
+
+beta_nestedness_sstd_study <- ggplot() +
+  facet_grid(.~climate) +
+  geom_point(data = Sstd_beta_coefs,
+             aes(x = jne_slope, y = Sstd),
              size = 2) +
   # geom_linerange(data = Sstd_beta_coefs,
   #                aes(x = jtu_slope, ymin = Sstd_lower, ymax = Sstd_upper,
@@ -59,20 +93,38 @@ ggplot() +
   #            aes(x = rtu_slope, y = Sstd, colour = time.since.fragmentation),
   #            shape = 2) +
   stat_smooth(data = Sstd_beta_coefs,
-              aes(x = jtu_slope, y = Sstd, colour = time.since.fragmentation),
-              method = 'lm', se = F) +
-  # stat_smooth(data = Sstd_beta_coefs,
-  #             aes(x = rtu_slope, y = Sstd, colour = time.since.fragmentation),
-  #             method = 'lm', se = F,
-  #             linetype = 2) +
+              aes(x = jne_slope, y = Sstd),
+              method = 'gam', se = F) +
+  stat_smooth(data = Sstd_beta_coefs,
+              aes(x = jne_slope, y = Sstd, colour = continent8),
+              method = 'lm', se = F,
+              linetype = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_vline(xintercept = 0, lty = 2) +
-  labs(x = 'Study-level turnover slope',
+  labs(x = 'Study-level nestedness component slope',
        y = expression(paste('Study-level ', S[std], ' slope'))) +
   theme_bw() +
-  theme(legend.position = c(0.8, 0.8))
+  theme(legend.position = c(1,0),
+        legend.justification = c(1,0),
+        legend.direction = 'horizontal',
+        legend.background = element_blank())
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Std_beta_study_level_time.png', 
-       width = 150, height = 150, units = 'mm')
-# interaction does not look to be statistically significant though
+cowplot::plot_grid(beta_turnover_sstd_slope, 
+                   beta_nestedness_sstd_study,
+                   nrow = 2)
+
+ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/SStd_beta_components_study_level.png', 
+       width = 250, height = 150, units = 'mm')
+
+# no interactions look to be statistically significant 
 with(Sstd_beta_coefs, car::Anova(lm(Sstd ~ jtu_slope*time.since.fragmentation)))
+with(Sstd_beta_coefs, car::Anova(lm(Sstd ~ jtu_slope*taxa)))
+with(Sstd_beta_coefs, summary(lm(Sstd ~ jtu_slope*taxa)))
+with(Sstd_beta_coefs, car::Anova(lm(Sstd ~ jtu_slope*continent)))
+with(Sstd_beta_coefs, car::Anova(lm(Sstd ~ jtu_slope*biome)))
+
+# overall relationship is negative
+with(Sstd_beta_coefs, car::Anova(lm(Sstd ~ jtu_slope)))
+with(Sstd_beta_coefs, summary(lm(Sstd ~ jtu_slope)))
+par(mfrow=c(2,2))
+with(Sstd_beta_coefs, plot(lm(Sstd ~ jtu_slope)))

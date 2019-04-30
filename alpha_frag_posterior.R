@@ -1,4 +1,4 @@
-# get study-level posterior samples
+# get study-level posterior samples from model with only study-level slope variation
 library(tidyverse)
 library(brms)
 library(ggridges)
@@ -10,48 +10,13 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
-# higher-levels (no studies are missing N_std)
-high_level <- Nstd_lognorm_fragSize4$data %>% 
-  as_tibble() %>% 
-  distinct(cbmtt) %>% 
-  mutate(level = cbmtt) %>%
-  nest(level)
 
 # study-levels (no studies are missing N_std)
 study_levels <- Nstd_lognorm_fragSize$data %>% 
   as_tibble() %>% 
   distinct(dataset_label) %>% 
   mutate(level = dataset_label) %>%
-  nest(level)
-
-cbmtt_posterior <- high_level %>%
-  mutate(S_std = purrr::map(data, possibly(~posterior_samples(Sstd2_lognorm_fragSize4,
-                                                     pars = paste0('r_cbmtt[', as.character(.x$level), ',c.lfs]'),
-                                                     exact_match = TRUE,
-                                                     subset = floor(runif(n = 1000,
-                                                                          min = 1, max = 2000))) %>% unlist() %>% as.numeric(),
-                                           otherwise = NULL)),
-         Scov = purrr::map(data, ~posterior_samples(Scov_lognorm_fragSize4,
-                                                    pars = paste('r_cbmtt[', as.character(.x$level), ',c.lfs]', sep=''),
-                                                    exact_match = TRUE,
-                                                    subset = floor(runif(n = 1000,
-                                                                         min = 1, max = 2000))) %>% unlist() %>% as.numeric()),
-         Sn = purrr::map(data, ~posterior_samples(Sn_lognorm_fragSize4,
-                                                  pars = paste('r_cbmtt[', as.character(.x$level), ',c.lfs]', sep=''),
-                                                  exact_match = TRUE,
-                                                  subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()),
-         Schao = purrr::map(data, ~posterior_samples(S_chao_lognorm_fragSize4,
-                                                     pars = paste('r_cbmtt[', as.character(.x$level), ',c.lfs]', sep=''),
-                                                     exact_match = TRUE,
-                                                     subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()),
-         S_PIE = purrr::map(data, ~posterior_samples(S_PIE_lognorm_fragSize4,
-                                                     pars = paste('r_cbmtt[', as.character(.x$level), ',c.lfs]', sep=''),
-                                                     exact_match = TRUE,
-                                                     subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()),
-         Nstd = purrr::map(data, ~posterior_samples(Nstd_lognorm_fragSize4,
-                                                    pars = paste('r_cbmtt[', as.character(.x$level), ',c.lfs]', sep=''),
-                                                    exact_match = TRUE,
-                                                    subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()))
+  nest(level) 
 
 study_sample_posterior <- study_levels %>%
   mutate(S_std = purrr::map(data, ~posterior_samples(Sstd2_lognorm_fragSize, 
@@ -124,8 +89,8 @@ Spie_posterior$time.since.fragmentation <- factor(Spie_posterior$time.since.frag
                                                   labels = c('< 20 years',
                                                              '20-100 years)',
                                                              '> 100 years)'))
-ggplot() +
-  facet_grid(continent ~ ., scale = 'free') +
+sstd_study_posterior_time_taxa <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.3) +
@@ -134,21 +99,155 @@ ggplot() +
                           y = time.since.fragmentation,
                           fill = taxa
                       ),
-                      scale = 1, alpha = 0.2,
+                      scale = 1, alpha = 0.3,
+                      linetype = 0) +
+  scale_fill_brewer(name = 'Taxa', type = 'qual', palette = 'Accent') +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = '',#Time since fragmentation
+       x = ''#expression(paste('Study-level slope'))#,
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank())
+
+sstd_study_posterior_time_continent <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_density_ridges(data = Sstd_posterior,
+                      aes(x = S_std + unique(Sstd_global_slope), 
+                          y = time.since.fragmentation,
+                          fill = continent
+                      ),
+                      scale = 1, alpha = 0.5,
+                      linetype = 0) +
+  scale_fill_brewer(name = 'Continent', type = 'qual', palette = 'Dark2') +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = '',
+       x = ''#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank())
+
+sstd_study_posterior_time_biome <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_density_ridges(data = Sstd_posterior,
+                      aes(x = S_std + unique(Sstd_global_slope), 
+                          y = time.since.fragmentation,
+                          fill = biome
+                      ),
+                      scale = 1, alpha = 0.5,
+                      linetype = 0) +
+  scale_fill_brewer(name = 'Biome', type = 'qual', palette = 'Set2') +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = '',
+       x = ''#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank())
+
+sstd_study_posterior_time_matrix <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_density_ridges(data = Sstd_posterior,
+                      aes(x = S_std + unique(Sstd_global_slope), 
+                          y = time.since.fragmentation,
+                          fill = Matrix.category
+                      ),
+                      scale = 1, alpha = 0.5,
+                      linetype = 0) +
+  scale_fill_brewer(name = 'Matrix', type = 'qual', palette = 'Set1') +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = '',
+       x = ''#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank()) #+
+
+sstd_study_posterior_time <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_density_ridges(data = Sstd_posterior,
+                      aes(x = S_std + unique(Sstd_global_slope), 
+                          y = time.since.fragmentation,
+                          # fill = taxa
+                      ),
+                      scale = 1, alpha = 0.5,
                       linetype = 0) +
   # scale_fill_viridis_d(name = 'Taxa') +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
-  labs(y = 'Time since fragmentation',
-       x = expression(paste('Study-level ', S[std], ' change'))#,
-       # tag = 'A'
+  labs(y = '',
+       x = '',#expression(paste('Study-level slope')),
+       subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
-        legend.position = c(0.85, 0.8)) #+
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank()) #+
+
+top <- cowplot::plot_grid(NULL, sstd_study_posterior_time, NULL,
+                          ncol = 3,
+                          rel_widths = c(0.2,0.6,0.2))
+
+bottom <- cowplot::plot_grid(sstd_study_posterior_time_matrix,
+                             sstd_study_posterior_time_taxa,
+                             sstd_study_posterior_time_biome,
+                             sstd_study_posterior_time_continent)
+
+cowplot::plot_grid(top, bottom, nrow = 2,
+                   rel_heights = c(0.6,1),
+                   rel_widths = c(0.5, 1)) + 
+  cowplot::draw_label('Study-level slope', y = 0.009) +
+  cowplot::draw_label('Time since fragmentation', x = 0.007, angle = 90)
+
+ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/study_level_slope_time_group.png',
+       width = 250,
+       height = 250,
+       units = 'mm')
 
 ggplot() +
   facet_grid(~ taxa, scales = 'free') +
@@ -178,4 +277,3 @@ ggplot() +
         legend.position = c(0.7, 0.2),
         # legend.direction = 'horizontal',
         legend.background = element_blank()) #+
-
