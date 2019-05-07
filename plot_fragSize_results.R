@@ -45,9 +45,11 @@ S_std_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_color_grey(guide=F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[std]))) +
+       y = expression(paste(S[std])),
+       tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none')
 
@@ -89,9 +91,11 @@ Sn_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_colour_grey(guide=F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[n]))) +
+       y = expression(paste(S[n])),
+       tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none')
 
@@ -133,9 +137,11 @@ Spie_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log', breaks = c(4,16,32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_color_grey(guide=F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[PIE]))) +
+       y = expression(paste(S[PIE])),
+       tag = 'd') +
   theme_bw() +
   theme(legend.position = 'none')
 
@@ -266,9 +272,11 @@ Nstd_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log10', breaks = c(1,10,100,1000,10000)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_color_grey(guide = F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(N[std]))) +
+       y = expression(paste(N[std])),
+       tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none')
 
@@ -292,7 +300,12 @@ Nstd_regPlot
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/N_std_fragSize.png',
 #        width = 200, height = 200, units = 'mm')
 
-# ggsave('~/fragmentation/figs/fragSize_regression.pdf', width = 250, height = 220, units = 'mm')
+cowplot::plot_grid(Nstd_regPlot,
+                   S_std_regPlot,
+                   Sn_regPlot,
+                   Spie_regPlot,
+                   nrow = 2, align = 'hv')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_grey.png', width = 250, height = 220, units = 'mm')
 ##---coef plots---------
 # get the metadata...
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep = ';') %>% 

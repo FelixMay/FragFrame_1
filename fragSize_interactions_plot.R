@@ -3,7 +3,7 @@ library(tidyverse)
 library(brms)
 ##----load model fits-----
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')
+# load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')
 # for plotting fixed effects
 Sstd_fS_matrix_fitted <- cbind(Sstd2_ln_fS_matrix$data,
                              fitted(Sstd2_ln_fS_matrix, re_formula = NA)) %>% 

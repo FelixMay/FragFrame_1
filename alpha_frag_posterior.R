@@ -72,6 +72,11 @@ Sstd_posterior$time.since.fragmentation <- factor(Sstd_posterior$time.since.frag
                                                              '20-100 years)',
                                                              '> 100 years)'))
 
+Sstd_posterior$Matrix.category <- factor(Sstd_posterior$Matrix.category,
+                                                  levels = c('light filter', 'intermediate', 'harsh filter'),
+                                                  labels = c('Light',
+                                                             'Intermediate',
+                                                             'Harsh'))
 Spie_posterior <- study_sample_posterior  %>% 
   select(-data) %>% 
   unnest(S_PIE) %>% 
@@ -89,6 +94,12 @@ Spie_posterior$time.since.fragmentation <- factor(Spie_posterior$time.since.frag
                                                   labels = c('< 20 years',
                                                              '20-100 years)',
                                                              '> 100 years)'))
+Spie_posterior$Matrix.category <- factor(Spie_posterior$Matrix.category,
+                                         levels = c('light filter', 'intermediate', 'harsh filter'),
+                                         labels = c('Light',
+                                                    'Intermediate',
+                                                    'Harsh'))
+
 sstd_study_posterior_time_taxa <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
@@ -203,17 +214,31 @@ sstd_study_posterior_time_matrix <- ggplot() +
 
 sstd_study_posterior_time <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
+  geom_density_ridges_gradient(data = Sstd_posterior,
+                      aes(x = S_std + unique(Sstd_global_slope),
+                          y = time.since.fragmentation,
+                          fill = stat(quantile)
+                      ),
+                      quantiles = c(0.25, 0.75),
+                      calc_ecdf = T,
+                      scale = 0.95, alpha = 0.5,
+                      linetype = 0) +
+  # stat_density_ridges(data = Sstd_posterior,
+  #                     geom = 'density_ridges_gradient',
+  #                     aes(x = S_std + unique(Sstd_global_slope), 
+  #                     y = time.since.fragmentation,
+  #                     fill = 0.5 - abs(0.5 -..ecdf..)),
+  #                     calc_ecdf = T,
+  #                     scale = 0.95, alpha = 0.5) +
+  geom_point(data = Sstd_posterior,
+             aes(x = S_std + unique(Sstd_global_slope), 
+                 y = time.since.fragmentation),
+             stat = ggstance:::StatSummaryh,
+             fun.x = median,
+             size = 3) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.3) +
-  geom_density_ridges(data = Sstd_posterior,
-                      aes(x = S_std + unique(Sstd_global_slope), 
-                          y = time.since.fragmentation,
-                          # fill = taxa
-                      ),
-                      scale = 1, alpha = 0.5,
-                      linetype = 0) +
-  # scale_fill_viridis_d(name = 'Taxa') +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -223,6 +248,14 @@ sstd_study_posterior_time <- ggplot() +
        subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  # scale_fill_viridis_c(name = 'Posterior probability') +
+  scale_fill_manual(name = 'Posterior probability',
+                    values = c('#cccccc',
+                               '#969696',
+                               '#cccccc'),
+                    labels = c('< 25%', 
+                               '25 - 75%',
+                               '> 75%')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = c(1, 1), 
@@ -277,3 +310,211 @@ ggplot() +
         legend.position = c(0.7, 0.2),
         # legend.direction = 'horizontal',
         legend.background = element_blank()) #+
+
+
+sstd_study_posterior_matrx <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_density_ridges_gradient(data = Sstd_posterior,
+                               aes(x = S_std + unique(Sstd_global_slope),
+                                   y = Matrix.category,
+                                   fill = stat(quantile)
+                               ),
+                               quantiles = c(0.25, 0.75),
+                               calc_ecdf = T,
+                               scale = 0.95, alpha = 0.5,
+                               linetype = 0) +
+  # stat_density_ridges(data = Sstd_posterior,
+  #                     geom = 'density_ridges_gradient',
+  #                     aes(x = S_std + unique(Sstd_global_slope), 
+  #                     y = time.since.fragmentation,
+  #                     fill = 0.5 - abs(0.5 -..ecdf..)),
+  #                     calc_ecdf = T,
+  #                     scale = 0.95, alpha = 0.5) +
+  geom_point(data = Sstd_posterior,
+             aes(x = S_std + unique(Sstd_global_slope), 
+                 y = Matrix.category),
+             stat = ggstance:::StatSummaryh,
+             fun.x = median,
+             size = 3) +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = 'Matrix filter',
+       x = ''#,#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  # scale_fill_viridis_c(name = 'Posterior probability') +
+  scale_fill_manual(name = 'Posterior probability',
+                    values = c('#cccccc',
+                               '#969696',
+                               '#cccccc'),
+                    labels = c('< 25%', 
+                               '25 - 75%',
+                               '> 75%')) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank()) #+
+
+
+sstd_study_posterior_biome <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_density_ridges_gradient(data = Sstd_posterior,
+                               aes(x = S_std + unique(Sstd_global_slope),
+                                   y = biome,
+                                   fill = stat(quantile)
+                               ),
+                               quantiles = c(0.25, 0.75),
+                               calc_ecdf = T,
+                               scale = 0.95, alpha = 0.5,
+                               linetype = 0) +
+  # stat_density_ridges(data = Sstd_posterior,
+  #                     geom = 'density_ridges_gradient',
+  #                     aes(x = S_std + unique(Sstd_global_slope), 
+  #                     y = time.since.fragmentation,
+  #                     fill = 0.5 - abs(0.5 -..ecdf..)),
+  #                     calc_ecdf = T,
+  #                     scale = 0.95, alpha = 0.5) +
+  geom_point(data = Sstd_posterior,
+             aes(x = S_std + unique(Sstd_global_slope), 
+                 y = biome),
+             stat = ggstance:::StatSummaryh,
+             fun.x = median,
+             size = 3) +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = 'Biome',
+       x = ''#,#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  # scale_fill_viridis_c(name = 'Posterior probability') +
+  scale_fill_manual(name = 'Posterior probability',
+                    values = c('#cccccc',
+                               '#969696',
+                               '#cccccc'),
+                    labels = c('< 25%', 
+                               '25 - 75%',
+                               '> 75%')) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank()) #+
+
+sstd_study_posterior_taxa <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_density_ridges_gradient(data = Sstd_posterior,
+                               aes(x = S_std + unique(Sstd_global_slope),
+                                   y = taxa,
+                                   fill = stat(quantile)
+                               ),
+                               quantiles = c(0.25, 0.75),
+                               calc_ecdf = T,
+                               scale = 0.95, alpha = 0.5,
+                               linetype = 0) +
+  # stat_density_ridges(data = Sstd_posterior,
+  #                     geom = 'density_ridges_gradient',
+  #                     aes(x = S_std + unique(Sstd_global_slope), 
+  #                     y = time.since.fragmentation,
+  #                     fill = 0.5 - abs(0.5 -..ecdf..)),
+  #                     calc_ecdf = T,
+  #                     scale = 0.95, alpha = 0.5) +
+  geom_point(data = Sstd_posterior,
+             aes(x = S_std + unique(Sstd_global_slope), 
+                 y = taxa),
+             stat = ggstance:::StatSummaryh,
+             fun.x = median,
+             size = 3) +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = 'Taxa',
+       x = ''#,#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  # scale_fill_viridis_c(name = 'Posterior probability') +
+  scale_fill_manual(name = 'Posterior probability',
+                    values = c('#cccccc',
+                               '#969696',
+                               '#cccccc'),
+                    labels = c('< 25%', 
+                               '25 - 75%',
+                               '> 75%')) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank()) #+
+
+sstd_study_posterior_continent <- ggplot() +
+  # facet_grid(continent ~ ., scale = 'free') +
+  geom_density_ridges_gradient(data = Sstd_posterior,
+                               aes(x = S_std + unique(Sstd_global_slope),
+                                   y = continent8,
+                                   fill = stat(quantile)
+                               ),
+                               quantiles = c(0.25, 0.75),
+                               calc_ecdf = T,
+                               scale = 0.95, alpha = 0.5,
+                               linetype = 0) +
+  # stat_density_ridges(data = Sstd_posterior,
+  #                     geom = 'density_ridges_gradient',
+  #                     aes(x = S_std + unique(Sstd_global_slope), 
+  #                     y = time.since.fragmentation,
+  #                     fill = 0.5 - abs(0.5 -..ecdf..)),
+  #                     calc_ecdf = T,
+  #                     scale = 0.95, alpha = 0.5) +
+  geom_point(data = Sstd_posterior,
+             aes(x = S_std + unique(Sstd_global_slope), 
+                 y = continent8),
+             stat = ggstance:::StatSummaryh,
+             fun.x = median,
+             size = 3) +
+  geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
+            aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
+            alpha = 0.3) +
+  geom_vline(data = Sstd_posterior,
+             aes(xintercept = Sstd_global_slope)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  theme_bw() +
+  labs(y = 'Continent',
+       x = ''#,#expression(paste('Study-level slope')),
+       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
+  ) +
+  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
+  # scale_fill_viridis_c(name = 'Posterior probability') +
+  scale_fill_manual(name = 'Posterior probability',
+                    values = c('#cccccc',
+                               '#969696',
+                               '#cccccc'),
+                    labels = c('< 25%', 
+                               '25 - 75%',
+                               '> 75%')) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = c(1, 1), 
+        legend.justification = c(1, 1),
+        legend.background = element_blank()) #+
+
+cowplot::plot_grid(sstd_study_posterior_time, 
+                   sstd_study_posterior_matrx, 
+                   sstd_study_posterior_taxa,
+                   sstd_study_posterior_biome,
+                   sstd_study_posterior_continent)
