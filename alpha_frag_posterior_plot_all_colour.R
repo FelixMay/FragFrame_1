@@ -1,6 +1,9 @@
+# COLOUR VERSION
+
 # get study-level posterior samples from model with only study-level slope variation
 # code to plot each of the groups we are interested in together on one figure: 
 # continent, taxa, time, biome, matrix, fragment and matrix sphere (climate?)
+
 library(tidyverse)
 library(brms)
 library(ggridges)
@@ -58,13 +61,13 @@ sstd_study_posterior_time <- ggplot() +
   #                     scale = 0.9, alpha = 0.5) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = time.since.fragmentation),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -86,8 +89,8 @@ sstd_study_posterior_time <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
+                    values = c('#bdd7e7', '#6baed6', '#3182bd',
+                               '#6baed6', '#bdd7e7')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = 'none', 
@@ -107,13 +110,13 @@ sstd_study_posterior_matrix <- ggplot() +
                                linetype = 0) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = Matrix.category),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -135,8 +138,8 @@ sstd_study_posterior_matrix <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
+                    values = c('#bae4b3', '#74c476', '#31a354',
+                               '#74c476', '#bae4b3')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = 'none', 
@@ -156,13 +159,13 @@ sstd_study_posterior_biome <- ggplot() +
                                linetype = 0) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = biome),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -184,8 +187,8 @@ sstd_study_posterior_biome <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
+                    values = c('#fdbe85', '#fd8d3c', '#e6550d',
+                               '#fd8d3c', '#fdbe85')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = 'none', 
@@ -204,13 +207,13 @@ sstd_study_posterior_taxa <- ggplot() +
                                linetype = 0) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = taxa),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -232,8 +235,8 @@ sstd_study_posterior_taxa <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
+                    values = c('#fcae91', '#fb6a4a', '#de2d26',
+                               '#fb6a4a', '#fcae91')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = 'none', 
@@ -252,13 +255,13 @@ sstd_study_posterior_continent <- ggplot() +
                                linetype = 0) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = continent8),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_text(data = Sstd_posterior %>%
@@ -280,8 +283,8 @@ sstd_study_posterior_continent <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
+                    values = c('#cbc9e2', '#9e9ac8', '#756bb1',
+                               '#9e9ac8', '#cbc9e2')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = 'none',
@@ -301,13 +304,13 @@ sstd_study_posterior_climate <- ggplot() +
                                linetype = 0) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = climate),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -347,13 +350,13 @@ sstd_study_posterior_sphere.frag <- ggplot() +
                                linetype = 0) +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
-            alpha = 0.9) +
+            alpha = 0.6) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + unique(Sstd_global_slope), 
                  y = frag_matrix),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5) +
+             size = 2.5, shape = 18) +
   geom_vline(data = Sstd_posterior,
              aes(xintercept = Sstd_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -375,8 +378,8 @@ sstd_study_posterior_sphere.frag <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
+                    values = c('#ecd1e8', '#dba7cd', '#cc7db0',
+                               '#dba7cd', '#ecd1e8')) +
   theme(panel.grid = element_blank(),
         legend.key = element_blank(),
         legend.position = 'none',
@@ -387,16 +390,16 @@ sstd_study_posterior_sphere.frag <- ggplot() +
 top = cowplot::plot_grid(NULL, legend, NULL,
                          nrow = 1, rel_widths = c(0.2,0.6,0.2))
 bottom = cowplot::plot_grid(sstd_study_posterior_continent,
-                   sstd_study_posterior_biome,
-                   sstd_study_posterior_sphere.frag,
-                   sstd_study_posterior_taxa,
-                   sstd_study_posterior_time, 
-                   sstd_study_posterior_matrix, 
-                   nrow = 2)
+                            sstd_study_posterior_biome,
+                            sstd_study_posterior_sphere.frag,
+                            sstd_study_posterior_taxa,
+                            sstd_study_posterior_time, 
+                            sstd_study_posterior_matrix, 
+                            nrow = 2)
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
   cowplot::draw_label('Study-level slope', y = 0.01)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig4_grey.png',
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig4_colour.png',
 #        width = 290,
 #        height = 220,
 #        units = 'mm')
