@@ -9,7 +9,7 @@ turnover_regression <- ggplot() +
   # data
   geom_point(data = frag_beta %>% filter(method == 'Baselga family, Jaccard'),
              aes(x = frag_size_num.x/frag_size_num.y, y = repl, colour = dataset_label),
-             size = 0.25,
+             size = 0.5,
              alpha = 0.15) +
   geom_segment(data = Jtu_z1i_group_coefs,
                aes(group = dataset_label,
@@ -53,7 +53,7 @@ turnover_regression <- ggplot() +
   #                 ymax = plogis(coi_Q97.5)),
   #             alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-annotate('text', x = 10^6.5, y = 0.2,
+annotate('text', x = Inf, y = 0, hjust = 1.2, vjust = 0,
          label = paste("beta[Jtu] == ", #[Frag.~size]
                        round(Jtu_z1i_fixef['cl10ra','Estimate'],2),
                        "  (",
@@ -77,16 +77,17 @@ annotate('text', x = 10^6.5, y = 0.2,
   # scale_colour_viridis_d(guide=F) +
   scale_color_grey(guide = F) +
   labs(x = 'Ratio of fragment sizes (log-scale)',
-       y = 'Turnover component of Jaccard dissimilarity',
+       y = 'Turnover (Jaccard)',
        tag = 'a') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 turnover_regression_ruzicka <- ggplot() +
   # data
   geom_point(data = frag_beta %>% filter(method == 'Baselga family, Ruzicka'),
              aes(x = frag_size_num.x/frag_size_num.y, y = repl, colour = dataset_label),
-             size = 0.25,
+             size = 0.5,
              alpha = 0.15) +
   geom_segment(data = Rtu_z1i_group_coefs,
                aes(group = dataset_label,
@@ -108,7 +109,7 @@ turnover_regression_ruzicka <- ggplot() +
                   ymin = plogis(Q2.5),
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
-  annotate('text', x = 10^6.5, y = 0.2,
+  annotate('text', x = Inf, y = 0, hjust = 1.2, vjust = 0,
            label = paste("beta[Rbal] == ", #[Frag.~size]
                          round(Rtu_z1i_fixef['cl10ra','Estimate'],2),
                          "  (",
@@ -123,16 +124,17 @@ turnover_regression_ruzicka <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_color_grey(guide = F) +
   labs(x = 'Ratio of fragment sizes (log-scale)',
-       y = 'Turnover component of Ruzicka dissimilarity',
+       y = 'Balanced abundance (Ruzicka)',
        tag = 'c') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 nestedness_regression <- ggplot() +
   # data
   geom_point(data = frag_beta %>% filter(method == 'Baselga family, Jaccard'),
              aes(x = frag_size_num.x/frag_size_num.y, y = rich, colour = dataset_label),
-             size = 0.25,
+             size = 0.5,
              alpha = 0.15) +
   geom_segment(data = Jne_zi_group_coefs,
                aes(group = dataset_label,
@@ -154,7 +156,7 @@ nestedness_regression <- ggplot() +
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-annotate('text', x = 10^6.5, y = 0.95,
+  annotate('text', x = Inf, y = 1, hjust = 1.2, vjust = 1.4,
          label = paste("beta[Jne] == ", #[Frag.~size]
                        round(Jne_zi_fixef['cl10ra','Estimate'],2),
                        "  (",
@@ -169,16 +171,16 @@ annotate('text', x = 10^6.5, y = 0.95,
   # scale_colour_viridis_d(guide=F) +
   scale_colour_grey(guide = F) +
   labs(x = 'Ratio of fragment sizes (log-scale)',
-       y = 'Nestedness component of Jaccard dissimilarity') +
+       y = 'Nestedness (Jaccard)') +
   coord_cartesian(ylim = c(0,1)) +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none', text = element_text(size = 13))
 
 nestedness_regression_ruzicka <- ggplot() +
   # data
   geom_point(data = frag_beta %>% filter(method == 'Baselga family, Ruzicka'),
              aes(x = frag_size_num.x/frag_size_num.y, y = rich, colour = dataset_label),
-             size = 0.25,
+             size = 0.5,
              alpha = 0.15) +
   geom_segment(data = Rne_zi_group_coefs,
                aes(group = dataset_label,
@@ -200,7 +202,7 @@ nestedness_regression_ruzicka <- ggplot() +
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 10^6.5, y = 0.9,
+  annotate('text', x = Inf, y = 1, hjust = 1.2, vjust = 1.4,
            label = paste("beta[Rgrad] == ", #[Frag.~size]
                          round(Rne_zi_fixef['cl10ra','Estimate'],2),
                          "  (",
@@ -215,11 +217,12 @@ nestedness_regression_ruzicka <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_grey(guide = F) +
   labs(x = 'Ratio of fragment sizes (log-scale)',
-       y = 'Nestedness component of Ruzicka dissimilarity',
+       y = 'Abundance gradient (Ruzicka)',
        tag = 'd') +
   coord_cartesian(ylim = c(0,1)) +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 cowplot::plot_grid(turnover_regression,
                    nestedness_regression,
