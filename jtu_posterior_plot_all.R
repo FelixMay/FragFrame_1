@@ -78,10 +78,10 @@ Jtu_study_posterior_time <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(time.since.fragmentation, n_study, .keep_all = T),
-            aes(x=0.65, y=time.since.fragmentation, 
+            aes(x=Inf, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   theme_bw() +
   labs(y = 'Time since fragmentation',
        x = '',#,#expression(paste('Study-level slope')),
@@ -127,10 +127,10 @@ Jtu_study_posterior_matrix <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(Matrix.category, n_study, .keep_all = T),
-            aes(x=0.65, y=Matrix.category, 
+            aes(x=Inf, y=Matrix.category, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   theme_bw() +
   labs(y = 'Matrix filter',
        x = '',#,#expression(paste('Study-level slope')),
@@ -176,10 +176,10 @@ Jtu_study_posterior_biome <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(biome, n_study, .keep_all = T),
-            aes(x=0.65, y=biome, 
+            aes(x=Inf, y=biome, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   theme_bw() +
   labs(y = 'Biome',
        x = '',#,#expression(paste('Study-level slope')),
@@ -224,10 +224,10 @@ Jtu_study_posterior_taxa <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(taxa, n_study, .keep_all = T),
-            aes(x=0.65, y=taxa, 
+            aes(x=Inf, y=taxa, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   theme_bw() +
   labs(y = 'Taxa',
        x = '',#,#expression(paste('Study-level slope')),
@@ -271,10 +271,10 @@ Jtu_study_posterior_continent <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(continent8, n_study, .keep_all = T),
-            aes(x=0.65, y=continent8, 
+            aes(x=Inf, y=continent8, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
   labs(y = 'Continent',
@@ -321,10 +321,10 @@ Jtu_study_posterior_climate <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(climate, n_study, .keep_all = T),
-            aes(x=0.65, y=climate, 
+            aes(x=Inf, y=climate, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   theme_bw() +
   labs(y = 'Climate',
        x = ''#,#expression(paste('Study-level slope')),
@@ -367,10 +367,10 @@ Jtu_study_posterior_sphere.frag <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(climate, n_study, .keep_all = T),
-            aes(x=0.65, y=frag_matrix, 
+            aes(x=Inf, y=frag_matrix, 
                 label=paste('n[study] == ', n_study)),
             size=3.5,
-            nudge_y = 0.15, parse = T) +
+            nudge_y = 0.15, parse = T, hjust = 1.25) +
   theme_bw() +
   labs(y = 'Fragment and matrix sphere',
        x = '',#,#expression(paste('Study-level slope')),

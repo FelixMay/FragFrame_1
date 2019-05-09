@@ -16,6 +16,11 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
+# two studies have slightly different labels in the beta-diversity dataframe (thanks Felix!)
+meta <- meta %>% 
+  mutate(dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', as.character(dataset_label)),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', as.character(dataset_label)))
+
 frag_beta <- frag_beta %>% 
   group_by(dataset_label, sample_design, method, frag_x) %>% 
   mutate(pair_group = paste0(frag_x, '_g')) %>% 
@@ -72,7 +77,33 @@ Jtu_z1i_group_coefs <- bind_cols(Jtu_z1i_coef[[1]][,,'Intercept'] %>%
                          xmax.y = max(frag_size_num.y),
                          cxmin = min(cl10ra),
                          cxmax = max(cl10ra)),
-             by = 'dataset_label')
+             by = 'dataset_label') %>% 
+  left_join(meta, by = 'dataset_label')
+
+Jtu_z1i_group_coefs$time.since.fragmentation <- factor(Jtu_z1i_group_coefs$time.since.fragmentation,
+                                                 levels = c('Recent (less than 20 years)',
+                                                            'Intermediate (20-100 years)',
+                                                            'long (100+ years)'),
+                                                 labels = c('< 20 years',
+                                                            '20-100 years',
+                                                            '> 100 years'))
+
+Jtu_z1i_group_coefs$Matrix.category <- factor(Jtu_z1i_group_coefs$Matrix.category,
+                                        levels = c('light filter', 'intermediate', 'harsh filter'),
+                                        labels = c('Light', 'Intermediate', 'Harsh'))
+
+Jtu_z1i_group_coefs$biome <- factor(Jtu_z1i_group_coefs$biome,
+                              levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                              labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+
+Jtu_z1i_group_coefs$taxa <- factor(Jtu_z1i_group_coefs$taxa,
+                             levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                             labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
+Jtu_z1i_group_coefs <- Jtu_z1i_group_coefs %>% 
+  unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
+        remove = F, sep = ', ')
+
 
 # repeat for Ruzicka
 Rtu_z1i_fitted <- cbind(Rtu_z1i_fragSize$data,
