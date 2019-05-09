@@ -16,6 +16,11 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
+# two studies have slightly different labels in the beta-diversity dataframe (thanks Felix!)
+meta <- meta %>% 
+  mutate(dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', as.character(dataset_label)),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', as.character(dataset_label)))
+
 frag_beta <- frag_beta %>% 
   group_by(dataset_label, sample_design, method, frag_x) %>% 
   mutate(pair_group = paste0(frag_x, '_g')) %>% 
