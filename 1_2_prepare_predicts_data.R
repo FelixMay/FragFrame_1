@@ -63,6 +63,15 @@ caceres2a <- caceres2 %>%
    select(names(dat_long))
 rm(caceres2)
 
+# sum species abundances in fragments
+caceres2b <- caceres2a %>%
+   group_by_at(vars(-abundance)) %>%
+   summarise(abundance = sum(abundance)) %>% 
+   ungroup() %>%
+   arrange(frag_id, species)
+rm(caceres2a)
+
+
 # # Ewers 2007 ------------------------------------------------------------
 # predicts_path <- path2Dropbox %+% "From PREDICTS/Ewers_et_al_2007.csv" 
 # 
@@ -353,7 +362,7 @@ rm(stouffer2a)
 
 # Combine and save studies ----------------------------------
 # exclude ewers for the moment
-predicts_dat <- bind_rows(caceres2a,
+predicts_dat <- bind_rows(caceres2b,
                           fernandez3c_rural, fernandez3c_urban,
                           garmendia3b,
                           stouffer2b)
@@ -371,6 +380,7 @@ predicts_dat2 %>%
 #    select(dataset_label, frag_id, sample_eff) %>% distinct())
 
 fragsad_predicts <- bind_rows(dat_long, predicts_dat)
+sum(duplicated(fragsad_predicts))
 
 # read long format data file
 outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_and_predicts.csv"

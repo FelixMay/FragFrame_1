@@ -87,3 +87,4 @@ fragsad_predicts_ewers <- bind_rows(dat_long, site_abund3)
 outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_predicts_ewers.csv"
 write_csv(fragsad_predicts_ewers, outfile)
 
+sum(duplicated(fragsad_predicts_ewers))
