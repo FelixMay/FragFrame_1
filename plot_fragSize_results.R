@@ -12,7 +12,7 @@ S_std_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_std_2, colour = dataset_label),
-             size = 1.5) +
+             size = 1.5, alpha = 0.5) +
   geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = dataset_label,
@@ -33,7 +33,7 @@ S_std_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.1, y = 132,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Sstd2_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          " (",
@@ -45,18 +45,21 @@ S_std_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_color_grey(guide=F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[std]))) +
+       y = expression(paste(S[std])),
+       tag = 'b') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 # Sn
 Sn_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_n, colour = dataset_label),
-             size = 1.5) +
+             size = 1.5, alpha = 0.5) +
   geom_segment(data = Sn_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = dataset_label,
@@ -77,7 +80,7 @@ Sn_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.1, y = 132,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Sn_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -89,18 +92,21 @@ Sn_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_colour_grey(guide=F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[n]))) +
+       y = expression(paste(S[n])),
+       tag = 'c') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none', 
+        text = element_text(size = 13))
 
 # S_PIE
 Spie_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_PIE, colour = dataset_label),
-             size = 1.5) +
+             size = 1.5, alpha = 0.5) +
   geom_segment(data = S_PIE_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = dataset_label,
@@ -121,7 +127,7 @@ Spie_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.1, y = 132,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(S_PIE_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -133,18 +139,20 @@ Spie_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log', breaks = c(4,16,32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_color_grey(guide=F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[PIE]))) +
+       y = expression(paste(S[PIE])),
+       tag = 'd') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none', text = element_text(size = 13))
 
 # S_cov
 Scov_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_cov, colour = dataset_label),
-             size = 1.5) +
+             size = 1.5, alpha = 0.5) +
   geom_segment(data = Scov_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = dataset_label,
@@ -165,7 +173,7 @@ Scov_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.1, y = 132,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.4, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Scov_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -181,14 +189,15 @@ Scov_regPlot <- ggplot() +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[cov]))) +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 # S_cov
 Schao_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_chao, colour = dataset_label),
-             size = 1.5) +
+             size = 1.5, alpha = 0.5) +
   geom_segment(data = Schao_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = dataset_label,
@@ -209,7 +218,7 @@ Schao_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.1, y = 900,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.4, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Schao_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -225,7 +234,8 @@ Schao_regPlot <- ggplot() +
   labs(x = 'Fragment size (hectares)',
        y = expression(paste(S[chao]))) +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 # N_std
 Nstd_regPlot <- ggplot() +
@@ -233,7 +243,7 @@ Nstd_regPlot <- ggplot() +
   geom_point(data = frag,
              aes(x = frag_size_num, y = N_std, 
                  colour = dataset_label),
-             size = 1.5) +
+             size = 1.5, alpha = 0.5) +
   geom_segment(data = Nstd_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = dataset_label,
@@ -254,7 +264,7 @@ Nstd_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.175, y = 20000,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Nstd_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -266,11 +276,14 @@ Nstd_regPlot <- ggplot() +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log10', breaks = c(1,10,100,1000,10000)) +
-  scale_colour_viridis_d(guide=F) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_color_grey(guide = F) +
   labs(x = 'Fragment size (hectares)',
-       y = expression(paste(N[std]))) +
+       y = expression(paste(N[std])),
+       tag = 'a') +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        text = element_text(size = 13))
 
 S_std_regPlot
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_std_fragSize.png',
@@ -292,7 +305,12 @@ Nstd_regPlot
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/N_std_fragSize.png',
 #        width = 200, height = 200, units = 'mm')
 
-# ggsave('~/fragmentation/figs/fragSize_regression.pdf', width = 250, height = 220, units = 'mm')
+cowplot::plot_grid(Nstd_regPlot,
+                   S_std_regPlot,
+                   Sn_regPlot,
+                   Spie_regPlot,
+                   nrow = 2, align = 'hv')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_grey.png', width = 250, height = 220, units = 'mm')
 ##---coef plots---------
 # get the metadata...
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep = ';') %>% 
