@@ -3,6 +3,17 @@ library(tidyverse)
 library(brms)
 ##----load model fits-----
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
+
+Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion = 'waic')
+Sstd2_ln_fS_tsf <- add_criterion(Sstd2_ln_fS_tsf, criterion = 'waic')
+Sstd2_ln_fS_biome <- add_criterion(Sstd2_ln_fS_biome, criterion = 'waic')
+Sstd2_ln_fS_matrix <- add_criterion(Sstd2_ln_fS_matrix, criterion = 'waic')
+Sstd2_ln_fS_taxa <- add_criterion(Sstd2_ln_fS_taxa, criterion = 'waic')
+
+loo_compare(Sstd2_lognorm_fragSize, Sstd2_ln_fS_tsf, 
+            Sstd2_ln_fS_biome, Sstd2_ln_fS_matrix,
+            Sstd2_ln_fS_taxa, criterion = 'waic')
+
 # load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_biome_wetland.Rdata')
 # for plotting fixed effects
 Sstd_fS_matrix_fitted <- cbind(Sstd2_ln_fS_matrix$data,

@@ -13,6 +13,10 @@ meta <- meta %>%
 
 meta %>% distinct(taxa)
 
+meta$taxa <- factor(meta$taxa,
+                         levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                         labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
 world <- map_data('world') %>% 
   as_tibble()
 
@@ -25,13 +29,13 @@ map_taxa <- ggplot() +
              size = 1.5) +
   coord_map('mollweide', ylim = c(-60, 90), xlim = c(-180, 180)) +
   scale_x_continuous(breaks = seq(-180, 180, by = 30)) +
-  scale_y_continuous(breaks = c(0, -23.5, 23.5)) +
+  scale_y_continuous(breaks = c(0, -23.5, 23.5, -60, 60)) +
   scale_shape_manual(name = 'Taxa',
-                     values = c('amphibians & reptiles' = 0,
-                                'birds' = 1,
-                                'plants' = 2,
-                                'invertebrates' = 3,
-                                'mammals' = 4),
+                     values = c('Amphibians & reptiles' = 0,
+                                'Birds' = 1,
+                                'Plants' = 2,
+                                'Invertebrates' = 3,
+                                'Mammals' = 4),
                      labels = c('Amphibians & reptiles', 'Birds',
                                 'Plants', 'Invertebrates', 'Mammals')) +
   scale_color_brewer(name = 'Taxa', 
@@ -41,7 +45,7 @@ map_taxa <- ggplot() +
   labs(x = '', 
        y = '') +
   theme_bw() +
-  theme(panel.grid.major.x = element_blank(), 
+  theme(#panel.grid.major.x = element_blank(), 
         panel.border = element_blank(),
         axis.ticks = element_blank(), 
         axis.text = element_blank(),

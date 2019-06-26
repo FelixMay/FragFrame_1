@@ -105,128 +105,58 @@ study_slope_coefs %>%
 study_slope_coefs %>% 
   filter(rtu_slope > rne_slope)
 
-# beta_turnover_sstd_slope <-
+s_jtu_corr <- cor.test(study_slope_coefs$Sstd, study_slope_coefs$jtu_slope)
+s_jne_corr <- cor.test(study_slope_coefs$Sstd, study_slope_coefs$jne_slope)
+
+beta_turnover_sstd_slope <-
 ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-             aes(x = jtu_slope, y = Sstd, colour = 'S'),
-             size = 0.5,
-             alpha = 0.2) +
-  geom_point(data = study_slope_coefs,
-             aes(x = jtu_slope, y = Spie, colour = 'Spie'),
-             size = 0.5,
-             alpha = 0.2) +
-  geom_point(data = study_slope_coefs,
-             aes(x = jtu_slope, y = Nstd, colour = 'N'),
-             size = 0.5,
-             alpha = 0.2) +
-  # geom_point(data = study_slope_coefs,
-  #            aes(x = rtu_slope, y = Sstd, colour = 'S'),
-  #            size = 0.5,
-  #            alpha = 0.2) +
-  # geom_point(data = study_slope_coefs,
-  #            aes(x = rtu_slope, y = Spie, colour = 'Spie'),
-  #            size = 0.5,
-  #            alpha = 0.2) +
-  # geom_point(data = study_slope_coefs,
-  #            aes(x = rtu_slope, y = Nstd, colour = 'N'),
-  #            size = 0.5,
-  #            alpha = 0.2) +
+             aes(x = jtu_slope, y = Sstd, 
+                 # colour = time.since.fragmentation
+                 )) +
   stat_smooth(data = study_slope_coefs,
-            aes(x = jtu_slope, y = Sstd, colour = 'S'),
-            method = 'gam',# se = F
+            aes(x = jtu_slope, y = Sstd#, colour = time.since.fragmentation
+                ),
+            method = 'lm', se = F
             ) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = jtu_slope, y = Spie, colour = 'Spie'),
-              method = 'gam', #se = F
-              ) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = jtu_slope, y = Nstd, colour = 'N'),
-              method = 'gam', #se = F
-              ) +
-  # stat_smooth(data = study_slope_coefs,
-  #             aes(x = rtu_slope, y = Sstd, colour = 'S'),
-  #             method = 'gam',# se = F,
-  #             linetype = 2) +
-  # stat_smooth(data = study_slope_coefs,
-  #             aes(x = rtu_slope, y = Spie, colour = 'Spie'),
-  #             method = 'gam', #se = F,
-  #             linetype = 2) +
-  # stat_smooth(data = study_slope_coefs,
-  #             aes(x = rtu_slope, y = Nstd, colour = 'N'),
-  #             method = 'gam', #se = F,
-  #             linetype = 2) +
+  annotate('text', x = -Inf, y = Inf, hjust = -0.2, vjust = 1.4,
+           label = paste("paste(italic(rho) == " , 
+                         round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
+                         round(s_jtu_corr$conf.int[1], 2),
+                         " ~`—` ",
+                         round(s_jtu_corr$conf.int[2], 2),"))"),
+           parse = T, size = 5) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_vline(xintercept = 0, lty = 2) +
-  scale_color_manual(name = '',
-                     values = c('S' = '#bc5090', 'Spie' = '#ffa600', 'N' = '#003f5c'),
-                     labels = c(expression(paste(N[Std])),
-                                expression(paste(S[PIE])),
-                                expression(paste(S[Std])))) +
   labs(x = 'Study-level turnover slope',
        y = ''
-       # y = expression(paste('Study-level biodiversity measure slope'))
+       # y = expression(paste('Study-level ', S[std], 'slope'))
        ) +
   theme_bw() +
   theme(legend.position = c(1,1),
         legend.justification = c(1,1),
         legend.background = element_blank())
 
-# beta_nestedness_sstd_study <- 
+
+beta_nestedness_sstd_study <-
 ggplot() +
   # facet_grid(.~climate) +
-geom_point(data = study_slope_coefs,
-           aes(x = jne_slope, y = Sstd, colour = 'S'),
-           size = 0.5,
-           alpha = 0.2) +
-geom_point(data = study_slope_coefs,
-           aes(x = jne_slope, y = Spie, colour = 'Spie'),
-           size = 0.5,
-           alpha = 0.2) +
-geom_point(data = study_slope_coefs,
-           aes(x = jne_slope, y = Nstd, colour = 'N'),
-           size = 0.5,
-           alpha = 0.2) +
-geom_point(data = study_slope_coefs,
-           aes(x = rne_slope, y = Sstd, colour = 'S'),
-           size = 0.5,
-           alpha = 0.2) +
-geom_point(data = study_slope_coefs,
-           aes(x = rne_slope, y = Spie, colour = 'Spie'),
-           size = 0.5,
-           alpha = 0.2) +
-geom_point(data = study_slope_coefs,
-           aes(x = rne_slope, y = Nstd, colour = 'N'),
-           size = 0.5,
-           alpha = 0.2) +
+  geom_point(data = study_slope_coefs,
+           aes(x = jne_slope, y = Sstd)) +
   stat_smooth(data = study_slope_coefs,
-              aes(x = jne_slope, y = Sstd, colour = 'S'),
-              method = 'gam', se = F) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = jne_slope, y = Spie, colour = 'Spie'),
-              method = 'gam', se = F) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = jne_slope, y = Nstd, colour = 'N'),
-              method = 'gam', se = F) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = rne_slope, y = Sstd, colour = 'S'),
-              method = 'gam', se = F, 
-              linetype = 2) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = rne_slope, y = Spie, colour = 'Spie'),
-              method = 'gam', se = F, 
-              linetype = 2) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = rne_slope, y = Nstd, colour = 'N'),
-              method = 'gam', se = F, 
-              linetype = 2) +
+              aes(x = jne_slope, y = Sstd),
+              method = 'lm', se = F) +
+  annotate('text', x = -Inf, y = Inf, hjust = -0.2, vjust = 1.4,
+           label = paste("paste(italic(rho) == " , 
+                         round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
+                         round(s_jne_corr$conf.int[1], 2),
+                         " ~`—` ",
+                         round(s_jne_corr$conf.int[2], 2),"))"),
+           parse = T, size = 5) +
+  
   geom_hline(yintercept = 0, lty = 2) +
   geom_vline(xintercept = 0, lty = 2) +
-  scale_color_manual(name = '',
-                     values = c('S' = '#bc5090', 'Spie' = '#ffa600', 'N' = '#003f5c'),
-                     labels = c(expression(paste(S[Std])),
-                                expression(paste(S[PIE])),
-                                expression(paste(N[Std])))) +
   labs(x = 'Study-level nestedness slope',
        y = ''
        # y = expression(paste('Study-level biodiversity measure slope'))
@@ -241,7 +171,7 @@ cowplot::plot_grid(beta_turnover_sstd_slope,
                    beta_nestedness_sstd_study,
                    align = 'hv',
                    nrow = 2) +
-  cowplot::draw_label('Study-level biodiversity measure slope',
+  cowplot::draw_label(expression(paste('Study-level ', S[std], 'slope')),
                       angle = 90, x = 0.01)
 
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig5.png',

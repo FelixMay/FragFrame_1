@@ -3,11 +3,11 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i-5181153.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i-5181154.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_noPairGroup-5282398.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_noPairGroup-5282404.Rdata')
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_noPairGroup.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_noPairGroup.Rdata')
 
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
 
@@ -16,15 +16,33 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
-# two studies have slightly different labels in the beta-diversity dataframe (thanks Felix!)
+# check names
+meta_labels <- meta %>% distinct(dataset_label)
+
+meta_labels %>% 
+  filter(!dataset_label %in% Jtu_z1i_fS$data$dataset_label) %>% 
+  distinct(dataset_label)
+
+Jtu_z1i_fS$data %>% 
+  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
+  distinct(dataset_label)
+
+# change metadata labels (as the ones in frag were used for the model fitting)
 meta <- meta %>% 
-  mutate(dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', as.character(dataset_label)),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', as.character(dataset_label)))
+  mutate(dataset_label = as.character(dataset_label),
+         dataset_label = ifelse(dataset_label=='Brosi_2009', 'Brosi_2007', dataset_label),
+         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label),
+         dataset_label = ifelse(dataset_label=='Dominguez-Haydar_2011', 'Dominquez-Haydar_2011', dataset_label),
+         dataset_label = ifelse(dataset_label=='Guadagnin_2005', 'Gaudagnin_2005', dataset_label),
+         dataset_label = ifelse(dataset_label=='Raheem_2009', 'Raheen_2009', dataset_label),
+         dataset_label = ifelse(dataset_label=='Silveira_2015', 'Silviera_2015', dataset_label),
+         dataset_label = ifelse(dataset_label=='Telleria_1995', 'Tellbera_1995', dataset_label),
+         dataset_label = ifelse(dataset_label=='Vulinec_2008', 'Vulineci_2008', dataset_label),
+         dataset_label = ifelse(dataset_label=='Sridhar_2008', 'Sridihar_2008', dataset_label))
+
 
 frag_beta <- frag_beta %>% 
-  group_by(dataset_label, sample_design, method, frag_x) %>% 
-  mutate(pair_group = paste0(frag_x, '_g')) %>% 
-  ungroup() %>% 
   # centre covariate before fitting
   mutate(cl10ra = log10_ratio_area - mean(log10_ratio_area))
 
@@ -33,19 +51,19 @@ frag_beta <- left_join(frag_beta,
 
 
 # study-levels (no studies are missing N_std)
-study_levels <- Jtu_z1i_fragSize$data %>% 
+study_levels <- Jtu_z1i_fS$data %>% 
   as_tibble() %>% 
   distinct(dataset_label) %>% 
   mutate(level = dataset_label) %>%
   nest(level) 
 
 study_sample_posterior <- study_levels %>%
-  mutate(Jtu = purrr::map(data, ~posterior_samples(Jtu_z1i_fragSize, 
+  mutate(Jtu = purrr::map(data, ~posterior_samples(Jtu_z1i_fS, 
                                                      pars = paste('r_dataset_label[', as.character(.x$level), ',cl10ra]', sep=''),
                                                      exact = TRUE,
                                                      subset = floor(runif(n = 1000,
                                                                           min = 1, max = 2000))) %>% unlist() %>% as.numeric()),
-         Rtu = purrr::map(data, ~posterior_samples(Rtu_z1i_fragSize, 
+         Rtu = purrr::map(data, ~posterior_samples(Rtu_z1i_fS, 
                                                     pars = paste('r_dataset_label[', as.character(.x$level), ',cl10ra]', sep=''),
                                                     exact = TRUE,
                                                     subset = floor(runif(n = 1000,
@@ -60,8 +78,8 @@ study_sample_posterior <- study_levels %>%
                                                      subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()))
 
 
-Jtu_fixef <- fixef(Jtu_z1i_fragSize)
-Rtu_fixef <- fixef(Rtu_z1i_fragSize)
+Jtu_fixef <- fixef(Jtu_z1i_fS)
+Rtu_fixef <- fixef(Rtu_z1i_fS)
 Jne_fixef <- fixef(Jne_zi_fragSize)
 Rne_fixef <- fixef(Rne_zi_fragSize)
 

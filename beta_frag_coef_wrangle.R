@@ -16,10 +16,31 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
-# two studies have slightly different labels in the beta-diversity dataframe (thanks Felix!)
+# check names
+meta_labels <- meta %>% distinct(dataset_label)
+
+meta_labels %>% 
+  filter(!dataset_label %in% Jtu_z1i_fS$data$dataset_label) %>% 
+  distinct(dataset_label)
+
+Jtu_z1i_fS$data %>% 
+  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
+  distinct(dataset_label)
+
+# change metadata labels (as the ones in frag were used for the model fitting)
 meta <- meta %>% 
-  mutate(dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', as.character(dataset_label)),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', as.character(dataset_label)))
+  mutate(dataset_label = as.character(dataset_label),
+         dataset_label = ifelse(dataset_label=='Brosi_2009', 'Brosi_2007', dataset_label),
+         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label),
+         dataset_label = ifelse(dataset_label=='Dominguez-Haydar_2011', 'Dominquez-Haydar_2011', dataset_label),
+         dataset_label = ifelse(dataset_label=='Guadagnin_2005', 'Gaudagnin_2005', dataset_label),
+         dataset_label = ifelse(dataset_label=='Raheem_2009', 'Raheen_2009', dataset_label),
+         dataset_label = ifelse(dataset_label=='Silveira_2015', 'Silviera_2015', dataset_label),
+         dataset_label = ifelse(dataset_label=='Telleria_1995', 'Tellbera_1995', dataset_label),
+         dataset_label = ifelse(dataset_label=='Vulinec_2008', 'Vulineci_2008', dataset_label),
+         dataset_label = ifelse(dataset_label=='Sridhar_2008', 'Sridihar_2008', dataset_label))
+
 
 frag_beta <- frag_beta %>% 
   # centre covariate before fitting
@@ -27,6 +48,30 @@ frag_beta <- frag_beta %>%
 
 frag_beta <- left_join(frag_beta, 
                        meta, by = 'dataset_label')
+
+frag_beta$time.since.fragmentation <- factor(frag_beta$time.since.fragmentation,
+                                                       levels = c('Recent (less than 20 years)',
+                                                                  'Intermediate (20-100 years)',
+                                                                  'long (100+ years)'),
+                                                       labels = c('< 20 years',
+                                                                  '20-100 years',
+                                                                  '> 100 years'))
+
+frag_beta$Matrix.category <- factor(frag_beta$Matrix.category,
+                                              levels = c('light filter', 'intermediate', 'harsh filter'),
+                                              labels = c('Light', 'Intermediate', 'Harsh'))
+
+frag_beta$biome <- factor(frag_beta$biome,
+                                    levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                                    labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+
+frag_beta$taxa <- factor(frag_beta$taxa,
+                                   levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                                   labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
+frag_beta <- frag_beta %>% 
+  unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
+        remove = F, sep = ', ')
 
 
 #------wrangle for plotting
@@ -144,7 +189,33 @@ Rtu_z1i_group_coefs <- bind_cols(Rtu_z1i_coef[[1]][,,'Intercept'] %>%
                          xmax.y = max(frag_size_num.y),
                          cxmin = min(cl10ra),
                          cxmax = max(cl10ra)),
-             by = 'dataset_label')
+             by = 'dataset_label') %>% 
+  left_join(meta, by = 'dataset_label')
+
+Rtu_z1i_group_coefs$time.since.fragmentation <- factor(Rtu_z1i_group_coefs$time.since.fragmentation,
+                                                       levels = c('Recent (less than 20 years)',
+                                                                  'Intermediate (20-100 years)',
+                                                                  'long (100+ years)'),
+                                                       labels = c('< 20 years',
+                                                                  '20-100 years',
+                                                                  '> 100 years'))
+
+Rtu_z1i_group_coefs$Matrix.category <- factor(Rtu_z1i_group_coefs$Matrix.category,
+                                              levels = c('light filter', 'intermediate', 'harsh filter'),
+                                              labels = c('Light', 'Intermediate', 'Harsh'))
+
+Rtu_z1i_group_coefs$biome <- factor(Rtu_z1i_group_coefs$biome,
+                                    levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                                    labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+
+Rtu_z1i_group_coefs$taxa <- factor(Rtu_z1i_group_coefs$taxa,
+                                   levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                                   labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
+Rtu_z1i_group_coefs <- Rtu_z1i_group_coefs %>% 
+  unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
+        remove = F, sep = ', ')
+
 
 # now for the nestedness components
 Jne_zi_fitted <- cbind(Jne_zi_fragSize$data,
@@ -190,7 +261,33 @@ Jne_zi_group_coefs <- bind_cols(Jne_zi_coef[[1]][,,'Intercept'] %>%
                          xmax.y = max(frag_size_num.y),
                          cxmin = min(cl10ra),
                          cxmax = max(cl10ra)),
-             by = 'dataset_label')
+             by = 'dataset_label') %>% 
+  left_join(meta, by = 'dataset_label')
+
+Jne_zi_group_coefs$time.since.fragmentation <- factor(Jne_zi_group_coefs$time.since.fragmentation,
+                                                       levels = c('Recent (less than 20 years)',
+                                                                  'Intermediate (20-100 years)',
+                                                                  'long (100+ years)'),
+                                                       labels = c('< 20 years',
+                                                                  '20-100 years',
+                                                                  '> 100 years'))
+
+Jne_zi_group_coefs$Matrix.category <- factor(Jne_zi_group_coefs$Matrix.category,
+                                              levels = c('light filter', 'intermediate', 'harsh filter'),
+                                              labels = c('Light', 'Intermediate', 'Harsh'))
+
+Jne_zi_group_coefs$biome <- factor(Jne_zi_group_coefs$biome,
+                                    levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                                    labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+
+Jne_zi_group_coefs$taxa <- factor(Jne_zi_group_coefs$taxa,
+                                   levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                                   labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
+Jne_zi_group_coefs <- Jne_zi_group_coefs %>% 
+  unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
+        remove = F, sep = ', ')
+
 
 # repeat for Ruzicka
 Rne_zi_fitted <- cbind(Rne_zi_fragSize$data,
@@ -235,5 +332,31 @@ Rne_zi_group_coefs <- bind_cols(Rne_zi_coef[[1]][,,'Intercept'] %>%
                          xmax.y = max(frag_size_num.y),
                          cxmin = min(cl10ra),
                          cxmax = max(cl10ra)),
-             by = 'dataset_label')
+             by = 'dataset_label') %>% 
+  left_join(meta, by = 'dataset_label')
+
+Rne_zi_group_coefs$time.since.fragmentation <- factor(Rne_zi_group_coefs$time.since.fragmentation,
+                                                       levels = c('Recent (less than 20 years)',
+                                                                  'Intermediate (20-100 years)',
+                                                                  'long (100+ years)'),
+                                                       labels = c('< 20 years',
+                                                                  '20-100 years',
+                                                                  '> 100 years'))
+
+Rne_zi_group_coefs$Matrix.category <- factor(Rne_zi_group_coefs$Matrix.category,
+                                              levels = c('light filter', 'intermediate', 'harsh filter'),
+                                              labels = c('Light', 'Intermediate', 'Harsh'))
+
+Rne_zi_group_coefs$biome <- factor(Rne_zi_group_coefs$biome,
+                                    levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                                    labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+
+Rne_zi_group_coefs$taxa <- factor(Rne_zi_group_coefs$taxa,
+                                   levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                                   labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
+Rne_zi_group_coefs <- Rne_zi_group_coefs %>% 
+  unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
+        remove = F, sep = ', ')
+
 
