@@ -10,6 +10,31 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
+# check names
+meta_labels <- meta %>% distinct(dataset_label)
+
+meta_labels %>% 
+  filter(!dataset_label %in% frag$dataset_label) %>% 
+  distinct(dataset_label)
+
+frag %>% 
+  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
+  distinct(dataset_label)
+
+# change metadata labels (as the ones in frag were used for the model fitting)
+meta <- meta %>% 
+  mutate(dataset_label = as.character(dataset_label),
+         dataset_label = ifelse(dataset_label=='Brosi_2009', 'Brosi_2007', dataset_label),
+         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label),
+         dataset_label = ifelse(dataset_label=='Dominguez-Haydar_2011', 'Dominquez-Haydar_2011', dataset_label),
+         dataset_label = ifelse(dataset_label=='Guadagnin_2005', 'Gaudagnin_2005', dataset_label),
+         dataset_label = ifelse(dataset_label=='Raheem_2009', 'Raheen_2009', dataset_label),
+         dataset_label = ifelse(dataset_label=='Silveira_2015', 'Silviera_2015', dataset_label),
+         dataset_label = ifelse(dataset_label=='Telleria_1995', 'Tellbera_1995', dataset_label),
+         dataset_label = ifelse(dataset_label=='Vulinec_2008', 'Vulineci_2008', dataset_label),
+         dataset_label = ifelse(dataset_label=='Sridhar_2008', 'Sridihar_2008', dataset_label))
+
 frag <- left_join(frag, 
                   meta,
                   by = 'dataset_label')
@@ -113,8 +138,20 @@ Sstd1_lognorm_fragSize_group_coefs <- bind_cols(Sstd1_lognorm_fragSize_coef[[1]]
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+               ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 Sstd2_lognorm_fragSize_group_coefs <- bind_cols(Sstd2_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
                                                   as_tibble() %>% 
@@ -135,8 +172,20 @@ Sstd2_lognorm_fragSize_group_coefs <- bind_cols(Sstd2_lognorm_fragSize_coef[[1]]
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+                         ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 Sn_lognorm_fragSize_group_coefs <- bind_cols(Sn_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
                                                as_tibble() %>% 
@@ -157,8 +206,20 @@ Sn_lognorm_fragSize_group_coefs <- bind_cols(Sn_lognorm_fragSize_coef[[1]][,,'In
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+               ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 Scov_lognorm_fragSize_group_coefs <- bind_cols(Scov_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
                                                  as_tibble() %>% 
@@ -179,8 +240,20 @@ Scov_lognorm_fragSize_group_coefs <- bind_cols(Scov_lognorm_fragSize_coef[[1]][,
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+               ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 Schao_lognorm_fragSize_group_coefs <- bind_cols(Schao_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
                                                   as_tibble() %>% 
@@ -201,8 +274,20 @@ Schao_lognorm_fragSize_group_coefs <- bind_cols(Schao_lognorm_fragSize_coef[[1]]
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+               ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 S_PIE_fragSize_group_coefs <- bind_cols(S_PIE_fS_coef[[1]][,,'Intercept'] %>% 
                                           as_tibble() %>% 
@@ -223,8 +308,20 @@ S_PIE_fragSize_group_coefs <- bind_cols(S_PIE_fS_coef[[1]][,,'Intercept'] %>%
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+               ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 Nstd_fragSize_group_coefs <- bind_cols(Nstd_fS_coef[[1]][,,'Intercept'] %>% 
                                          as_tibble() %>% 
@@ -245,5 +342,17 @@ Nstd_fragSize_group_coefs <- bind_cols(Nstd_fS_coef[[1]][,,'Intercept'] %>%
                summarise(xmin = min(frag_size_num),
                          xmax = max(frag_size_num),
                          cxmin = min(c.lfs),
-                         cxmax = max(c.lfs)),
-             by = 'dataset_label')
+                         cxmax = max(c.lfs),
+                         climate = unique(climate),
+                         continent7 = unique(continent7),
+                         sphere.fragment = unique(sphere.fragment),
+                         sphere.matrix = unique(sphere.matrix), 
+                         biome = unique(biome),
+                         taxa = unique(taxa), 
+                         time.since.fragmentation = unique(time.since.fragmentation),
+                         Matrix.category = unique(Matrix.category)
+               ),
+             by = 'dataset_label') %>% 
+  # add indicator for whether study-level slope differed from zero?
+  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))

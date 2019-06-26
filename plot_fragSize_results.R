@@ -4,23 +4,48 @@ library(brms)
 source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/fragSize_coef_wrangle.R')
 
 #---- regression plots showing study-level slopes-----
-# setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/')
-setwd(paste(path2temp,"figs/", sep = ""))
+setwd('~/Dropbox/Frag Database (new)/analysis_apr19/figures/')
+# setwd(paste(path2temp,"figs/", sep = ""))
+
+# plot to generate legend 
+taxa_legend <- ggplot() +
+  # data
+  geom_point(data = frag,
+             aes(x = frag_size_num, y = S_std_2, colour = taxa),
+             size = 1, alpha = 0.25) +
+  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
+               aes(group = dataset_label,
+                   colour = taxa,
+                   x = xmin,
+                   xend = xmax,
+                   y = exp(Intercept + Slope * cxmin),
+                   yend = exp(Intercept + Slope * cxmax)),
+               size = 0.75) +
+  # scale_colour_viridis_d(guide=F) +
+  # scale_color_grey(guide=F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  theme_bw() +
+  theme(legend.position = 'top',
+        legend.direction = 'horizontal',
+        text = element_text(size = 13)) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2)))
+source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+taxa_colour = gg_legend(taxa_legend)
 
 # S_std_2 (Felix recommends this one for the main result)
 S_std_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std_2, colour = dataset_label),
-             size = 1.5, alpha = 0.5) +
+             aes(x = frag_size_num, y = S_std_2, colour = taxa),
+             size = 1, alpha = 0.25) +
   geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
-                   colour = dataset_label,
+                   colour = taxa,
                    x = xmin,
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.5) +
+               size = 0.75) +
   # fixed effect
   geom_line(data = Sstd2_fS_fitted, 
             aes(x = frag_size_num,
@@ -44,10 +69,11 @@ S_std_regPlot <- ggplot() +
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-  scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
+  scale_y_continuous(trans = 'log', breaks = c(1, 2, 4, 8, 16, 32,64, 128, 256)) +
   # scale_colour_viridis_d(guide=F) +
-  scale_color_grey(guide=F) +
-  labs(x = 'Fragment size (hectares)',
+  # scale_color_grey(guide=F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  labs(x = '',
        y = expression(paste(S[std])),
        tag = 'b') +
   theme_bw() +
@@ -58,16 +84,16 @@ S_std_regPlot <- ggplot() +
 Sn_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_n, colour = dataset_label),
-             size = 1.5, alpha = 0.5) +
+             aes(x = frag_size_num, y = S_n, colour = taxa),
+             size = 1, alpha = 0.25) +
   geom_segment(data = Sn_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
-                   colour = dataset_label,
+                   colour = taxa,
                    x = xmin,
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.5) +
+               size = 0.75) +
   # fixed effect
   geom_line(data = Sn_fS_fitted, 
             aes(x = frag_size_num,
@@ -91,12 +117,13 @@ Sn_regPlot <- ggplot() +
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-  scale_y_continuous(trans = 'log', breaks = c(4,16, 32,64,128, 256)) +
+  scale_y_continuous(trans = 'log', breaks = c(1, 2, 4, 8, 16, 32,64,128, 256)) +
   # scale_colour_viridis_d(guide=F) +
-  scale_colour_grey(guide=F) +
-  labs(x = 'Fragment size (hectares)',
+  # scale_colour_grey(guide=F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  labs(x = '',
        y = expression(paste(S[n])),
-       tag = 'c') +
+       tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none', 
         text = element_text(size = 13))
@@ -105,16 +132,16 @@ Sn_regPlot <- ggplot() +
 Spie_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_PIE, colour = dataset_label),
-             size = 1.5, alpha = 0.5) +
+             aes(x = frag_size_num, y = S_PIE, colour = taxa),
+             size = 1, alpha = 0.25) +
   geom_segment(data = S_PIE_fragSize_group_coefs,
                aes(group = dataset_label,
-                   colour = dataset_label,
+                   colour = taxa,
                    x = xmin,
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.5) +
+               size = 0.75) +
   # fixed effect
   geom_line(data = S_PIE_fS_fitted, 
             aes(x = frag_size_num,
@@ -138,12 +165,13 @@ Spie_regPlot <- ggplot() +
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-  scale_y_continuous(trans = 'log', breaks = c(4,16,32,64,128, 256)) +
+  scale_y_continuous(trans = 'log', breaks = c(1, 2, 4, 8, 16,32,64,128, 256)) +
   # scale_colour_viridis_d(guide=F) +
-  scale_color_grey(guide=F) +
-  labs(x = 'Fragment size (hectares)',
+  # scale_color_grey(guide=F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  labs(x = '',
        y = expression(paste(S[PIE])),
-       tag = 'd') +
+       tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none', text = element_text(size = 13))
 
@@ -151,16 +179,16 @@ Spie_regPlot <- ggplot() +
 Scov_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_cov, colour = dataset_label),
-             size = 1.5, alpha = 0.5) +
+             aes(x = frag_size_num, y = S_cov, colour = taxa),
+             size = 1, alpha = 0.25) +
   geom_segment(data = Scov_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
-                   colour = dataset_label,
+                   colour = taxa,
                    x = xmin,
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.5) +
+               size = 0.75) +
   # fixed effect
   geom_line(data = Scov_fS_fitted, 
             aes(x = frag_size_num,
@@ -173,7 +201,7 @@ Scov_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.01, y = Inf, hjust = 0.4, vjust = 1.4,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Scov_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -184,10 +212,12 @@ Scov_regPlot <- ggplot() +
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-  scale_y_continuous(trans = 'log', breaks = c(4,16,32,64,128, 256)) +
-  scale_colour_viridis_d(guide=F) +
-  labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[cov]))) +
+  scale_y_continuous(trans = 'log', breaks = c(1, 2, 4, 8, 16,32,64,128, 256)) +
+  # scale_colour_viridis_d(guide=F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  labs(x = '',
+       y = expression(paste(S[cov])),
+       tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
         text = element_text(size = 13))
@@ -196,16 +226,16 @@ Scov_regPlot <- ggplot() +
 Schao_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_chao, colour = dataset_label),
-             size = 1.5, alpha = 0.5) +
+             aes(x = frag_size_num, y = S_chao, colour = taxa),
+             size = 1, alpha = 0.25) +
   geom_segment(data = Schao_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
-                   colour = dataset_label,
+                   colour = taxa,
                    x = xmin,
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.5) +
+               size = 0.75) +
   # fixed effect
   geom_line(data = Schao_fS_fitted, 
             aes(x = frag_size_num,
@@ -218,7 +248,7 @@ Schao_regPlot <- ggplot() +
                   ymax = Q97.5),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = 0.01, y = Inf, hjust = 0.4, vjust = 1.4,
+  annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
                          round(Schao_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          "  (",
@@ -229,10 +259,12 @@ Schao_regPlot <- ggplot() +
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-  scale_y_continuous(trans = 'log', breaks = c(2, 16, 128, 1024)) +#
-  scale_colour_viridis_d(guide=F) +
-  labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[chao]))) +
+  scale_y_continuous(trans = 'log', breaks = c(1, 2, 16, 128, 1024)) +#
+  # scale_colour_viridis_d(guide=F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  labs(x = '',
+       y = expression(paste(S[chao])),
+       tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
         text = element_text(size = 13))
@@ -242,16 +274,17 @@ Nstd_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
              aes(x = frag_size_num, y = N_std, 
-                 colour = dataset_label),
-             size = 1.5, alpha = 0.5) +
+                 colour = taxa
+                 ),
+             size = 1, alpha = 0.25) +
   geom_segment(data = Nstd_fragSize_group_coefs,
                aes(group = dataset_label,
-                   colour = dataset_label,
+                   colour = taxa,
                    x = xmin,
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.5) +
+               size = 0.75) +
   # fixed effect
   geom_line(data = Nstd_fS_fitted, 
             aes(x = frag_size_num,
@@ -277,40 +310,38 @@ Nstd_regPlot <- ggplot() +
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   scale_y_continuous(trans = 'log10', breaks = c(1,10,100,1000,10000)) +
   # scale_colour_viridis_d(guide=F) +
-  scale_color_grey(guide = F) +
-  labs(x = 'Fragment size (hectares)',
+  # scale_color_grey(guide = F) +
+  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  labs(x = '',
        y = expression(paste(N[std])),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none',
         text = element_text(size = 13))
 
-S_std_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_std_fragSize.png',
-#        width = 200, height = 200, units = 'mm')
-Sn_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_n_fragSize.png',
-#        width = 200, height = 200, units = 'mm')
-Scov_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_cov_fragSize.png', 
-#        width = 200, height = 200, units = 'mm')
-Schao_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_chao_fragSize.png',
-#        width = 200, height = 200, units = 'mm')
-Spie_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/S_PIE_fragSize.png', 
-#        width = 200, height = 200, units = 'mm')
-
-Nstd_regPlot
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/N_std_fragSize.png',
-#        width = 200, height = 200, units = 'mm')
-
-cowplot::plot_grid(Nstd_regPlot,
+# main text: N, S, Spie
+top <- cowplot::plot_grid(taxa_colour)
+bottom <- cowplot::plot_grid(Nstd_regPlot,
                    S_std_regPlot,
-                   Sn_regPlot,
                    Spie_regPlot,
-                   nrow = 2, align = 'hv')
+                   nrow = 1, align = 'hv')
+cowplot::plot_grid(top, bottom, 
+                   nrow = 2,
+                   rel_heights = c(0.1,1)) +
+  cowplot::draw_label('Fragment size (hectares)', y = 0.05)
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_grey.png', width = 250, height = 220, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
+
+bottom_supp <- cowplot::plot_grid(Sn_regPlot,
+                                  Scov_regPlot,
+                                  Schao_regPlot,
+                                  nrow = 1, align = 'hv')
+cowplot::plot_grid(top, bottom_supp, 
+                   nrow = 2,
+                   rel_heights = c(0.1,1)) +
+  cowplot::draw_label('Fragment size (hectares)', y = 0.05)
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_otherMetrics_taxa_color.png', width = 250, height = 80, units = 'mm')
+
 ##---coef plots---------
 # get the metadata...
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep = ';') %>% 
