@@ -3,11 +3,11 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_noPairGroup-5282398.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_noPairGroup-5282404.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref-5311666.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_ref-5311668.Rdata')
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_noPairGroup.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_noPairGroup.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_ref.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
 
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
 
@@ -30,16 +30,8 @@ Jtu_z1i_fS$data %>%
 # change metadata labels (as the ones in frag were used for the model fitting)
 meta <- meta %>% 
   mutate(dataset_label = as.character(dataset_label),
-         dataset_label = ifelse(dataset_label=='Brosi_2009', 'Brosi_2007', dataset_label),
          dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label),
-         dataset_label = ifelse(dataset_label=='Dominguez-Haydar_2011', 'Dominquez-Haydar_2011', dataset_label),
-         dataset_label = ifelse(dataset_label=='Guadagnin_2005', 'Gaudagnin_2005', dataset_label),
-         dataset_label = ifelse(dataset_label=='Raheem_2009', 'Raheen_2009', dataset_label),
-         dataset_label = ifelse(dataset_label=='Silveira_2015', 'Silviera_2015', dataset_label),
-         dataset_label = ifelse(dataset_label=='Telleria_1995', 'Tellbera_1995', dataset_label),
-         dataset_label = ifelse(dataset_label=='Vulinec_2008', 'Vulineci_2008', dataset_label),
-         dataset_label = ifelse(dataset_label=='Sridhar_2008', 'Sridihar_2008', dataset_label))
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
 
 
 frag_beta <- frag_beta %>% 

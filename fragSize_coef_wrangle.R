@@ -1,7 +1,8 @@
 # code to wrangle the coefficients for the fragemnt area regressions (with no interactions)
 library(tidyverse)
 library(brms)
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
+
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
 
 frag <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_biodiv_frag_fcont_10_mabund_as_is.csv')
 
@@ -24,16 +25,8 @@ frag %>%
 # change metadata labels (as the ones in frag were used for the model fitting)
 meta <- meta %>% 
   mutate(dataset_label = as.character(dataset_label),
-         dataset_label = ifelse(dataset_label=='Brosi_2009', 'Brosi_2007', dataset_label),
          dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label),
-         dataset_label = ifelse(dataset_label=='Dominguez-Haydar_2011', 'Dominquez-Haydar_2011', dataset_label),
-         dataset_label = ifelse(dataset_label=='Guadagnin_2005', 'Gaudagnin_2005', dataset_label),
-         dataset_label = ifelse(dataset_label=='Raheem_2009', 'Raheen_2009', dataset_label),
-         dataset_label = ifelse(dataset_label=='Silveira_2015', 'Silviera_2015', dataset_label),
-         dataset_label = ifelse(dataset_label=='Telleria_1995', 'Tellbera_1995', dataset_label),
-         dataset_label = ifelse(dataset_label=='Vulinec_2008', 'Vulineci_2008', dataset_label),
-         dataset_label = ifelse(dataset_label=='Sridhar_2008', 'Sridihar_2008', dataset_label))
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
 
 frag <- left_join(frag, 
                   meta,
@@ -41,26 +34,9 @@ frag <- left_join(frag,
 
 # mean-centred log(fragment.size)
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
-# add log-transformed (to fit multivariate normal?)
-frag$lSstd1 <- log(frag$S_std_1)
-frag$lSstd2 <- log(frag$S_std_2)
-frag$lSn <- log(frag$S_n)
-frag$lScov <- log(frag$S_cov)
-frag$lS_PIE <- log(frag$S_PIE)
-frag$lS_chao <- log(frag$S_chao)
-frag$lNstd <- log(frag$N_std)
-
 
 #------wrangle for plotting
 # for plotting fixed effects----------------
-Sstd1_fS_fitted <- cbind(Sstd1_lognorm_fragSize$data,
-                         fitted(Sstd1_lognorm_fragSize, re_formula = NA)) %>% 
-  as_tibble() %>% 
-  inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
-             by = c('dataset_label', 'c.lfs'))
-
-Sstd1_lognorm_fragSize_fixef <- fixef(Sstd1_lognorm_fragSize)
-
 Sstd2_fS_fitted <- cbind(Sstd2_lognorm_fragSize$data,
                          fitted(Sstd2_lognorm_fragSize, re_formula = NA)) %>% 
   as_tibble() %>% 

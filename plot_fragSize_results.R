@@ -74,7 +74,7 @@ S_std_regPlot <- ggplot() +
   # scale_color_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste(S[std])),
+       y = expression(paste('Species richness (', S[std], ')')),
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -122,7 +122,7 @@ Sn_regPlot <- ggplot() +
   # scale_colour_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste(S[n])),
+       y = expression(paste('Rarefied richness (', S[n], ')')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none', 
@@ -170,12 +170,13 @@ Spie_regPlot <- ggplot() +
   # scale_color_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste(S[PIE])),
+       y = expression(paste('Evenness (', S[PIE], ')')),
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none', text = element_text(size = 13))
 
 # S_cov
+ylab = expression(atop('Coverage standardised'), paste('richness (', S[cov], ')'))
 Scov_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
@@ -216,7 +217,7 @@ Scov_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste(S[cov])),
+       y = expression(atop('Coverage standardised', paste('richness (', S[cov], ')'))),
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -263,7 +264,7 @@ Schao_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste(S[chao])),
+       y = expression(paste('Asymptotic richness (', S[chao], ')')),
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -313,7 +314,7 @@ Nstd_regPlot <- ggplot() +
   # scale_color_grey(guide = F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste(N[std])),
+       y = expression(paste('Total abundance (', N[std], ')')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -325,11 +326,12 @@ bottom <- cowplot::plot_grid(Nstd_regPlot,
                    S_std_regPlot,
                    Spie_regPlot,
                    nrow = 1, align = 'hv')
+
 cowplot::plot_grid(top, bottom, 
                    nrow = 2,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05)
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_grey.png', width = 250, height = 220, units = 'mm')
+
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
