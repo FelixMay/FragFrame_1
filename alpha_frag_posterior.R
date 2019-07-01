@@ -3,13 +3,33 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
 
 # get the metadata (I want to group the posteriors)
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
+# check names
+meta_labels <- meta %>% distinct(dataset_label)
+
+meta_labels %>% 
+  filter(!dataset_label %in% frag$dataset_label) %>% 
+  distinct(dataset_label)
+
+frag %>% 
+  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
+  distinct(dataset_label)
+
+# change metadata labels (as the ones in frag were used for the model fitting)
+meta <- meta %>% 
+  mutate(dataset_label = as.character(dataset_label),
+         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
+
+frag <- left_join(frag, 
+                  meta,
+                  by = 'dataset_label')
 
 # study-levels (no studies are missing N_std)
 study_levels <- Nstd_lognorm_fragSize$data %>% 
@@ -100,7 +120,8 @@ Spie_posterior$Matrix.category <- factor(Spie_posterior$Matrix.category,
                                                     'Intermediate',
                                                     'Harsh'))
 
-sstd_study_posterior_time_taxa <- ggplot() +
+sstd_study_posterior_time_taxa <- 
+  ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
   geom_rect(data = Sstd_posterior %>% distinct(Sstd_lower_slope, Sstd_upper_slope),
             aes(xmin = Sstd_lower_slope, xmax = Sstd_upper_slope), ymin = -Inf, ymax = Inf,
@@ -277,10 +298,10 @@ cowplot::plot_grid(top, bottom, nrow = 2,
   cowplot::draw_label('Study-level slope', y = 0.009) +
   cowplot::draw_label('Time since fragmentation', x = 0.007, angle = 90)
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/study_level_slope_time_group.png',
-       width = 250,
-       height = 250,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/study_level_slope_time_group.png',
+#        width = 250,
+#        height = 250,
+#        units = 'mm')
 
 ggplot() +
   facet_grid(~ taxa, scales = 'free') +

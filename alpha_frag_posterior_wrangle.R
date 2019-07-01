@@ -3,12 +3,35 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms.Rdata')
-
+# load model fits and the data
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
+frag <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_biodiv_frag_fcont_10_mabund_as_is.csv')
 # get the metadata (I want to group the posteriors)
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
+
+# check names
+meta_labels <- meta %>% distinct(dataset_label)
+
+meta_labels %>% 
+  filter(!dataset_label %in% frag$dataset_label) %>% 
+  distinct(dataset_label)
+
+frag %>% 
+  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
+  distinct(dataset_label)
+
+# change metadata labels (as the ones in frag were used for the model fitting)
+meta <- meta %>% 
+  mutate(dataset_label = as.character(dataset_label),
+         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
+
+frag <- left_join(frag, 
+                  meta,
+                  by = 'dataset_label')
+
 
 
 # study-levels (no studies are missing N_std)
@@ -112,3 +135,39 @@ Spie_posterior$Matrix.category <- factor(Spie_posterior$Matrix.category,
                                                     'Intermediate',
                                                     'Harsh'))
 
+Spie_posterior$biome <- factor(Spie_posterior$biome,
+                               levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                               labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+Spie_posterior$taxa <- factor(Spie_posterior$taxa,
+                              levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                              labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+
+Nstd_posterior <- study_sample_posterior  %>% 
+  select(-data) %>% 
+  unnest(Nstd) %>% 
+  mutate(response = 'Nstd',
+         Nstd_global_slope = Nstd_lognorm_fragSize_fixef['c.lfs','Estimate'],
+         Nstd_upper_slope = Nstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],
+         Nstd_lower_slope = Nstd_lognorm_fragSize_fixef['c.lfs','Q2.5']) %>% 
+  left_join(meta, 
+            by = 'dataset_label')
+
+Nstd_posterior$time.since.fragmentation <- factor(Nstd_posterior$time.since.fragmentation,
+                                                  levels = c('Recent (less than 20 years)',
+                                                             'Intermediate (20-100 years)',
+                                                             'long (100+ years)'),
+                                                  labels = c('< 20 years',
+                                                             '20-100 years)',
+                                                             '> 100 years)'))
+Nstd_posterior$Matrix.category <- factor(Nstd_posterior$Matrix.category,
+                                         levels = c('light filter', 'intermediate', 'harsh filter'),
+                                         labels = c('Light',
+                                                    'Intermediate',
+                                                    'Harsh'))
+
+Nstd_posterior$biome <- factor(Nstd_posterior$biome,
+                               levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                               labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+Nstd_posterior$taxa <- factor(Nstd_posterior$taxa,
+                              levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                              labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
