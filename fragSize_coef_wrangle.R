@@ -9,7 +9,7 @@ frag <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_biodi
 # load the meta data
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
-  dplyr::rename(dataset_label = dataset_id)
+  dplyr::rename(dataset_label = X...dataset_id)
 
 # check names
 meta_labels <- meta %>% distinct(dataset_label)
@@ -87,7 +87,7 @@ Nstd_lognorm_fragSize_fixef <- fixef(Nstd_lognorm_fragSize)
 
 
 # for plotting the random-effects----------------
-Sstd1_lognorm_fragSize_coef <- coef(Sstd1_lognorm_fragSize)
+# Sstd1_lognorm_fragSize_coef <- coef(Sstd1_lognorm_fragSize)
 Sstd2_lognorm_fragSize_coef <- coef(Sstd2_lognorm_fragSize)
 Sn_lognorm_fragSize_coef <- coef(Sn_lognorm_fragSize)
 Scov_lognorm_fragSize_coef <- coef(Scov_lognorm_fragSize)
@@ -95,39 +95,39 @@ Schao_lognorm_fragSize_coef <- coef(S_chao_lognorm_fragSize)
 S_PIE_fS_coef <- coef(S_PIE_lognorm_fragSize)
 Nstd_fS_coef <- coef(Nstd_lognorm_fragSize)
 
-Sstd1_lognorm_fragSize_group_coefs <- bind_cols(Sstd1_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
-                                                  as_tibble() %>% 
-                                                  mutate(Intercept = Estimate,
-                                                         Intercept_lower = Q2.5,
-                                                         Intercept_upper = Q97.5,
-                                                         dataset_label = rownames(Sstd1_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
-                                                  dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                                Sstd1_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
-                                                  as_tibble() %>% 
-                                                  mutate(Slope = Estimate,
-                                                         Slope_lower = Q2.5,
-                                                         Slope_upper = Q97.5) %>% 
-                                                  dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
-  # join with min and max of the x-values
-  inner_join(frag %>% 
-               group_by(dataset_label) %>% 
-               summarise(xmin = min(frag_size_num),
-                         xmax = max(frag_size_num),
-                         cxmin = min(c.lfs),
-                         cxmax = max(c.lfs),
-                         climate = unique(climate),
-                         continent7 = unique(continent7),
-                         sphere.fragment = unique(sphere.fragment),
-                         sphere.matrix = unique(sphere.matrix), 
-                         biome = unique(biome),
-                         taxa = unique(taxa), 
-                         time.since.fragmentation = unique(time.since.fragmentation),
-                         Matrix.category = unique(Matrix.category)
-               ),
-             by = 'dataset_label') %>% 
-  # add indicator for whether study-level slope differed from zero?
-  mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
-                         ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
+# Sstd1_lognorm_fragSize_group_coefs <- bind_cols(Sstd1_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
+#                                                   as_tibble() %>% 
+#                                                   mutate(Intercept = Estimate,
+#                                                          Intercept_lower = Q2.5,
+#                                                          Intercept_upper = Q97.5,
+#                                                          dataset_label = rownames(Sstd1_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
+#                                                   dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
+#                                                 Sstd1_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
+#                                                   as_tibble() %>% 
+#                                                   mutate(Slope = Estimate,
+#                                                          Slope_lower = Q2.5,
+#                                                          Slope_upper = Q97.5) %>% 
+#                                                   dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
+#   # join with min and max of the x-values
+#   inner_join(frag %>% 
+#                group_by(dataset_label) %>% 
+#                summarise(xmin = min(frag_size_num),
+#                          xmax = max(frag_size_num),
+#                          cxmin = min(c.lfs),
+#                          cxmax = max(c.lfs),
+#                          climate = unique(climate),
+#                          continent7 = unique(continent7),
+#                          sphere.fragment = unique(sphere.fragment),
+#                          sphere.matrix = unique(sphere.matrix), 
+#                          biome = unique(biome),
+#                          taxa = unique(taxa), 
+#                          time.since.fragmentation = unique(time.since.fragmentation),
+#                          Matrix.category = unique(Matrix.category)
+#                ),
+#              by = 'dataset_label') %>% 
+#   # add indicator for whether study-level slope differed from zero?
+#   mutate(effect = ifelse((Slope_lower < 0 & Slope_upper > 0), 'random',
+#                          ifelse((Slope_lower > 0 & Slope_upper > 0), 'decay', 'down')))
 
 Sstd2_lognorm_fragSize_group_coefs <- bind_cols(Sstd2_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
                                                   as_tibble() %>% 

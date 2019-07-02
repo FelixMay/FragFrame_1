@@ -113,10 +113,10 @@ ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
              aes(x = jtu_slope, y = Sstd, 
-                 # colour = time.since.fragmentation
+                  colour = time.since.fragmentation
                  )) +
   stat_smooth(data = study_slope_coefs,
-            aes(x = jtu_slope, y = Sstd#, colour = time.since.fragmentation
+            aes(x = jtu_slope, y = Sstd
                 ),
             method = 'lm', se = F
             ) +
@@ -124,7 +124,7 @@ ggplot() +
            label = paste("paste(italic(rho) == " , 
                          round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
                          round(s_jtu_corr$conf.int[1], 2),
-                         " ~`—` ",
+                         " ~`???` ",
                          round(s_jtu_corr$conf.int[2], 2),"))"),
            parse = T, size = 2) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -151,7 +151,7 @@ ggplot() +
            label = paste("paste(italic(rho) == " , 
                          round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
                          round(s_jne_corr$conf.int[1], 2),
-                         " ~`—`~",
+                         " ~`???`~",
                          round(s_jne_corr$conf.int[2], 2),"))"),
            parse = T, size = 2) +
   
@@ -228,7 +228,7 @@ cowplot::plot_grid(beta_turnover_sstd_slope,
   #          label = paste("paste(italic(rho) == " , 
   #                        round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
   #                        round(s_jtu_corr$conf.int[1], 2),
-  #                        " ~`—` ",
+  #                        " ~`???` ",
   #                        round(s_jtu_corr$conf.int[2], 2),"))"),
   #          parse = T, size = 2) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -262,7 +262,7 @@ beta_nestedness_sstd_study <-
            label = paste("paste(italic(rho) == " , 
                          round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
                          round(s_jne_corr$conf.int[1], 2),
-                         " ~`—`~",
+                         " ~`???`~",
                          round(s_jne_corr$conf.int[2], 2),"))"),
            parse = T, size = 2) +
   
@@ -288,3 +288,9 @@ cowplot::plot_grid(beta_turnover_sstd_slope,
 
 ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig5.png', width = 170, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
+
+
+study_slope_coefs %>% 
+  group_by(time.since.fragmentation) %>% 
+  summarise(sum(continent8=='Europe')
+            )

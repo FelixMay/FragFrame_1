@@ -154,6 +154,8 @@ N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize,
 
 
 # compare the model fits (with versus without interactions
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
+
 Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion =  'loo', reloo = T) 
 Sstd2_ln_fS_matrix <- add_criterion(Sstd2_ln_fS_matrix, criterion = 'loo')
 Sstd2_ln_fS_taxa <- add_criterion(Sstd2_ln_fS_taxa, criterion = 'loo')
@@ -197,4 +199,5 @@ save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome,
      Schao_ln_fS_matrix, Schao_ln_fS_taxa, Schao_ln_fS_tsf, Schao_ln_fS_biome,
      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome,
+     Sstd2_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
