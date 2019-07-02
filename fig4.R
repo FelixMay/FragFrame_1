@@ -108,6 +108,26 @@ study_slope_coefs %>%
 s_jtu_corr <- cor.test(study_slope_coefs$Sstd, study_slope_coefs$jtu_slope)
 s_jne_corr <- cor.test(study_slope_coefs$Sstd, study_slope_coefs$jne_slope)
 
+timeLegend <-
+  ggplot() +
+  # facet_grid(.~climate) +
+  geom_point(data = study_slope_coefs,
+             aes(y = jtu_slope, x = Sstd, 
+                 colour = time.since.fragmentation
+             )) +
+  scale_color_manual(name = 'Time since fragmentation', 
+                     values = c('20-100 years' = '#6996b3',
+                                '< 20 years' = '#c1e7ff',
+                                '> 100 years' = '#004c6d')) +
+  theme_bw() +
+  theme(legend.position = 'top',
+        legend.direction = 'horizontal',
+        # legend.justification = c(1,1),
+        legend.background = element_blank())
+
+source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+time_colour_legend <- gg_legend(timeLegend)
+
 beta_turnover_sstd_slope <-
 ggplot() +
   # facet_grid(.~climate) +
@@ -118,45 +138,53 @@ ggplot() +
   stat_smooth(data = study_slope_coefs,
             aes(x = jtu_slope, y = Sstd
                 ),
-            method = 'lm', se = F
+            method = 'lm', se = F, colour = 'black'
             ) +
-  annotate('text', x = Inf, y = -0.02, hjust = 1, vjust = 0,
-           label = paste("paste(italic(rho) == " , 
-                         round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
-                         round(s_jtu_corr$conf.int[1], 2),
-                         " ~`???` ",
-                         round(s_jtu_corr$conf.int[2], 2),"))"),
-           parse = T, size = 2) +
+  # annotate('text', x = Inf, y = -0.02, hjust = 1.025, vjust = 0,
+  #          label = paste("paste(italic(rho) == " , 
+  #                        round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
+  #                        round(s_jtu_corr$conf.int[1], 2),
+  #                        " ~`???` ",
+  #                        round(s_jtu_corr$conf.int[2], 2),"))"),
+  #          parse = T, size = 2.5) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_vline(xintercept = 0, lty = 2) +
+  scale_color_manual(name = 'Time since fragmentation', 
+                     values = c('20-100 years' = '#6996b3',
+                                '< 20 years' = '#c1e7ff',
+                                '> 100 years' = '#004c6d')) +
   labs(x = 'Study-level turnover slope',
        y = ''
        # y = expression(paste('Study-level ', S[std], 'slope'))
        ) +
   theme_bw() +
-  theme(legend.position = c(1,1),
-        legend.justification = c(1,1),
-        legend.background = element_blank())
+  theme(legend.position = 'none')
 
 
 beta_nestedness_sstd_study <-
 ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-           aes(x = jne_slope, y = Sstd)) +
+           aes(x = jne_slope, y = Sstd, 
+               colour = time.since.fragmentation)) +
   stat_smooth(data = study_slope_coefs,
-              aes(x = jne_slope, y = Sstd),
-              method = 'lm', se = F) +
-  annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
-           label = paste("paste(italic(rho) == " , 
-                         round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
-                         round(s_jne_corr$conf.int[1], 2),
-                         " ~`???`~",
-                         round(s_jne_corr$conf.int[2], 2),"))"),
-           parse = T, size = 2) +
-  
+              aes(x = jne_slope, y = Sstd,
+                  # colour = time.since.fragmentation
+                  ),
+              method = 'lm', se = F, colour = 'black'
+              ) +
+  # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
+  #          label = paste("paste(italic(rho) == " , 
+  #                        round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
+  #                        round(s_jne_corr$conf.int[1], 2),
+  #                        " ~`???`~",
+  #                        round(s_jne_corr$conf.int[2], 2),"))"),
+  #          parse = T, size = 2.5) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_vline(xintercept = 0, lty = 2) +
+  scale_color_manual(values = c('20-100 years' = '#6996b3',
+                                '< 20 years' = '#c1e7ff',
+                                '> 100 years' = '#004c6d')) +
   labs(x = 'Study-level nestedness slope',
        y = ''
        # y = expression(paste('Study-level biodiversity measure slope'))
@@ -167,15 +195,18 @@ ggplot() +
         legend.direction = 'horizontal',
         legend.background = element_blank())
 
-cowplot::plot_grid(beta_turnover_sstd_slope, 
+top = time_colour_legend
+bottom = cowplot::plot_grid(beta_turnover_sstd_slope, 
                    beta_nestedness_sstd_study,
                    align = 'hv',
                    nrow = 1,
                    labels = 'auto') +
   cowplot::draw_label(expression(paste('Study-level ', S[std], 'slope')),
-                      angle = 90, x = 0.02)
+                      angle = 90,
+                      x = 0.02)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig5.png', width = 170, height = 80, units = 'mm')
+cowplot::plot_grid(top, bottom, nrow = 2, rel_heights = c(0.1, 1))
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour.png', width = 170, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 # beta_turnover_sstd_slope_colour <-
