@@ -12,6 +12,23 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
+# check names
+meta_labels <- meta %>% distinct(dataset_label)
+
+meta_labels %>% 
+  filter(!dataset_label %in% frag$dataset_label) %>% 
+  distinct(dataset_label)
+
+frag %>% 
+  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
+  distinct(dataset_label)
+
+# change metadata labels (as the ones in frag were used for the model fitting)
+meta <- meta %>% 
+  mutate(dataset_label = as.character(dataset_label),
+         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
+         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
+
 frag <- left_join(frag, 
                   meta,
                   by = 'dataset_label')
@@ -27,7 +44,8 @@ frag %>% distinct(time.since.fragmentation)
 frag$time.since.fragmentation <- factor(frag$time.since.fragmentation,
                                          levels = c("Recent (less than 20 years)", "Intermediate (20-100 years)", "long (100+ years)"))
 
-
+# load fragSize only models
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
 # two-way interactions: matrix permeability first
 Sstd2_ln_fS_matrix <- update(Sstd2_lognorm_fragSize,
                              formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
@@ -134,70 +152,49 @@ N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize,
                             newdata = frag,# %>% filter(biome!='wetland'), 
                             cores = 4)
 
-#
+
+# compare the model fits (with versus without interactions
+Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion =  'loo', reloo = T) 
+Sstd2_ln_fS_matrix <- add_criterion(Sstd2_ln_fS_matrix, criterion = 'loo')
+Sstd2_ln_fS_taxa <- add_criterion(Sstd2_ln_fS_taxa, criterion = 'loo')
+Sstd2_ln_fS_tsf <- add_criterion(Sstd2_ln_fS_tsf, criterion = 'loo')
+Sstd2_ln_fS_biome <- add_criterion(Sstd2_ln_fS_biome, criterion = 'loo')
+
+loo_compare(Sstd2_lognorm_fragSize,
+            Sstd2_ln_fS_matrix,
+            Sstd2_ln_fS_taxa,
+            Sstd2_ln_fS_tsf,
+            Sstd2_ln_fS_biome)
+
+S_PIE_lognorm_fragSize <- add_criterion(S_PIE_lognorm_fragSize, criterion =  'loo') 
+S_PIE_ln_fS_matrix <- add_criterion(S_PIE_ln_fS_matrix, criterion = 'loo')
+S_PIE_ln_fS_taxa <- add_criterion(S_PIE_ln_fS_taxa, criterion = 'loo')
+S_PIE_ln_fS_tsf <- add_criterion(S_PIE_ln_fS_tsf, criterion = 'loo')
+S_PIE_ln_fS_biome <- add_criterion(S_PIE_ln_fS_biome, criterion = 'loo')
+
+loo_compare(S_PIE_lognorm_fragSize,
+            S_PIE_ln_fS_matrix,
+            S_PIE_ln_fS_taxa,
+            S_PIE_ln_fS_tsf,
+            S_PIE_ln_fS_biome)
+
+Nstd_lognorm_fragSize <- add_criterion(Nstd_lognorm_fragSize, criterion =  'loo') 
+N_std_ln_fS_matrix <- add_criterion(N_std_ln_fS_matrix, criterion = 'loo')
+N_std_ln_fS_taxa <- add_criterion(N_std_ln_fS_taxa, criterion = 'loo')
+N_std_ln_fS_tsf <- add_criterion(N_std_ln_fS_tsf, criterion = 'loo')
+N_std_ln_fS_biome <- add_criterion(N_std_ln_fS_biome, criterion = 'loo')
+
+loo_compare(Nstd_lognorm_fragSize,
+            N_std_ln_fS_matrix,
+            N_std_ln_fS_taxa,
+            N_std_ln_fS_tsf,
+            N_std_ln_fS_biome)
+
+
 save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome,
      Sn_ln_fS_matrix, Sn_ln_fS_taxa, Sn_ln_fS_tsf, Sn_ln_fS_biome,
      Scov_ln_fS_matrix, Scov_ln_fS_taxa, Scov_ln_fS_tsf, Scov_ln_fS_biome,
      Schao_ln_fS_matrix, Schao_ln_fS_taxa, Schao_ln_fS_tsf, Schao_ln_fS_biome,
      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
-
-# compare the model fits (with versus without interactions)
-sstd_waic <- waic(Sstd2_lognorm_fragSize, 
-     Sstd2_ln_fS_matrix,
-     Sstd2_ln_fS_taxa,
-     Sstd2_ln_fS_tsf,
-     Sstd2_ln_fS_biome) # matrix wins (deltaWAIC ~2)
-
-sn_waic <- waic(Sn_lognorm_fragSize,
-     Sn_ln_fS_matrix,
-     Sn_ln_fS_taxa,
-     Sn_ln_fS_tsf,
-     Sn_ln_fS_biome) # matrix wins (deltaWAIC ~7)
-
-scov_waic <- waic(Scov_lognorm_fragSize,
-     Scov_ln_fS_matrix,
-     Scov_ln_fS_taxa,
-     Scov_ln_fS_tsf,
-     Scov_ln_fS_biome) # matrix wins (deltaWAIC ~5)
-
-schao_waic <- waic(S_chao_lognorm_fragSize,
-     Schao_ln_fS_matrix,
-     Schao_ln_fS_taxa,
-     Schao_ln_fS_tsf,
-     Schao_ln_fS_biome) # no interaction is best
-
-spie_waic <- waic(S_PIE_lognorm_fragSize,
-     S_PIE_ln_fS_matrix,
-     S_PIE_ln_fS_taxa,
-     S_PIE_ln_fS_tsf,
-     S_PIE_ln_fS_biome) # tsf wins (deltaWAIC ~ 3)
-
-nstd_waic <- waic(Nstd_lognorm_fragSize,
-     N_std_ln_fS_matrix,
-     N_std_ln_fS_taxa,
-     N_std_ln_fS_tsf,
-     N_std_ln_fS_biome) # biome wins (deltaWAIC ~ 5)
-
-# check tsf model: want to know if the slopes differ from zero for long time since fragmentation
-hypothesis(Sstd2_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
-hypothesis(Sn_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
-hypothesis(Scov_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
-hypothesis(Schao_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
-hypothesis(S_PIE_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
-hypothesis(N_std_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0')
-
-
-plot(hypothesis(Sstd2_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Sstd_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
-plot(hypothesis(Sn_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Sn_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
-plot(hypothesis(Scov_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Scov_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
-plot(hypothesis(Schao_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Schao_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
-plot(hypothesis(S_PIE_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Spie_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
-plot(hypothesis(N_std_ln_fS_tsf, 'c.lfs + c.lfs:time.since.fragmentationlong100Pyears > 0'))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Nstd_long_slope_posterior.png', width = 170, height = 100, units = 'mm')
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
