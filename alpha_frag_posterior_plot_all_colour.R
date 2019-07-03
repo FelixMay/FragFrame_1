@@ -228,10 +228,10 @@ sstd_study_posterior_taxa <- ggplot() +
             size=3.5,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
-  labs(y = 'Taxa',
+  labs(y = 'Taxon group',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'),
-       tag = 'b'
+       tag = 'a'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -279,7 +279,7 @@ sstd_study_posterior_continent <- ggplot() +
   labs(y = 'Continent',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'a'
+       tag = 'b'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -390,10 +390,11 @@ sstd_study_posterior_sphere.frag <- ggplot() +
 
 top = cowplot::plot_grid(NULL, legend, NULL,
                          nrow = 1, rel_widths = c(0.2,0.6,0.2))
-bottom = cowplot::plot_grid(sstd_study_posterior_continent,
+bottom = cowplot::plot_grid(
                             #sstd_study_posterior_biome,
                             #sstd_study_posterior_sphere.frag,
                             sstd_study_posterior_taxa,
+                            sstd_study_posterior_continent,
                             sstd_study_posterior_time, 
                             sstd_study_posterior_matrix, 
                             nrow = 2)
@@ -404,11 +405,11 @@ cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
 #        width = 240,
 #        height = 220,
 #        units = 'mm')
-
-##repeat for Nstd and Nstd for supplement
+# 
+##repeat for S_PIE and S_PIE for supplement
 continent <- ggplot() +
-  geom_density_ridges_gradient(data = Nstd_posterior,
-                               aes(x = Nstd + unique(Nstd_global_slope),
+  geom_density_ridges_gradient(data = Spie_posterior,
+                               aes(x = S_PIE + unique(S_PIE_global_slope),
                                    y = continent8,
                                    fill = stat(quantile)
                                ),
@@ -416,18 +417,18 @@ continent <- ggplot() +
                                calc_ecdf = T,
                                scale = 0.9, alpha = 0.5,
                                linetype = 0) +
-  geom_rect(data = Nstd_posterior %>% distinct(Nstd_lower_slope, Nstd_upper_slope),
-            aes(xmin = Nstd_lower_slope, xmax = Nstd_upper_slope), ymin = -Inf, ymax = Inf,
+  geom_rect(data = Spie_posterior %>% distinct(S_PIE_lower_slope, S_PIE_upper_slope),
+            aes(xmin = S_PIE_lower_slope, xmax = S_PIE_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.6) +
-  geom_point(data = Nstd_posterior,
-             aes(x = Nstd + unique(Nstd_global_slope), 
+  geom_point(data = Spie_posterior,
+             aes(x = S_PIE + unique(S_PIE_global_slope), 
                  y = continent8),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
              size = 2.5, shape = 18) +
-  geom_vline(data = Nstd_posterior,
-             aes(xintercept = Nstd_global_slope)) +
-  geom_text(data = Nstd_posterior %>%
+  geom_vline(data = Spie_posterior,
+             aes(xintercept = S_PIE_global_slope)) +
+  geom_text(data = Spie_posterior %>%
               group_by(continent8) %>% 
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
@@ -441,7 +442,7 @@ continent <- ggplot() +
   labs(y = 'Continent',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'a'
+       tag = 'b'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -456,8 +457,8 @@ continent <- ggplot() +
         legend.background = element_blank()) #+
 
 taxa <- ggplot() +
-  geom_density_ridges_gradient(data = Nstd_posterior,
-                               aes(x = Nstd + unique(Nstd_global_slope),
+  geom_density_ridges_gradient(data = Spie_posterior,
+                               aes(x = S_PIE + unique(S_PIE_global_slope),
                                    y = taxa,
                                    fill = stat(quantile)
                                ),
@@ -465,19 +466,19 @@ taxa <- ggplot() +
                                calc_ecdf = T,
                                scale = 0.9, alpha = 0.5,
                                linetype = 0) +
-  geom_rect(data = Nstd_posterior %>% distinct(Nstd_lower_slope, Nstd_upper_slope),
-            aes(xmin = Nstd_lower_slope, xmax = Nstd_upper_slope), ymin = -Inf, ymax = Inf,
+  geom_rect(data = Spie_posterior %>% distinct(S_PIE_lower_slope, S_PIE_upper_slope),
+            aes(xmin = S_PIE_lower_slope, xmax = S_PIE_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.6) +
-  geom_point(data = Nstd_posterior,
-             aes(x = Nstd + unique(Nstd_global_slope), 
+  geom_point(data = Spie_posterior,
+             aes(x = S_PIE + unique(S_PIE_global_slope), 
                  y = taxa),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
              size = 2.5, shape = 18) +
-  geom_vline(data = Nstd_posterior,
-             aes(xintercept = Nstd_global_slope)) +
+  geom_vline(data = Spie_posterior,
+             aes(xintercept = S_PIE_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
-  geom_text(data = Nstd_posterior %>%
+  geom_text(data = Spie_posterior %>%
               group_by(taxa) %>% 
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
@@ -487,10 +488,10 @@ taxa <- ggplot() +
             size=3.5,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
-  labs(y = 'Taxa',
+  labs(y = 'Taxon group',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'),
-       tag = 'b'
+       tag = 'a'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -505,8 +506,8 @@ taxa <- ggplot() +
 
 time <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
-  geom_density_ridges_gradient(data = Nstd_posterior,
-                               aes(x = Nstd + unique(Nstd_global_slope),
+  geom_density_ridges_gradient(data = Spie_posterior,
+                               aes(x = S_PIE + unique(S_PIE_global_slope),
                                    y = time.since.fragmentation,
                                    fill = stat(quantile)
                                ),
@@ -514,19 +515,19 @@ time <- ggplot() +
                                calc_ecdf = T,
                                scale = 0.9, alpha = 0.5,
                                linetype = 0) +
-  geom_rect(data = Nstd_posterior %>% distinct(Nstd_lower_slope, Nstd_upper_slope),
-            aes(xmin = Nstd_lower_slope, xmax = Nstd_upper_slope), ymin = -Inf, ymax = Inf,
+  geom_rect(data = Spie_posterior %>% distinct(S_PIE_lower_slope, S_PIE_upper_slope),
+            aes(xmin = S_PIE_lower_slope, xmax = S_PIE_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.6) +
-  geom_point(data = Nstd_posterior,
-             aes(x = Nstd + unique(Nstd_global_slope), 
+  geom_point(data = Spie_posterior,
+             aes(x = S_PIE + unique(S_PIE_global_slope), 
                  y = time.since.fragmentation),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
              size = 2.5, shape = 18) +
-  geom_vline(data = Nstd_posterior,
-             aes(xintercept = Nstd_global_slope)) +
+  geom_vline(data = Spie_posterior,
+             aes(xintercept = S_PIE_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
-  geom_text(data = Nstd_posterior %>%
+  geom_text(data = Spie_posterior %>%
               group_by(time.since.fragmentation) %>% 
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
@@ -554,8 +555,8 @@ time <- ggplot() +
 
 
 matrix <- ggplot() +
-  geom_density_ridges_gradient(data = Nstd_posterior,
-                               aes(x = Nstd + unique(Nstd_global_slope),
+  geom_density_ridges_gradient(data = Spie_posterior,
+                               aes(x = S_PIE + unique(S_PIE_global_slope),
                                    y = Matrix.category,
                                    fill = stat(quantile)
                                ),
@@ -563,19 +564,19 @@ matrix <- ggplot() +
                                calc_ecdf = T,
                                scale = 0.9, alpha = 0.5,
                                linetype = 0) +
-  geom_rect(data = Nstd_posterior %>% distinct(Nstd_lower_slope, Nstd_upper_slope),
-            aes(xmin = Nstd_lower_slope, xmax = Nstd_upper_slope), ymin = -Inf, ymax = Inf,
+  geom_rect(data = Spie_posterior %>% distinct(S_PIE_lower_slope, S_PIE_upper_slope),
+            aes(xmin = S_PIE_lower_slope, xmax = S_PIE_upper_slope), ymin = -Inf, ymax = Inf,
             alpha = 0.6) +
-  geom_point(data = Nstd_posterior,
-             aes(x = Nstd + unique(Nstd_global_slope), 
+  geom_point(data = Spie_posterior,
+             aes(x = S_PIE + unique(S_PIE_global_slope), 
                  y = Matrix.category),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
              size = 2.5, shape = 18) +
-  geom_vline(data = Nstd_posterior,
-             aes(xintercept = Nstd_global_slope)) +
+  geom_vline(data = Spie_posterior,
+             aes(xintercept = S_PIE_global_slope)) +
   geom_vline(xintercept = 0, lty = 2) +
-  geom_text(data = Nstd_posterior %>%
+  geom_text(data = Spie_posterior %>%
               group_by(Matrix.category) %>% 
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
@@ -601,17 +602,18 @@ matrix <- ggplot() +
         legend.justification = c(1, 1),
         legend.background = element_blank()) #+
 
-bottom = cowplot::plot_grid(continent,
+bottom = cowplot::plot_grid(
                             #sstd_study_posterior_biome,
                             #sstd_study_posterior_sphere.frag,
                             taxa,
+                            continent,
                             time,  
                             matrix,
                             nrow = 2)
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Study-level total abundance (', N[std], ') slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Study-level evenness (', S[PIE], ') slope estimate')), y = 0.01)
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_colour_abundance_density.png',
-       width = 240,
-       height = 220,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_colour_evenness_density.png',
+#        width = 240,
+#        height = 220,
+#        units = 'mm')

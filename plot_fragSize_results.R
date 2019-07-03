@@ -20,15 +20,17 @@ taxa_legend <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # scale_colour_viridis_d(guide=F) +
   # scale_color_grey(guide=F) +
-  scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
+  scale_colour_brewer(name = 'Taxon group', type = 'qual', palette = 'Dark2',
+                      labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))+
   theme_bw() +
   theme(legend.position = 'top',
         legend.direction = 'horizontal',
         text = element_text(size = 13)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2)))
+
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
 taxa_colour = gg_legend(taxa_legend)
 
@@ -45,7 +47,7 @@ S_std_regPlot <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # fixed effect
   geom_line(data = Sstd2_fS_fitted, 
             aes(x = frag_size_num,
@@ -74,7 +76,7 @@ S_std_regPlot <- ggplot() +
   # scale_color_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Species richness (', S[std], ')')),
+       y = expression(paste('Species richness')),
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -93,7 +95,7 @@ Sn_regPlot <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # fixed effect
   geom_line(data = Sn_fS_fitted, 
             aes(x = frag_size_num,
@@ -141,7 +143,7 @@ Spie_regPlot <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # fixed effect
   geom_line(data = S_PIE_fS_fitted, 
             aes(x = frag_size_num,
@@ -170,13 +172,12 @@ Spie_regPlot <- ggplot() +
   # scale_color_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Evenness (', S[PIE], ')')),
+       y = expression(paste('Evenness')),
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none', text = element_text(size = 13))
 
 # S_cov
-ylab = expression(atop('Coverage standardised'), paste('richness (', S[cov], ')'))
 Scov_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
@@ -189,7 +190,7 @@ Scov_regPlot <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # fixed effect
   geom_line(data = Scov_fS_fitted, 
             aes(x = frag_size_num,
@@ -236,7 +237,7 @@ Schao_regPlot <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # fixed effect
   geom_line(data = Schao_fS_fitted, 
             aes(x = frag_size_num,
@@ -285,7 +286,7 @@ Nstd_regPlot <- ggplot() +
                    xend = xmax,
                    y = exp(Intercept + Slope * cxmin),
                    yend = exp(Intercept + Slope * cxmax)),
-               size = 0.75) +
+               size = 0.5) +
   # fixed effect
   geom_line(data = Nstd_fS_fitted, 
             aes(x = frag_size_num,
@@ -314,7 +315,7 @@ Nstd_regPlot <- ggplot() +
   # scale_color_grey(guide = F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Total abundance (', N[std], ')')),
+       y = expression(paste('Total abundance')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none',
