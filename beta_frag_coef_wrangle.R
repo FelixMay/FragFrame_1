@@ -14,7 +14,7 @@ frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_
 # get the metadata
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
-  dplyr::rename(dataset_label = X...dataset_id)
+  dplyr::rename(dataset_label = dataset_id)
 
 # check names
 meta_labels <- meta %>% distinct(dataset_label)

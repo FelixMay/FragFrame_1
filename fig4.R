@@ -209,6 +209,42 @@ cowplot::plot_grid(top, bottom, nrow = 2, rel_heights = c(0.1, 1))
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour.png', width = 170, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
+# relationship between the intercepts of turnover and nestedness tell us about their
+# relative contribution to total dissimilarity
+cor.test(study_slope_coefs$jtu_intercept, study_slope_coefs$jne_intercept)
+with(study_slope_coefs, summary(lm(jne_intercept ~ jtu_intercept)))
+# beta_turnover_nestedness_intercept <-
+  ggplot() +
+  # facet_grid(.~climate) +
+  geom_point(data = study_slope_coefs,
+             aes(x = jtu_intercept, y = jne_intercept, 
+                 # colour = time.since.fragmentation
+             )) +
+  stat_smooth(data = study_slope_coefs,
+              aes(x = jtu_intercept, y = jne_intercept
+              ),
+              method = 'lm', se = F, colour = 'black'
+  ) +
+  # annotate('text', x = Inf, y = -0.02, hjust = 1.025, vjust = 0,
+  #          label = paste("paste(italic(rho) == " , 
+  #                        round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
+  #                        round(s_jtu_corr$conf.int[1], 2),
+  #                        " ~`???` ",
+  #                        round(s_jtu_corr$conf.int[2], 2),"))"),
+  #          parse = T, size = 2.5) +
+  # geom_hline(yintercept = 0, lty = 2) +
+  # geom_vline(xintercept = 0, lty = 2) +
+  # scale_color_manual(name = 'Time since fragmentation', 
+  #                    values = c('20-100 years' = '#6996b3',
+  #                               '< 20 years' = '#c1e7ff',
+  #                               '> 100 years' = '#004c6d')) +
+  # labs(x = 'Study-level turnover slope',
+  #      y = ''
+  #      # y = expression(paste('Study-level ', S[std], 'slope'))
+  # ) +
+  theme_bw() +
+  theme(legend.position = 'none')
+
 # beta_turnover_sstd_slope_colour <-
   ggplot() +
   # facet_grid(.~climate) +
