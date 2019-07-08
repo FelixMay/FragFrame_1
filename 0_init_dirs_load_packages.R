@@ -1,5 +1,5 @@
 ############################################################################
-### set directories
+### set directories and load packages
 ############################################################################
 
 .setwdntemp <- function(){
@@ -42,7 +42,7 @@ needed_libs <- c(#"devtools", # download from github
                  "vegan", # for diversity indices
                  "adespatial" , # for beta-diversity partitioning
                  #"car", # for logit transformation
-#                 "metafor", # for meta-analysis 
+                 #"metafor", # for meta-analysis 
                  "lme4", # for lmer
                  #"gridExtra", # for multiple plots using grid.arrange()
                  #"grid", # for extracting legends with grid.draw()
