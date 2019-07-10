@@ -29,7 +29,7 @@ taxa_legend <- ggplot() +
   theme(legend.position = 'top',
         legend.direction = 'horizontal',
         text = element_text(size = 13)) +
-  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2)))
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1)))
 
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
 taxa_colour = gg_legend(taxa_legend)
@@ -310,12 +310,13 @@ Nstd_regPlot <- ggplot() +
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-  scale_y_continuous(trans = 'log10', breaks = c(1,10,100,1000,10000)) +
+  scale_y_continuous(trans = 'log10', breaks = c(1,10,100,1000,10000),
+                     labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   # scale_colour_viridis_d(guide=F) +
   # scale_color_grey(guide = F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Total abundance')),
+       y = expression(paste('Number of individuals')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -474,3 +475,7 @@ inner_join(Sn_study_slope %>%
   theme(panel.grid.minor = element_blank())
   
 
+# how many in each biome?
+frag %>% 
+  group_by(biome) %>% 
+  summarise(n_study = n_distinct(dataset_label))

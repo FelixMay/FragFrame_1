@@ -284,8 +284,8 @@ Sstd_robust <- ggplot() +
                  aes(x = Sstd_ref, ymin = Sstd_sens11_lower, ymax = Sstd_sens11_upper, colour = 'sens11')) +
   # 1:1 line and zero lines
   geom_abline(intercept = 0, slope = 1, lty = 2) +
-  geom_vline(xintercept = 0, lty = 2) +
-  geom_hline(yintercept = 0, lty = 2) +
+  # geom_vline(xintercept = 0, lty = 2) +
+  # geom_hline(yintercept = 0, lty = 2) +
   scale_colour_manual(name = 'Standardisation',
                       guide = F,
                       values = c('sens1' = '#003f5c',
@@ -295,7 +295,7 @@ Sstd_robust <- ggplot() +
                       labels = c('1', '2', '3', '4')) +
   labs(x = '',
        y = '',
-       subtitle = expression(paste('Species richness (', S[std], ')'))) +
+       subtitle = expression(paste('Species richness'))) +# (', S[std], ')
   theme_bw()
 
 
@@ -351,8 +351,8 @@ Nstd_robust <-
                  aes(x = Nstd_ref, ymin = Nstd_sens11_lower, ymax = Nstd_sens11_upper, colour = 'sens11')) +
   # 1:1 line and zero lines
   geom_abline(intercept = 0, slope = 1, lty = 2) +
-  geom_vline(xintercept = 0, lty = 2) +
-  geom_hline(yintercept = 0, lty = 2) +
+  # geom_vline(xintercept = 0, lty = 2) +
+  # geom_hline(yintercept = 0, lty = 2) +
   scale_colour_manual(name = 'Standardisation',
                       values = c('sens1' = '#003f5c',
                                  'sens3' = '#7a5195',
@@ -361,7 +361,7 @@ Nstd_robust <-
                       labels = c('1', '2', '3', '4')) +
   labs(x = '',
        y = '',
-       subtitle = expression(paste('Total abundance (', N[std], ')'))) +
+       subtitle = expression(paste('Number of individuals'))) +# (', N[std], ')
   theme_bw() +
   theme(legend.position = c(1,0),
         legend.background = element_blank(),
@@ -428,11 +428,11 @@ S_PIE_robust <- ggplot() +
                                  'sens11' = '#ffa600'),
                       labels = c('1', '2', '3', '4')) +
   geom_abline(intercept = 0, slope = 1, lty = 2) +
-  geom_vline(xintercept = 0, lty = 2) +
-  geom_hline(yintercept = 0, lty = 2) +
+  # geom_vline(xintercept = 0, lty = 2) +
+  # geom_hline(yintercept = 0, lty = 2) +
   labs(x = '',
        y = '',
-       subtitle = expression(paste('Evenness (', S[PIE], ')'))) +
+       subtitle = expression(paste('Evenness'))) +# (', S[PIE], ')
   theme_bw()
 
 cowplot::plot_grid(Nstd_robust,
@@ -441,11 +441,11 @@ cowplot::plot_grid(Nstd_robust,
                    nrow = 1, align = 'hv',
                    labels = 'auto') +
   cowplot::draw_label('Slope estimate for reference standardisation',
-                      y = 0.03) +
+                      y = 0.03, size = 13) +
   cowplot::draw_label('Slope estimate for\nalternate standardisation',
-                      x = 0.02, angle = 90)
+                      x = 0.02, angle = 90, size = 13)
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_robust_main.png',
-       width = 250,
-       height = 80,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_robust_main.png',
+#        width = 250,
+#        height = 80,
+#        units = 'mm')
