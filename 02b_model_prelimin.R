@@ -1,85 +1,102 @@
-# code to fit preliminary models for fragmentation synthesis
-# preliminary models will use ML, but I plan to use Bayesian methods for 
-# final analysis
-# library(lme4)
+# code to do prior predictive checks for fitting Bayesian models to fragment diversity data
 
 # load the data
-# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
-frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
+frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
-# remove observations without fragment size
-frag2 <- frag %>% 
-  filter(!is.na(entity.size))
+# add mean centred (log) fragsize
+frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-##--create some covariates for easier workflow--
-# mean-centred log(fragment.size)
-frag2$c.lfs <- log(frag2$entity.size) - mean(log(frag2$entity.size))
-frag2$lSn <- log(frag2$S_n)
+# check lm fit
+with(frag, lm(log(S_std_2) ~ c.lfs))
 
-# simplest model: richness as a function of fragment size; allow fragment size to vary by study
-summary(m1_fragSize <- lmer(lSn ~ c.lfs + (c.lfs | filename), 
-                             data = frag2))
+# get the fragment sizes for predicting slopes based on priors
+x <- frag %>% 
+  distinct(c.lfs) %>% 
+  arrange(-desc(c.lfs))  
 
-# inspect model fit
-m1_inspect <- broom::augment(m1_fragSize) %>% 
-  as_tibble() %>% 
-  # add some other covariates that were not modelled here
-  inner_join(frag2 %>% distinct(filename, time.since.fragmentation,
-                              taxa, veg.fragment, matrix.category, ratio.min.max.fragment.size2),
-             by = 'filename' )
+# visual inspection of priors for intercept (alpha) and slope (beta)
+# recall we will model log(S) ~ c.lfs, i.e., both S and fragment size are log-transformed,
+# and fragment size is mean centred too. This means that we want the predicted value to be
+# ~mean(log(S_std_2)) when our predictor or x==0 (i.e., is the intercept of our linear model)
+# And, we don't want to regularly predict impossibly strong (steep) relationships
+alpha <- rnorm(50, 2.5, 0.2) # intercept ~ N(2.5, 0.2)
+beta <- rnorm(50, 0, 0.5)  # slope ~ N(0, 1)
+
+# simulate from these priors
+y_pred <- tibble()
+for(i in 1:length(beta)){
+  temp = tibble(
+    sim = i,
+    x = x$c.lfs,
+    y_temp = exp(alpha[i] + beta[i] * x))
+  # join 'em together
+  y_pred = bind_rows(y_pred, temp)
+}
 
 
+# slope inspection for predicting S_std_2: some a bit steep but not too bad
+ggplot() + 
+  geom_line(data = y_pred,
+            aes(x = x, y = y_temp, group = sim),
+            size = 0.1) +
+  scale_y_continuous(trans = 'log',
+                     name = 'y_pred') +
+  geom_vline(xintercept = 0, lty =2) +
+  geom_hline(data = frag %>% 
+               summarise(mu = mean(S_std_2, na.rm=T)),
+             aes(yintercept = mu), lty = 2) +
+  geom_hline(data = frag %>% 
+               summarise(max = max(S_std_2, na.rm=T)),
+             aes(yintercept = max), lty = 2) +
+  geom_hline(data = frag %>% 
+               summarise(min = min(S_std_2, na.rm=T)),
+             aes(yintercept = min), lty = 2) 
 
-ggplot() +
-  geom_boxplot(data = m1_inspect,
-               aes(filename, .resid)) +
-  coord_flip()
 
-ggplot() +
-  geom_boxplot(data = m1_inspect,
-               aes(veg.fragment, .resid)) +
-  coord_flip()
-ggplot() +
-  geom_boxplot(data = m1_inspect,
-               aes(matrix.category, .resid)) +
-  coord_flip()
+# what about N_std with these priors? No, intercept too low
+ggplot() + 
+  geom_line(data = y_pred,
+            aes(x = x, y = y_temp, group = sim),
+            size = 0.1) +
+  scale_y_continuous(trans = 'log',
+                     name = 'y_pred') +
+  geom_vline(xintercept = 0, lty =2) +
+  geom_hline(data = frag %>% 
+               summarise(mu = mean(N_std, na.rm=T)),
+             aes(yintercept = mu), lty = 2)  
 
-ggplot() +
-  geom_point(data = m1_inspect,
-               aes(c.lfs, .resid))
+with(frag, lm(log(N_std) ~ c.lfs))
 
-ggplot() +
-  geom_point(data = m1_inspect,
-             aes(time.since.fragmentation, .resid))
+alpha_N <- rnorm(100, 4, 0.2)
+beta_N <- rnorm(100, 0, 0.5)
 
-ggplot() +
-  geom_point(data = m1_inspect,
-             aes(ratio.min.max.fragment.size2, .resid))
+N_pred <- tibble()
+for(i in 1:length(beta_N)){
+  temp = tibble(
+    sim = i,
+    x = x$c.lfs,
+    y_temp = exp(alpha_N[i] + beta_N[i] * x))
+  # join 'em together
+  N_pred = bind_rows(N_pred, temp)
+}
 
-ggplot() +
-  geom_boxplot(data = m1_inspect %>% filter(!is.na(taxa)),
-    aes(taxa, .resid))
-        
-
-summary(m2_fS_taxa <- lmer(lSn ~ -1 + c.lfs*taxa + (c.lfs | filename), 
-                            data = frag2, REML = F))
-car::Anova(m2_fS_taxa)
-# alternate for taxa
-summary(m2_fS_taxa_2 <- lmer(lSn ~ -1 + c.lfs*taxa + (c.lfs | taxa/filename),
-                             data = frag2, REML = F))
-AIC(m2_fS_taxa, m2_fS_taxa_2) # no support for adding taxa as grouping covariate
-
-summary(m3_fS_taxa_matrix <- lmer(lSn ~ -1 + c.lfs*taxa*matrix.category + (c.lfs | filename), 
-                           data = frag2, REML = T))
-car::Anova(m3_fS_taxa_matrix)
-
-summary(m4_fS_taxa_matrix <- lmer(lSn ~ -1 + c.lfs*taxa*matrix.category*veg.fragment + (c.lfs | filename), 
-                                  data = frag2, REML = T))
-car::Anova(m4_fS_taxa_matrix) # looks like there might be support for a fragmentSize x matrixCategory x vegFragment interaction
-                              # and, fragmentSize x taxa, and fragmentSize x taxa
-
-# more complex? Not needed.
-summary(m5_fS_taxa_matrix <- lmer(lSn ~ -1 + c.lfs*taxa*matrix.category*veg.fragment*time.since.fragmentation + (c.lfs | filename), 
-                                  data = frag2, REML = T))
-car::Anova(m5_fS_taxa_matrix) # looks like there might be support for a fragmentSize x matrixCategory x vegFragment interaction
-# and, fragmentSize x taxa,
+# intercept a bit low still and a few strong slopes, but this looks ok
+ggplot() + 
+  geom_line(data = N_pred,
+            aes(x = x, y = y_temp, group = sim),
+            size = 0.1) +
+  scale_y_continuous(trans = 'log',
+                     name = 'N_pred') +
+  geom_vline(xintercept = 0, lty =2) +
+  geom_hline(data = frag %>% 
+               summarise(mu = mean(N_std, na.rm=T)),
+             aes(yintercept = mu), lty = 2) +
+  geom_hline(data = frag %>% 
+               summarise(mu = mean(N_std, na.rm=T)),
+             aes(yintercept = mu), lty = 2) +
+  geom_hline(data = frag %>% 
+               summarise(max = max(N_std, na.rm=T)),
+             aes(yintercept = max), lty = 2) +
+  geom_hline(data = frag %>% 
+               summarise(min = min(N_std, na.rm=T)),
+             aes(yintercept = min), lty = 2)

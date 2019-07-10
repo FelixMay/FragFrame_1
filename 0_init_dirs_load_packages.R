@@ -6,24 +6,34 @@
    cu <- Sys.info()["user"]
    cn <- Sys.info()["nodename"]
    
-   if (cu == "kg83hyby") #KG 
+   # if (cu == "kg83hyby") #KG 
+   # {
+   #    path2wd <- "C:/Users/kg83hyby/Documents/GitHub/FragFrame_1/" 
+   #    path2Dropbox <- "C:/Users/kg83hyby/Dropbox/Habitat loss meta-analysis/"
+   #    path2temp <- "C:/Users/kg83hyby/Documents/temp/FragFrame_1/" 
+   # }  
+   if (cu == 'sb25gaqy')
    {
-      path2wd <- "C:/Users/kg83hyby/Documents/GitHub/FragFrame_1/" 
-      path2Dropbox <- "C:/Users/kg83hyby/Dropbox/Habitat loss meta-analysis/"
-      path2temp <- "C:/Users/kg83hyby/Documents/temp/FragFrame_1/" 
-   }  
+     path2wd <- '~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/'
+     path2Dropbox <- '~/Dropbox/Frag Database (new)'
+     path2data <- '~/Dropbox/Frag Database (new)/files_datapaper/Analysis/'
+     path2meta <- '~/Dropbox/Frag Database (new)/'
+     path2temp <- '/Users/sb25gaqy/Dropbox/1current/fragmentation_synthesis/temp/'
+   }
    else {#FM
       path2wd <- "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1/" 
       path2Dropbox <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/"
       path2temp <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/Analysis/"
    }
-   return(list(path2temp,path2Dropbox,path2wd))
+   return(list(path2temp,path2Dropbox,path2wd, path2data, path2meta))
 }
 
 set.list <-  .setwdntemp()
 path2temp <- set.list[[1]]
 path2Dropbox <- set.list[[2]]
 path2wd <- set.list[[3]]
+path2data <- set.list[[4]]
+path2meta <- set.list[[5]]
 
 ############################################################################
 ### some helper functions

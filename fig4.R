@@ -132,11 +132,11 @@ beta_turnover_sstd_slope <-
 ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-             aes(x = jtu_slope, y = Sstd, 
+             aes(y = jtu_slope, x = Sstd, 
                   colour = time.since.fragmentation
                  )) +
   stat_smooth(data = study_slope_coefs,
-            aes(x = jtu_slope, y = Sstd
+            aes(y = jtu_slope, x = Sstd
                 ),
             method = 'lm', se = F, colour = 'black'
             ) +
@@ -153,8 +153,8 @@ ggplot() +
                      values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
-  labs(x = 'Study-level turnover slope',
-       y = ''
+  labs(y = 'Study-level turnover slope',
+       x = ''
        # y = expression(paste('Study-level ', S[std], 'slope'))
        ) +
   theme_bw() +
@@ -165,10 +165,10 @@ beta_nestedness_sstd_study <-
 ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-           aes(x = jne_slope, y = Sstd, 
+           aes(y = jne_slope, x = Sstd, 
                colour = time.since.fragmentation)) +
   stat_smooth(data = study_slope_coefs,
-              aes(x = jne_slope, y = Sstd,
+              aes(y = jne_slope, x = Sstd,
                   # colour = time.since.fragmentation
                   ),
               method = 'lm', se = F, colour = 'black'
@@ -185,8 +185,8 @@ ggplot() +
   scale_color_manual(values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
-  labs(x = 'Study-level nestedness slope',
-       y = ''
+  labs(y = 'Study-level nestedness slope',
+       x = ''
        # y = expression(paste('Study-level biodiversity measure slope'))
        ) +
   theme_bw() +
@@ -201,12 +201,12 @@ bottom = cowplot::plot_grid(beta_turnover_sstd_slope,
                    align = 'hv',
                    nrow = 1,
                    labels = 'auto') +
-  cowplot::draw_label(expression(paste('Study-level ', S[std], 'slope')),
-                      angle = 90,
-                      x = 0.02)
+  cowplot::draw_label(expression(paste('Study-level species richness slope')),
+                      # angle = 90,
+                      y = 0.03, size = 12)
 
 cowplot::plot_grid(top, bottom, nrow = 2, rel_heights = c(0.1, 1))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour.png', width = 170, height = 80, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour_flip.png', width = 170, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 # relationship between the intercepts of turnover and nestedness tell us about their
@@ -361,3 +361,85 @@ study_slope_coefs %>%
   group_by(time.since.fragmentation) %>% 
   summarise(sum(continent8=='Europe')
             )
+
+beta_turnover_sstd_intercept <-
+  ggplot() +
+  # facet_grid(.~climate) +
+  geom_point(data = study_slope_coefs,
+             aes(x = jtu_intercept, y = Sstd, 
+                 colour = time.since.fragmentation
+             )) +
+  stat_smooth(data = study_slope_coefs,
+              aes(x = jtu_intercept, y = Sstd
+              ),
+              method = 'lm', se = F, colour = 'black'
+  ) +
+  # annotate('text', x = Inf, y = -0.02, hjust = 1.025, vjust = 0,
+  #          label = paste("paste(italic(rho) == " , 
+  #                        round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
+  #                        round(s_jtu_corr$conf.int[1], 2),
+  #                        " ~`???` ",
+  #                        round(s_jtu_corr$conf.int[2], 2),"))"),
+  #          parse = T, size = 2.5) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  scale_color_manual(name = 'Time since fragmentation', 
+                     values = c('20-100 years' = '#6996b3',
+                                '< 20 years' = '#c1e7ff',
+                                '> 100 years' = '#004c6d')) +
+  labs(x = 'Study-level turnover intercept',
+       y = ''
+       # y = expression(paste('Study-level ', S[std], 'slope'))
+  ) +
+  theme_bw() +
+  theme(legend.position = 'none')
+
+
+beta_nestedness_intercept_sstd_slope <-
+  ggplot() +
+  # facet_grid(.~climate) +
+  geom_point(data = study_slope_coefs,
+             aes(x = jne_intercept, y = Sstd, 
+                 colour = time.since.fragmentation)) +
+  stat_smooth(data = study_slope_coefs,
+              aes(x = jne_intercept, y = Sstd,
+                  # colour = time.since.fragmentation
+              ),
+              method = 'lm', se = F, colour = 'black'
+  ) +
+  # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
+  #          label = paste("paste(italic(rho) == " , 
+  #                        round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
+  #                        round(s_jne_corr$conf.int[1], 2),
+  #                        " ~`???`~",
+  #                        round(s_jne_corr$conf.int[2], 2),"))"),
+  #          parse = T, size = 2.5) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  scale_color_manual(values = c('20-100 years' = '#6996b3',
+                                '< 20 years' = '#c1e7ff',
+                                '> 100 years' = '#004c6d')) +
+  labs(x = 'Study-level nestedness intercept',
+       y = ''
+       # y = expression(paste('Study-level biodiversity measure slope'))
+  ) +
+  theme_bw() +
+  theme(legend.position = 'none',
+        legend.justification = c(1,1),
+        legend.direction = 'horizontal',
+        legend.background = element_blank())
+
+top = time_colour_legend
+bottom = cowplot::plot_grid(beta_turnover_sstd_intercept, 
+                            beta_nestedness_intercept_sstd_slope,
+                            align = 'hv',
+                            nrow = 1,
+                            labels = 'auto') +
+  cowplot::draw_label(expression(paste('Study-level ', S[std], 'slope')),
+                      angle = 90,
+                      x = 0.02)
+
+cowplot::plot_grid(top, bottom, nrow = 2, rel_heights = c(0.1, 1))
+
+cor.test(study_slope_coefs$Sstd, study_slope_coefs$jtu_intercept)
+cor.test(study_slope_coefs$Sstd, study_slope_coefs$jne_intercept)

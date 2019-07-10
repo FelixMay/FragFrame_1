@@ -2,7 +2,7 @@
 library(tidyverse)
 library(brms)
 ##----load model fits-----
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
 
 Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion = 'waic')
 Sstd2_ln_fS_tsf <- add_criterion(Sstd2_ln_fS_tsf, criterion = 'waic')

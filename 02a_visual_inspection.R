@@ -1,113 +1,99 @@
 # visual inspection of data for fragmentation synthesis
-
 # Please do not use absolute paths in a shared R script! Please adjust 00_InitializeDirectories_LoadPackages.R
-# frag <- read_csv('~/Dropbox/Habitat loss meta-analysis/analysis/diversity_metadata.csv')
+# ok, I changed some paths for myself. Felix, you might need to update yours for this to work?
 
-frag <- read_csv(paste(path2temp, "diversity_metadata.csv", sep = ""))
+frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
-# setwd('~/Dropbox/Habitat loss meta-analysis/analysis/figs/visual_inspection/')
+# load the meta data
+meta <- read.csv(paste0(path2meta, '/new_meta_2_merge.csv'), sep=';') %>% 
+  as_tibble() %>% 
+  dplyr::rename(dataset_label = dataset_id)
+
+# and join 
+frag <- left_join(frag, 
+                  meta,
+                  by = 'dataset_label')
+
+# if you want to save these figures...
 setwd(paste(path2temp,"figs/visual_inspection/", sep = ""))
 
-# we are mostly interested in diversity as a function of entity size
-# the different standardisation look qualitativley similar, though S_cov has a lower intercept
+# we are mostly interested in diversity as a function of fragment size
 ggplot() +
   geom_point(data = frag,
-             aes(x = entity.size, y = S_n, colour = 'S_n'),
+             aes(x = frag_size_num, y = S_PIE, colour = 'S_PIE'),
              alpha = 0.5) +
   geom_point(data = frag,
-             aes(x = entity.size, y = S_cov, colour = 'S_cov'),
+             aes(x = frag_size_num, y = S_n, colour = 'S_n'),
              alpha = 0.5) +
   geom_point(data = frag,
-             aes(x = entity.size, y = S_std, colour = 'S_std'),
+             aes(x = frag_size_num, y = S_cov, colour = 'S_cov'),
+             alpha = 0.5) +
+  geom_point(data = frag,
+             aes(x = frag_size_num, y = S_std_2, colour = 'S_std_2'),
              alpha = 0.5) +
   stat_smooth(data = frag,
-              method = 'lm',
-              aes(x = entity.size, y = S_n),
-              colour = 'black') +
+              method = 'lm', 
+              aes(x = frag_size_num, y = S_PIE,
+                  colour = 'S_PIE')) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = entity.size, y = S_cov),
-              colour = 'red') +
+              aes(x = frag_size_num, y = S_n, colour = 'S_n')) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = entity.size, y = S_std),
-              colour = 'blue') +
+              aes(x = frag_size_num, y = S_cov, colour = 'S_cov')) +
+  stat_smooth(data = frag,
+              method = 'lm',
+              aes(x = frag_size_num, y = S_std_2, colour = 'S_std_2')) +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128, 256)) +
-  scale_colour_manual(name = '',
-                      values = c('S_n' = 'black', 'S_cov' = 'red', 'S_std' = 'blue')) +
+  scale_colour_manual(name = 'metric',
+                      values = c('N_std' = '#00455c', 'S_PIE' = '#006a6f', 
+                                 'S_n' = '#008c57', 'S_cov' = '#83a51b', 
+                                 'S_std_2' = '#ffa600')) +
   labs(x = 'Fragment size (hectares)',
        y = 'Richness (standardised)') +
-  theme_bw() #+
-  #theme(legend.position = c(0.1,0.9))
+  theme_bw() +
+  theme(legend.key = element_blank(),
+        legend.position = c(0.1,0.9)) +
+  guides(colour = guide_legend(override.aes = list(fill=NA)))
 
-ggsave('standardised_S_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
-
-# S_PIE?
-ggplot() +
-  geom_point(data = frag,
-             aes(x = entity.size, y = S_PIE),
-             alpha = 0.5) +
-  stat_smooth(data = frag,
-              method = 'lm',
-              aes(x = entity.size, y = S_PIE),
-              colour = 'black') +
-  # add study-level variation
-  # stat_smooth(data = frag,
-  #             method = 'lm', se=F,
-  #             aes(x = entity.size, y = S_PIE, group = filename, colour = taxa),
-  #             lwd = 1/2) +
-  scale_x_continuous(trans = 'log10') +
-  scale_y_continuous(trans = 'log2') +
-  scale_colour_viridis_d(name = 'Taxa') +
-  labs(x = 'Fragment size (ha)',
-       y = expression(S[PIE])) +
-  theme_bw() #+
-  #theme(legend.position = c(0.1,0.8))
-
-ggsave('S_PIE_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
+# ggsave('standardised_S_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
 
 # Total and standardized N
 ggplot() +
-   geom_point(data = frag,
-              aes(x = entity.size, y = N, colour = 'N'),
-              alpha = 0.5) +
-   geom_point(data = frag,
-              aes(x = entity.size, y = N_std, colour = 'N_std'),
-              alpha = 0.5) +
-   stat_smooth(data = frag,
-               method = 'lm',
-               aes(x = entity.size, y = N),
-               colour = 'black') +
-   stat_smooth(data = frag,
-               method = 'lm',
-               aes(x = entity.size, y = N_std),
-               colour = 'red') +
+  geom_point(data = frag,
+             aes(x = frag_size_num, y = N_std, colour = 'N_std'),
+             alpha = 0.5) +
+  stat_smooth(data = frag,
+              method = 'lm',
+              aes(x = frag_size_num, y = N_std,
+                  colour = 'N_std')) +
    scale_x_continuous(trans = 'log10') +
    scale_y_continuous(trans = 'log10') +
-   scale_colour_manual(name = '',
-                       values = c('N' = 'black', 'N_std' = 'red')) +
+  scale_colour_manual(name = 'metric', guide = F,
+                      values = c('N_std' = '#00455c')) +
    labs(x = 'Fragment size (hectares)',
         y = 'No. of individuals') +
    theme_bw() 
    
-ggsave('N_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
+# ggsave('N_fragmentSize.pdf', width = 290, height = 200, units = 'mm')
 
 
 # what does the study-level variation look like?
 ggplot() +
   geom_point(data = frag,
-             aes(x = entity.size, y = S_n)) +
+             aes(x = frag_size_num, y = S_n, colour = sample_design)) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = entity.size, y = S_n),
+              aes(x = frag_size_num, y = S_n),
               colour = 'black') +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = entity.size, y = S_n,
-                  group = filename),
-              colour = 'black', lwd = 0.3) +
-  scale_colour_viridis_d(name = 'Taxa') +
+              aes(x = frag_size_num, y = S_n,
+                  group = dataset_label,
+                  colour = sample_design),
+              lwd = 0.3) +
+  scale_colour_viridis_d(name = 'Sample design') +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(4,32,64,128,256)) +
   labs(x = 'Fragment size (hectares)',
@@ -118,16 +104,15 @@ ggplot() +
 # ggsave('S_n_fragmentSize_studyLevel.pdf', width = 290, height = 200, units = 'mm')
 
 # How do we want to examine taxa? Within studies, or across all studies?
-# are there really studies where we don't know the taxa? Jon will check NAs here...
 # this plot is taxa across all studies...
 ggplot() +
   geom_point(data = frag,
-             aes(x = entity.size, y = S_n, 
+             aes(x = frag_size_num, y = S_n, 
                  colour = taxa),
              alpha = 0.3) +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = entity.size, y = S_n, 
+              aes(x = frag_size_num, y = S_n, 
                   colour = taxa)) +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128,256)) +
@@ -138,17 +123,17 @@ ggplot() +
 #....but I think we should allow the taxa to vary within studies too:
 ggplot() +
   geom_point(data = frag,
-             aes(x = entity.size, y = S_n, 
+             aes(x = frag_size_num, y = S_n, 
                  colour = taxa), 
              alpha = 0.3, size = 1.5) +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = entity.size, y = S_n,
+              aes(x = frag_size_num, y = S_n,
                   colour = taxa),
               size = 1.5) +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = entity.size, y = S_n, group = filename,
+              aes(x = frag_size_num, y = S_n, group = dataset_label,
                   colour = taxa),
               size = 0.3) +
   scale_x_continuous(trans = 'log10') +
@@ -162,50 +147,23 @@ ggplot() +
 
 # ggsave('standardised_S_fragmentSize_x_taxa_studyLevel.pdf', width = 290, height = 200, units = 'mm')
 
-# taxa may respond differently depending on the vegetation within the fragments
-ggplot() +
-  facet_wrap(~veg.fragment) +
-  # throw out the fragments for which we don't have veg.fragment data
-  geom_point(data = frag %>% filter(!is.na(veg.fragment)),
-             aes(x = entity.size, y = S_n, 
-                 colour = taxa)) +
-  stat_smooth(data = frag %>% filter(!is.na(veg.fragment)),
-              method = 'lm',
-              aes(x = entity.size, y = S_n),
-              colour = 'black') +
-  stat_smooth(data = frag %>% filter(!is.na(veg.fragment)),
-              method = 'lm', se = F,
-              aes(x = entity.size, y = S_n, group = filename,
-                  colour = taxa),
-              lwd = 0.3) +
-  scale_x_continuous(trans = 'log10') +
-  scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128, 256)) +
-  scale_colour_viridis_d(name = 'Taxa') +
-  labs(x = 'Fragment size (hectares)',
-       y = expression(paste(S[n]))) +
-  theme_bw() +
-  theme(legend.position = c(0.9, 0.9),
-        legend.background = element_blank())
-
-# ggsave('Sn_fragmentSize_x_taxa_x_vegFragment_studyLevel.pdf', width = 290, height = 200, units = 'mm')
-
 # what about the character of the matrix?
 # add factor for ordering facets
-frag$f.matrix.category <- factor(frag$matrix.category, levels = c('light filter', 'medium filter', 'harsh filter')) 
+frag$f.Matrix.category <- factor(frag$Matrix.category, levels = c('light filter', 'intermediate', 'harsh filter')) 
 
 ggplot() +
-  facet_wrap(~f.matrix.category) +
-  # throw out the fragments for which we don't have matrix.category data
-  geom_point(data = frag %>% filter(!is.na(matrix.category)),
-             aes(x = entity.size, y = S_n, 
+  facet_wrap(~f.Matrix.category) +
+  # throw out the fragments for which we don't have Matrix.category data
+  geom_point(data = frag %>% filter(!is.na(Matrix.category)),
+             aes(x = frag_size_num, y = S_n, 
                  colour = taxa)) +
-  stat_smooth(data = frag %>% filter(!is.na(matrix.category)),
+  stat_smooth(data = frag %>% filter(!is.na(Matrix.category)),
               method = 'lm',
-              aes(x = entity.size, y = S_n),
+              aes(x = frag_size_num, y = S_n),
               colour = 'black') +
-  stat_smooth(data = frag %>% filter(!is.na(matrix.category)),
+  stat_smooth(data = frag %>% filter(!is.na(Matrix.category)),
               method = 'lm', se = F,
-              aes(x = entity.size, y = S_n, group = filename,
+              aes(x = frag_size_num, y = S_n, group = dataset_label,
                   colour = taxa),
               lwd = 0.3) +
   scale_x_continuous(trans = 'log10') +
@@ -222,21 +180,23 @@ ggplot() +
 # time since fragmentation
 # order for facets...
 frag$f.tsf <- factor(frag$time.since.fragmentation, 
-                     levels = c('recent (less than 20 years)', 'intermediate (20-100 years)', 'long (100+ years)'))
-# long time since fragmentation has an overall negative slope...
+                     levels = c('Recent (less than 20 years)', 'Intermediate (20-100 years)', 'long (100+ years)'),
+                     labels = c('< 20 years', '20 - 100 years', '> 100 years'))
+
+# long time since fragmentation looks to have a flatter (negative?) slope
 ggplot() +
   facet_wrap(~f.tsf) +
-  # throw out the fragments for which we don't have matrix.category data
+  # throw out the fragments for which we don't have Matrix.category data
   geom_point(data = frag %>% filter(!is.na(time.since.fragmentation)),
-             aes(x = entity.size, y = S_n, 
+             aes(x = frag_size_num, y = S_n, 
                  colour = taxa)) +
   stat_smooth(data = frag %>% filter(!is.na(time.since.fragmentation)),
               method = 'lm',
-              aes(x = entity.size, y = S_n),
+              aes(x = frag_size_num, y = S_n),
               colour = 'black') +
   stat_smooth(data = frag %>% filter(!is.na(time.since.fragmentation)),
               method = 'lm', se = F,
-              aes(x = entity.size, y = S_n, group = filename,
+              aes(x = frag_size_num, y = S_n, group = dataset_label,
                   colour = taxa),
               lwd = 0.3) +
   scale_x_continuous(trans = 'log10') +
