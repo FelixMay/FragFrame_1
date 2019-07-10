@@ -3,6 +3,23 @@ frag_div <- read.csv(infile, stringsAsFactors = F)
 
 summary(frag_div)
 
+# get number of studies with specific sampling design
+frag_div %>% 
+   select(dataset_label, sample_design) %>%
+   distinct() %>% count(sample_design)
+
+sample_designs <- frag_div %>% 
+   select(dataset_label, sample_design) %>%
+   distinct() %>% 
+   arrange(sample_design, dataset_label)
+
+outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/sample_designs_overview.csv"
+write.csv(sample_designs, outfile, row.names = F)
+
+
+   
+
+
 na_S_std_1 <- frag_div %>%
    filter(is.na(S_std_1)) 
 summary(na_S_std_1)

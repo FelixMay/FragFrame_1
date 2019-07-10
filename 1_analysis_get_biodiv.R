@@ -107,7 +107,7 @@ betapart_subplots <- function(index, dat1, n){
       summarise_all(sum)
    
    dat_sample3 <- dat_frag %>%
-      left_join(dat_sample2) %>%
+      left_join(dat_sample2, by = "frag_id") %>%
       arrange(frag_size_num)
    
    beta_part <- get_beta_part(dat_sample3)
@@ -147,7 +147,8 @@ resample_fragment <- function(dat1, N){
 # Function to calculate biodiversity indices for every fragment
 get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
                        method_abund = c("as_is","round","ceiling","multiply"),
-                       n_resamples = 100){
+                       n_resamples = 100,
+                       pool_subsamples = FALSE){
    
    method_abund <- match.arg(method_abund)
    
@@ -173,37 +174,60 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    if (any(frag_cont))
       print(paste("Imputed area of continuous habitat in ", data_set$dataset_label [1], sep = ""))
    
-   # sum abundances in same fragments
-   dat_abund <- data_set %>%
-      group_by(frag_id, frag_size_num, species) %>%
-      summarise(abundance = sum(abundance))
+   # sum abundances in subsamples and in fragments 
+   if (pool_subsamples == TRUE){
+      
+      dat_sample_eff <- data_set %>%
+         select(frag_id, sample_id, sample_eff) %>%
+         distinct() %>%
+         group_by(frag_id) %>%
+         summarise(sample_eff = sum(sample_eff)) %>%
+         ungroup()
+      
+      dat_abund <- data_set %>%
+         group_by(frag_id, species) %>%
+         summarise(abundance = sum(abundance)) %>%
+         ungroup()
+      
+   } else {
+      
+      dat_sample_eff <- data_set %>%
+         select(frag_id, sample_id, sample_eff) %>%
+         distinct() %>%
+         group_by(frag_id, sample_id) %>%
+         summarise(sample_eff = sum(sample_eff)) %>%
+         ungroup()
+      
+      dat_abund <- data_set %>%
+         group_by(frag_id, sample_id, species) %>%
+         summarise(abundance = sum(abundance)) %>%
+         ungroup()
+      
+      dat_abund <- left_join(dat_sample_eff, dat_abund)
+   }
    
-   dat_wide <- dat_abund %>% spread(key = species, value = abundance, fill = 0)
+   dat_abund <- left_join(dat_sample_eff, dat_abund)
+   
+   dat_wide <- dat_abund %>%
+      spread(key = species, value = abundance, fill = 0) #%>%
+      #arrange(frag_size_num)
    
    # prepare output data
-   dat_sample <- data_set %>%
+   dat_frag <- data_set %>%
       select(-species, -abundance) %>%
-      distinct()
+      distinct() %>% 
+      group_by(dataset_label, frag_id, frag_size_char, frag_size_num, sample_design) %>%
+      summarise(sample_eff = sum(sample_eff)) %>%
+      arrange(frag_size_num) %>%
+      ungroup()
    
-   dat_sample_eff <- dat_sample %>%
-      group_by(frag_id) %>%
-      summarise(sample_eff = sum(sample_eff)) 
-   
-   dat_frag <- dat_sample %>% 
-      select(-sample_id, -sample_eff) %>%
-      distinct() %>%
-      left_join(dat_sample_eff) %>%
-      arrange(frag_size_num)
-   
-   dat_wide <- dat_frag %>%
-      select(frag_id, sample_eff) %>%
-      left_join(dat_wide) %>%
-      arrange(frag_size_num)
+   abund_mat <- as.data.frame(select(dat_wide, -(frag_id:sample_eff)))
    
    # get biodiversity indices ----
    dat_biodiv <- data.frame(frag_id = dat_wide$frag_id,
+                            # sample_id = dat_wide$sample_id,
                             sample_eff = dat_wide$sample_eff,
-                            N = rowSums(dat_wide[,-(1:3)]),
+                            N = rowSums(abund_mat),
                             stringsAsFactors = F)
    
    # Determine base sample size for the sample-size-based rarefaction and extrapolation
@@ -220,11 +244,11 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    # Chao et al. 2014. Box 1
    
    # sample coverage
-   dat_biodiv$coverage <- apply(dat_wide[,-(1:3)], 1,
+   dat_biodiv$coverage <- apply(abund_mat, 1,
                                 function(x) {Chat.Ind(x, sum(x))} )
    
    # extrapolated coverage with sample size * 2
-   cov_extra <- apply(dat_wide[,-(1:3)], 1,
+   cov_extra <- apply(abund_mat, 1,
                       function(x) {Chat.Ind(x, 2*sum(x))})
    
    # base coverage 
@@ -232,7 +256,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
                               min(cov_extra, na.rm = T))
     
    # get mobr indices
-   mob <- calc_biodiv(abund_mat = as.data.frame(dat_wide[,-(1:3)]),
+   mob <- calc_biodiv(abund_mat = abund_mat,
                       groups = rep("frag", nrow(dat_wide)),
                       index = c("S", "S_n", "S_asymp", "S_PIE"), 
                       effort = dat_biodiv$n_base[1],
@@ -257,7 +281,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    
    dat_biodiv$S_chao <- mob$value[mob$index == "S_asymp"] 
    
-   S_cov_std <- lapply(data.frame(t(dat_wide[,-(1:3)])),
+   S_cov_std <- lapply(data.frame(t(abund_mat)),
                        function(x) try(estimateD(x, datatype = "abundance",
                                                  base = "coverage",
                                                  level = dat_biodiv$cov_base[1],
@@ -282,7 +306,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    
       for (i in 1:nrow(dat_biodiv)){
          if (dat_biodiv$N_std[i] >= n_thres)
-            dat_biodiv$S_std_1[i] <- rarefaction(dat_wide[i,-(1:3)],
+            dat_biodiv$S_std_1[i] <- rarefaction(abund_mat[i,],
                                                  method = "indiv",
                                                  effort = round(dat_biodiv$N_std[i]))
       }
@@ -322,8 +346,14 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    coverage_eq_1 <- dat_biodiv$coverage == 1 & dat_biodiv$cov_base == 1
    dat_biodiv$S_cov[coverage_eq_1] <- dat_biodiv$S_obs[coverage_eq_1]
    
+   # average across sub-samples
+   dat_biodiv_avg <- dat_biodiv %>%
+      select(-sample_eff) %>%
+      group_by(frag_id) %>%
+      summarise_all(mean)
+   
    # add fragment information
-   dat_out <- left_join(dat_frag, dat_biodiv)
+   dat_out <- left_join(dat_frag, dat_biodiv_avg)
 
    # beta-diversity partitioning ---------------------------------------------
    
@@ -435,10 +465,10 @@ str(dat_long)
 
 head(dat_long)
 
-# dat_long %>% select(dataset_label, sample_design) %>% distinct()
-# 
-# data_set <- dat_long %>% filter(dataset_label == "Ewers_2007")
-# test <- get_biodiv(data_set)
+dat_long %>% select(dataset_label, sample_design) %>% distinct()
+
+data_set <- dat_long %>% filter(dataset_label == "Ziter_2013")
+test <- get_biodiv(data_set)
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
