@@ -181,8 +181,8 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
       print(paste("Imputed area of continuous habitat in ", data_set$dataset_label [1], sep = ""))
    
    # sum abundances in subsamples and in fragments 
-   if (pool_subsamples == TRUE){
-      
+   if (pool_subsamples == TRUE  | data_set$sample_design[1] == "pooled"){
+       
       dat_sample_eff <- data_set %>%
          select(frag_id, sample_id, frag_size_num, sample_eff) %>%
          distinct() %>%
@@ -472,13 +472,21 @@ head(dat_long)
 
 # dat_long %>% select(dataset_label, sample_design) %>% distinct()
 # 
-data_set <- dat_long %>% filter(dataset_label == "Zartman_2003")
-test <- get_biodiv(data_set)
+data_set <- dat_long %>% filter(dataset_label == "Dauber_2006")
+#test <- get_biodiv(data_set)
+
+# get number of studies with specific sampling design
+dat_long %>% 
+   select(dataset_label, sample_design) %>%
+   distinct() %>% count(sample_design)
+
+# dat_long <- filter(dat_long, dataset_label != "Andresen_2003" & dataset_label != "Bernard_2007" )
 
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
                       stringsAsFactors = F)
-parset <- parset[c(1,2,3,8,11),]
+# parset <- parset[c(1,2,3,8,11),]
+parset <- parset[2,]
 
 for (i in 1:nrow(parset)){
    out1 <- dat_long %>%
@@ -554,3 +562,7 @@ for (i in 1:nrow(parset)){
 
 # test <- out1 %>% filter(coverage == 1 & cov_base == 1)
 
+# Note Problem with:
+# Andresen 2003 --> mixed sampling design
+# Bernard 2007 --> mixed sampling design
+# Cadotte 2002 a --> check

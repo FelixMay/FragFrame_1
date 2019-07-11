@@ -81,9 +81,11 @@ read_data_files <- function(filename){
    plot_id <- paste(dat1$frag_id, dat1$sample_id, sep = "_")
    sample_eff_per_plot <- tapply(dat1$sample_eff, plot_id, sum)
    range_sample_eff_frag <- max(sample_eff_per_frag) - min(sample_eff_per_frag)   
-   range_sample_eff_plot <- max(sample_eff_per_plot) - min(sample_eff_per_plot)  
+   range_sample_eff_plot <- max(sample_eff_per_plot) - min(sample_eff_per_plot) 
    
-   if (range_sample_eff_frag == 0 && range_sample_eff_plot == 0){
+   n_subsamples <- table(dat1$frag_id)
+   
+   if (max(n_subsamples) == 1 && range_sample_eff_frag == 0 && range_sample_eff_plot == 0){
       dat1$sample_design <- "standardized_fragment"
    } else {
       if (range_sample_eff_plot == 0) {
