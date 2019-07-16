@@ -463,7 +463,7 @@ for (i in 1:nrow(parset)){
       map(get_biodiv,
           fac_cont = parset$fac_cont[i],
           method_abund = parset$method_abund[i],
-          n_resamples = 25)
+          n_resamples = 200)
    
    out_biodiv_frag <- out1 %>% map_dfr("biodiv_frag")
    # out_betapart_frag <- out1 %>% map_dfr("betapart_frag")
@@ -486,49 +486,7 @@ for (i in 1:nrow(parset)){
    # write_csv(out_betapart_study, path2outfile)
 }
    
-# out1 %>% 
-#    select(dataset_label, sample_design) %>% 
-#    distinct() %>%
-#    ungroup() %>%
-#    count(sample_design)
-   
- 
-# base R version
-# out1 <- by(dat_all, INDICES = list(dat_all$dataset_id)
-#             FUN = get_biodiv)
 
-# class(out1) <- "list"
-# out1 <- bind_rows(out1)
-
-# # purrr version
-# out1 <- dat_all %>%
-#    split(.$dataset_label) %>%
-#    map_dfr(get_biodiv)
-# 
-# out1 %>% 
-#    select(dataset_label, sample_design) %>% 
-#    distinct() %>%
-#    ungroup() %>%
-#    count(sample_design)
-# 
-# # prepare output date
-# path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/biodiv_fragment_level.csv"
-# write_csv(out1, path2outfile)
-
-###
-# check what happens with multiplication of abundances
-
-# data_set1 <- dat_all %>% filter(dataset_label == "Cosson_1999")
-# data_set3 <- data_set2 <- data_set1
-# 
-# data_set2$abundance <- 10*data_set2$abundance
-# data_set3$abundance <- 100*data_set1$abundance
-# 
-# biodiv1 <- get_biodiv(data_set1)
-# biodiv2 <- get_biodiv(data_set2)
-# biodiv3 <- get_biodiv(data_set3)
-
-# test <- out1 %>% filter(coverage == 1 & cov_base == 1)
 
 # Note Problem with:
 # Andresen 2003 --> mixed sampling design
