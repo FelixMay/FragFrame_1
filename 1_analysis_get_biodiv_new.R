@@ -49,12 +49,11 @@ biodiv_abund <- function(abund_vec, n_base, cov_base){
                       extrapolate = T,
                       return_NA = F)
    
-   out <- c(N_check   = sum(abund_vec),
-            S_std     = mob$value[mob$index == "S"],
+   out <- c(S_std     = mob$value[mob$index == "S"],
             S_n       = mob$value[mob$index  == "S_n"],
             S_PIE     = mob$value[mob$index == "S_PIE"],
-            S_cov_std = NA,
-            S_asymp   = mob$value[mob$index == "S_asymp"]
+            S_cov     = NA,
+            S_chao    = mob$value[mob$index == "S_asymp"]
    )
    
    S_cov <- try(estimateD(abund_vec, datatype = "abundance",
@@ -62,7 +61,7 @@ biodiv_abund <- function(abund_vec, n_base, cov_base){
                                          level = cov_base,
                                          conf = NULL))
    if (!is.error(S_cov)){
-      out["S_cov_std"] <- S_cov[["q = 1"]]
+      out["S_cov"] <- S_cov[["q = 1"]]
    }
    
   return(out)
@@ -314,6 +313,9 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    coverage_eq_1 <- dat_biodiv$coverage == 1 & dat_biodiv$cov_base == 1
    dat_biodiv$S_cov[coverage_eq_1] <- dat_biodiv$S_obs[coverage_eq_1]
    
+   # set S_n to NA when n_base < 5
+   dat_biodiv$S_n[dat_biodiv$n_base < n_thres] <- NA
+   
    # average across sub-samples
    dat_biodiv_avg <- dat_biodiv %>%
       select(-sample_id, -sample_eff, -rel_sample_eff) %>%
@@ -463,7 +465,7 @@ for (i in 1:nrow(parset)){
       map(get_biodiv,
           fac_cont = parset$fac_cont[i],
           method_abund = parset$method_abund[i],
-          n_resamples = 200)
+          n_resamples = 100)
    
    out_biodiv_frag <- out1 %>% map_dfr("biodiv_frag")
    # out_betapart_frag <- out1 %>% map_dfr("betapart_frag")
