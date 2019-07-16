@@ -58,3 +58,33 @@ frag_div_cov <- frag_div %>%
    arrange(cov_base) 
 plot(coverage ~ cov_base, data = frag_div_cov)
 hist(frag_div_cov$coverage)
+
+
+# compare results with different methods
+infile1 <- path2Dropbox %+% "/files_datapaper/Analysis/1_biodiv_frag_fcont_10_mabund_as_is.csv"
+frag_div1 <- read.csv(infile1, stringsAsFactors = F)
+
+infile2 <- path2Dropbox %+% "/files_datapaper/Analysis_June_26/2_biodiv_frag_fcont_10_mabund_as_is.csv"
+frag_div2 <- read.csv(infile2, stringsAsFactors = F)
+
+frag_div1 <- frag_div1 %>%
+   arrange(dataset_label, frag_id)
+
+frag_div2 <- frag_div2 %>%
+   arrange(dataset_label, frag_id)
+
+
+names(frag_div1)
+names(frag_div2)
+
+plot(frag_div1$N_std ~ frag_div2$N_std)
+plot(frag_div1$S_std ~ frag_div2$S_std_1)
+plot(frag_div1$S_std ~ frag_div2$S_std_2)
+plot(frag_div1$S_obs ~ frag_div2$S_obs)
+abline(0,1)
+
+plot(frag_div1$S_n ~ frag_div2$S_n)
+abline(0,1)
+
+plot(frag_div1$S_PIE ~ frag_div2$S_PIE)
+abline(0,1)
