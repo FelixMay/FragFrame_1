@@ -1,41 +1,23 @@
-# code to fit models for fragmentation synthesis
+# need to execute 0_init_dirs_load_packages.R first
+
+# code to fit models with 2-way interaction for fragmentation synthesis
 # so far: bayesian framework for approximately ML-like results (i.e.,
 # with non-informative priors - against the science of Gelman)
-library(tidyverse)
-library(brms)
 
-# load the data
-frag <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_biodiv_frag_fcont_10_mabund_as_is.csv')
+frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
-# load the meta data
-meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
+# add mean centred (log) fragsize
+frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
+
+meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
-
-# check names
-meta_labels <- meta %>% distinct(dataset_label)
-
-meta_labels %>% 
-  filter(!dataset_label %in% frag$dataset_label) %>% 
-  distinct(dataset_label)
-
-frag %>% 
-  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
-  distinct(dataset_label)
-
-# change metadata labels (as the ones in frag were used for the model fitting)
-meta <- meta %>% 
-  mutate(dataset_label = as.character(dataset_label),
-         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
 
 frag <- left_join(frag, 
                   meta,
                   by = 'dataset_label')
 
 ##--create some covariates for easier workflow--
-# mean-centred log(fragment.size)
-frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
 # # set the reference levels for the categorical covariates of interest
 frag %>% distinct(Matrix.category)
@@ -49,151 +31,173 @@ frag %>% distinct(continent8)
 # load fragSize only models
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
 # two-way interactions: matrix permeability first
-Sstd2_ln_fS_matrix <- update(Sstd2_lognorm_fragSize,
-                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+Sstd_ln_fS_matrix <- update(Sstd_lognorm_fragSize,
+                            formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
+                            newdata = frag %>% filter(S_std > 0), 
+                            cores = 4)
 
 Sn_ln_fS_matrix <- update(Sn_lognorm_fragSize, 
                           formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                          newdata = frag, cores = 4)
+                          newdata = frag %>% filter(S_n > 0),
+                          cores = 4)
 
 Scov_ln_fS_matrix <- update(Scov_lognorm_fragSize, 
                           formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                          newdata = frag, cores = 4)
+                          newdata = frag %>% filter(S_cov > 0), 
+                          cores = 4)
 
 Schao_ln_fS_matrix <- update(S_chao_lognorm_fragSize, 
                              formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+                             newdata = frag %>% filter(S_chao > 0), 
+                             cores = 4)
 
 S_PIE_ln_fS_matrix <- update(S_PIE_lognorm_fragSize, 
                              formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+                             newdata = frag %>% filter(S_PIE > 0),
+                             cores = 4)
 
 N_std_ln_fS_matrix <- update(Nstd_lognorm_fragSize, 
                              formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)  
+                             newdata = frag, 
+                             cores = 4)  
 
 # repeat for taxa
-Sstd2_ln_fS_taxa <- update(Sstd2_lognorm_fragSize, 
+Sstd_ln_fS_taxa <- update(Sstd_lognorm_fragSize, 
                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                          newdata = frag, cores = 4)
+                          newdata = frag %>% filter(S_std > 0), 
+                          cores = 4)
 
 Sn_ln_fS_taxa <- update(Sn_lognorm_fragSize, 
-                          formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                          newdata = frag, cores = 4)
+                        formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                        newdata = frag %>% filter(S_n > 0), 
+                        cores = 4)
 
 Scov_ln_fS_taxa <- update(Scov_lognorm_fragSize, 
-                            formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                            newdata = frag, cores = 4)
+                          formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                          newdata = frag %>% filter(S_cov > 0), 
+                          cores = 4)
 
 Schao_ln_fS_taxa <- update(S_chao_lognorm_fragSize, 
-                             formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                           newdata = frag %>% filter(S_chao > 0), 
+                           cores = 4)
 
 S_PIE_ln_fS_taxa <- update(S_PIE_lognorm_fragSize, 
-                             formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                           newdata = frag %>% filter(S_PIE > 0), 
+                           cores = 4)
 
 N_std_ln_fS_taxa <- update(Nstd_lognorm_fragSize, 
-                             formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)  
+                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
+                           newdata = frag, 
+                           cores = 4)  
 
 # repeat for time since fragmentation
-Sstd2_ln_fS_tsf <- update(Sstd2_lognorm_fragSize, 
-                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                           newdata = frag, cores = 4)
+Sstd_ln_fS_tsf <- update(Sstd_lognorm_fragSize, 
+                         formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                         newdata = frag %>% filter(S_std > 0), 
+                         cores = 4)
 
 Sn_ln_fS_tsf <- update(Sn_lognorm_fragSize, 
-                        formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                        newdata = frag, cores = 4)
+                       formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                       newdata = frag %>% filter(S_n > 0), 
+                       cores = 4)
 
 Scov_ln_fS_tsf <- update(Scov_lognorm_fragSize, 
-                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                          newdata = frag, cores = 4)
+                         formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                         newdata = frag %>% filter(S_cov > 0),
+                         cores = 4)
 
 Schao_ln_fS_tsf <- update(S_chao_lognorm_fragSize, 
-                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                           newdata = frag, cores = 4)
+                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                          newdata = frag %>% filter(S_chao > 0), 
+                          cores = 4)
 
 S_PIE_ln_fS_tsf <- update(S_PIE_lognorm_fragSize, 
-                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                           newdata = frag, cores = 4)
+                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                          newdata = frag %>% filter(S_PIE > 0), 
+                          cores = 4)
 
 N_std_ln_fS_tsf <- update(Nstd_lognorm_fragSize, 
-                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                           newdata = frag, cores = 4)  
+                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
+                          newdata = frag, 
+                          cores = 4)  
 
-# repeat for biome (remove the single wetland study)
-Sstd2_ln_fS_biome <- update(Sstd2_lognorm_fragSize, 
+# repeat for biome
+Sstd_ln_fS_biome <- update(Sstd_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag, #%>% filter(biome!='wetland'),
+                          newdata = frag %>% filter(S_std > 0),
                           cores = 4)
 
 Sn_ln_fS_biome <- update(Sn_lognorm_fragSize, 
                        formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                       newdata = frag, #%>% filter(biome!='wetland'), 
+                       newdata = frag %>% filter(S_n > 0),
                        cores = 4)
 
 Scov_ln_fS_biome <- update(Scov_lognorm_fragSize, 
                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                         newdata = frag,# %>% filter(biome!='wetland'), 
+                         newdata = frag %>% filter(S_cov > 0),
                          cores = 4)
 
 Schao_ln_fS_biome <- update(S_chao_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag,# %>% filter(biome!='wetland'), 
+                          newdata = frag %>% filter(S_chao > 0),
                           cores = 4)
 
 S_PIE_ln_fS_biome <- update(S_PIE_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag, #%>% filter(biome!='wetland'), 
+                          newdata = frag %>% filter(S_PIE > 0),
                           cores = 4)
 
 N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize, 
                             formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                            newdata = frag,# %>% filter(biome!='wetland'), 
+                            newdata = frag,
                             cores = 4)
 # region
-Sstd2_ln_fS_region <- update(Sstd2_lognorm_fragSize,
-                             formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+Sstd_ln_fS_region <- update(Sstd_lognorm_fragSize,
+                            formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
+                            newdata = frag %>% filter(S_std > 0),
+                            cores = 4)
 
 Sn_ln_fS_region <- update(Sn_lognorm_fragSize, 
                           formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                          newdata = frag, cores = 4)
+                          newdata = frag %>% filter(S_n > 0),
+                          cores = 4)
 
 Scov_ln_fS_region <- update(Scov_lognorm_fragSize, 
                             formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                            newdata = frag, cores = 4)
+                            newdata = frag %>% filter(S_cov > 0),
+                            cores = 4)
 
 Schao_ln_fS_region <- update(S_chao_lognorm_fragSize, 
                              formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+                             newdata = frag %>% filter(S_chao > 0),
+                             cores = 4)
 
 S_PIE_ln_fS_region <- update(S_PIE_lognorm_fragSize, 
                              formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)
+                             newdata = frag %>% filter(S_PIE > 0),
+                             cores = 4)
 
 N_std_ln_fS_region <- update(Nstd_lognorm_fragSize, 
                              formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                             newdata = frag, cores = 4)  
+                             newdata = frag,
+                             cores = 4)  
 
 # compare the model fits (with versus without interactions
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
+Sstd_lognorm_fragSize <- add_criterion(Sstd_lognorm_fragSize, criterion =  'loo') 
+Sstd_ln_fS_matrix <- add_criterion(Sstd_ln_fS_matrix, criterion = 'loo')
+Sstd_ln_fS_taxa <- add_criterion(Sstd_ln_fS_taxa, criterion = 'loo')
+Sstd_ln_fS_tsf <- add_criterion(Sstd_ln_fS_tsf, criterion = 'loo')
+Sstd_ln_fS_biome <- add_criterion(Sstd_ln_fS_biome, criterion = 'loo')
+Sstd_ln_fS_region <- add_criterion(Sstd_ln_fS_region, criterion = 'loo')
 
-Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion =  'loo', reloo = T) 
-Sstd2_ln_fS_matrix <- add_criterion(Sstd2_ln_fS_matrix, criterion = 'loo')
-Sstd2_ln_fS_taxa <- add_criterion(Sstd2_ln_fS_taxa, criterion = 'loo')
-Sstd2_ln_fS_tsf <- add_criterion(Sstd2_ln_fS_tsf, criterion = 'loo')
-Sstd2_ln_fS_biome <- add_criterion(Sstd2_ln_fS_biome, criterion = 'loo')
-Sstd2_ln_fS_region <- add_criterion(Sstd2_ln_fS_region, criterion = 'loo')
-
-loo_compare(Sstd2_lognorm_fragSize,
-            Sstd2_ln_fS_matrix,
-            Sstd2_ln_fS_taxa,
-            Sstd2_ln_fS_tsf,
-            Sstd2_ln_fS_biome,
-            Sstd2_ln_fS_region)
+loo_compare(Sstd_lognorm_fragSize,
+            Sstd_ln_fS_matrix,
+            Sstd_ln_fS_taxa,
+            Sstd_ln_fS_tsf,
+            Sstd_ln_fS_biome,
+            Sstd_ln_fS_region)
 
 S_PIE_lognorm_fragSize <- add_criterion(S_PIE_lognorm_fragSize, criterion =  'loo') 
 S_PIE_ln_fS_matrix <- add_criterion(S_PIE_ln_fS_matrix, criterion = 'loo')
@@ -224,56 +228,13 @@ loo_compare(Nstd_lognorm_fragSize,
             N_std_ln_fS_region)
 
 
-save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome, Sstd2_ln_fS_region,
+save(Sstd_ln_fS_matrix, Sstd_ln_fS_taxa, Sstd_ln_fS_tsf, Sstd_ln_fS_biome, Sstd_ln_fS_region,
      Sn_ln_fS_matrix, Sn_ln_fS_taxa, Sn_ln_fS_tsf, Sn_ln_fS_biome,
      Scov_ln_fS_matrix, Scov_ln_fS_taxa, Scov_ln_fS_tsf, Scov_ln_fS_biome,
      Schao_ln_fS_matrix, Schao_ln_fS_taxa, Schao_ln_fS_tsf, Schao_ln_fS_biome,
      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome, S_PIE_ln_fS_region,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome, N_std_ln_fS_region,
-     Sstd2_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
+     Sstd_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
 
 
-fixef(Sstd2_ln_fS_matrix) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/Sstd_matrix.csv', sep = '\t' )
-
-fixef(Sstd2_ln_fS_taxa) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/taxa_temp.csv', sep = ',', row.names = T)
-
-fixef(Sstd2_ln_fS_tsf) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/tsf_temp.csv', sep = ',', row.names = T)
-
-fixef(N_std_ln_fS_region) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/N_region_temp.csv', sep = ',', row.names = T)
-
-fixef(N_std_ln_fS_taxa) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/N_taxa_temp.csv', sep = ',', row.names = T)
-
-fixef(N_std_ln_fS_tsf) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/N_time_temp.csv', sep = ',', row.names = T)
-
-fixef(N_std_ln_fS_matrix) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/N_matrix_temp.csv', sep = ',', row.names = T)
-
-fixef(S_PIE_ln_fS_region) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/Spie_region_temp.csv', sep = ',', row.names = T)
-
-fixef(S_PIE_ln_fS_taxa) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/Spie_taxa_temp.csv', sep = ',', row.names = T)
-
-fixef(S_PIE_ln_fS_tsf) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/Spie_time_temp.csv', sep = ',', row.names = T)
-
-fixef(S_PIE_ln_fS_matrix) %>% 
-  as_tibble() %>% 
-  write.table('~/Desktop/Spie_matrix_temp.csv', sep = ',', row.names = T)

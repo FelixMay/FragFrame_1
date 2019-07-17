@@ -5,28 +5,10 @@ library(ggridges)
 
 # load model fits and the data
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
-frag <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_biodiv_frag_fcont_10_mabund_as_is.csv')
-# get the metadata (I want to group the posteriors)
-meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
+
+meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
-
-# check names
-meta_labels <- meta %>% distinct(dataset_label)
-
-meta_labels %>% 
-  filter(!dataset_label %in% frag$dataset_label) %>% 
-  distinct(dataset_label)
-
-frag %>% 
-  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
-  distinct(dataset_label)
-
-# change metadata labels (as the ones in frag were used for the model fitting)
-meta <- meta %>% 
-  mutate(dataset_label = as.character(dataset_label),
-         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
 
 frag <- left_join(frag, 
                   meta,
@@ -42,7 +24,7 @@ study_levels <- Nstd_lognorm_fragSize$data %>%
   nest(level) 
 
 study_sample_posterior <- study_levels %>%
-  mutate(S_std = purrr::map(data, ~posterior_samples(Sstd2_lognorm_fragSize, 
+  mutate(S_std = purrr::map(data, ~posterior_samples(Sstd_lognorm_fragSize, 
                                                      pars = paste('r_dataset_label[', as.character(.x$level), ',c.lfs]', sep=''),
                                                      exact = TRUE,
                                                      subset = floor(runif(n = 1000,
@@ -70,7 +52,7 @@ study_sample_posterior <- study_levels %>%
                                                     subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()))
 
 
-Sstd2_lognorm_fragSize_fixef <- fixef(Sstd2_lognorm_fragSize)
+Sstd_lognorm_fragSize_fixef <- fixef(Sstd_lognorm_fragSize)
 S_PIE_lognorm_fragSize_fixef <- fixef(S_PIE_lognorm_fragSize)
 Scov_lognorm_fragSize_fixef <- fixef(Scov_lognorm_fragSize)
 Sn_lognorm_fragSize_fixef <- fixef(Sn_lognorm_fragSize)
@@ -81,9 +63,9 @@ Sstd_posterior <- study_sample_posterior  %>%
   select(-data) %>% 
   unnest(S_std) %>% 
   mutate(response = 'Sstd',
-         Sstd_global_slope = Sstd2_lognorm_fragSize_fixef['c.lfs','Estimate'],
-         Sstd_upper_slope = Sstd2_lognorm_fragSize_fixef['c.lfs','Q97.5'],
-         Sstd_lower_slope = Sstd2_lognorm_fragSize_fixef['c.lfs','Q2.5']) %>% 
+         Sstd_global_slope = Sstd_lognorm_fragSize_fixef['c.lfs','Estimate'],
+         Sstd_upper_slope = Sstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],
+         Sstd_lower_slope = Sstd_lognorm_fragSize_fixef['c.lfs','Q2.5']) %>% 
   left_join(meta, 
             by = 'dataset_label')
 

@@ -1,19 +1,19 @@
 # code to plot regressions for all metrics (no interaction models)
-library(tidyverse)
-library(brms)
-source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/fragSize_coef_wrangle.R')
+
+# get the coefficients for all the results
+source(paste0(path2wd, 'fragSize_coef_wrangle.R'))
 
 #---- regression plots showing study-level slopes-----
-setwd('~/Dropbox/Frag Database (new)/analysis_apr19/figures/')
+setwd(paste0(path2Dropbox, '/analysis_apr19/figures/'))
 # setwd(paste(path2temp,"figs/", sep = ""))
 
 # plot to generate legend 
 taxa_legend <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std_2, colour = taxa),
+             aes(x = frag_size_num, y = S_std, colour = taxa),
              size = 1, alpha = 0.25) +
-  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
+  geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = taxa,
                    x = xmin,
@@ -34,13 +34,13 @@ taxa_legend <- ggplot() +
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
 taxa_colour = gg_legend(taxa_legend)
 
-# S_std_2 (Felix recommends this one for the main result)
+# S_std (Felix recommends this one for the main result)
 S_std_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std_2, colour = taxa),
+             aes(x = frag_size_num, y = S_std, colour = taxa),
              size = 1, alpha = 0.25) +
-  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
+  geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = taxa,
                    x = xmin,
@@ -49,12 +49,12 @@ S_std_regPlot <- ggplot() +
                    yend = exp(Intercept + Slope * cxmax)),
                size = 0.5) +
   # fixed effect
-  geom_line(data = Sstd2_fS_fitted, 
+  geom_line(data = Sstd_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
             size = 1.5) +
   # fixed effect uncertainty
-  geom_ribbon(data = Sstd2_fS_fitted,
+  geom_ribbon(data = Sstd_fS_fitted,
               aes(x = frag_size_num,
                   ymin = Q2.5,
                   ymax = Q97.5),
@@ -62,11 +62,11 @@ S_std_regPlot <- ggplot() +
   # add regression coefficient and uncertainty interval
   annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
-                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
+                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          " (",
-                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Q2.5'],2),
+                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Q2.5'],2),
                          " - ",
-                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
+                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
@@ -334,7 +334,7 @@ cowplot::plot_grid(top, bottom,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
+# ggsave('fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
                                   Scov_regPlot,
@@ -344,7 +344,7 @@ cowplot::plot_grid(top, bottom_supp,
                    nrow = 2,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05)
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_otherMetrics_taxa_color.png', width = 250, height = 80, units = 'mm')
+# ggsave('figSx_otherMetrics_taxa_color.png', width = 250, height = 80, units = 'mm')
 
 ##---coef plots---------
 # get the metadata...
@@ -354,11 +354,11 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep = ';'
 
 # create unique dataframes with columns for plotting relationships between change in different metrics
 # there are different studies retained for each metric, so put 'em together for each plot separately
-S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>% 
-    mutate(S_std2_slope = Slope,
-           S_std2_lower = Slope_lower,
-           S_std2_upper = Slope_upper) %>% 
-    select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper) %>% 
+S_std_study_slope <- Sstd_lognorm_fragSize_group_coefs %>% 
+    mutate(S_std_slope = Slope,
+           S_std_lower = Slope_lower,
+           S_std_upper = Slope_upper) %>% 
+    select(dataset_label, S_std_slope, S_std_lower, S_std_upper) %>% 
   left_join(meta,
             by = 'dataset_label')
 
@@ -404,19 +404,19 @@ Nstd_study_slope <- Nstd_fragSize_group_coefs %>%
 
 # delta S_std ~ delta N
 inner_join(S_std_study_slope %>% 
-             select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper),
+             select(dataset_label, S_std_slope, S_std_lower, S_std_upper),
            Nstd_study_slope,
            by = 'dataset_label') %>% 
   # mutate(Sstd_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
   #        N_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
   ggplot() +
   # facet_wrap(time.since.fragmentation ~ taxa) +
-  geom_point(aes(x = N_std_slope, y = S_std2_slope),#, colour = interaction(Scov_change, Sn_change)
+  geom_point(aes(x = N_std_slope, y = S_std_slope),#, colour = interaction(Scov_change, Sn_change)
              size = 2) +
-  geom_linerange(aes(x = N_std_slope, ymin = S_std2_lower, ymax = S_std2_upper),
+  geom_linerange(aes(x = N_std_slope, ymin = S_std_lower, ymax = S_std_upper),
                  size = 0.25,
                  alpha = 0.2) +
-  geom_errorbarh(aes(xmin = N_std_lower, xmax = N_std_upper, y = S_std2_slope ),
+  geom_errorbarh(aes(xmin = N_std_lower, xmax = N_std_upper, y = S_std_slope ),
                  size = 0.25,
                  alpha = 0.2) +
   geom_abline(intercept = 0, 
@@ -428,19 +428,19 @@ inner_join(S_std_study_slope %>%
 
 # delta S_std ~ delta S_PIE
 inner_join(S_std_study_slope %>% 
-             select(dataset_label, S_std2_slope, S_std2_lower, S_std2_upper),
+             select(dataset_label, S_std_slope, S_std_lower, S_std_upper),
            Spie_study_slope,
            by = 'dataset_label') %>% 
   # mutate(Sstd_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
   #        N_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
   ggplot() +
   # facet_wrap(time.since.fragmentation ~ taxa) +
-  geom_point(aes(x = S_PIE_slope, y = S_std2_slope),#, colour = interaction(Scov_change, Sn_change)
+  geom_point(aes(x = S_PIE_slope, y = S_std_slope),#, colour = interaction(Scov_change, Sn_change)
              size = 2) +
-  geom_linerange(aes(x = S_PIE_slope, ymin = S_std2_lower, ymax = S_std2_upper),
+  geom_linerange(aes(x = S_PIE_slope, ymin = S_std_lower, ymax = S_std_upper),
                  size = 0.25,
                  alpha = 0.2) +
-  geom_errorbarh(aes(xmin = S_PIE_lower, xmax = S_PIE_upper, y = S_std2_slope ),
+  geom_errorbarh(aes(xmin = S_PIE_lower, xmax = S_PIE_upper, y = S_std_slope ),
                  size = 0.25,
                  alpha = 0.2) +
   geom_abline(intercept = 0, 
@@ -475,7 +475,3 @@ inner_join(Sn_study_slope %>%
   theme(panel.grid.minor = element_blank())
   
 
-# how many in each biome?
-frag %>% 
-  group_by(biome) %>% 
-  summarise(n_study = n_distinct(dataset_label))

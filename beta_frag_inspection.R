@@ -4,7 +4,7 @@ rm(list=ls())
 library(tidyverse)
 
 # load the data
-frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
+frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/1_betapart_frag_fcont_10_mabund_as_is.csv')
 # study_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_study_fcont_10_mabund_as_is.csv')
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
