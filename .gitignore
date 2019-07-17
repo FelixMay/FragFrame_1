@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-FragFrame_1.RProj
+*.RProj
+FragFrame_1.Rproj
