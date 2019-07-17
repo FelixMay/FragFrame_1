@@ -119,8 +119,13 @@ get_beta_part <- function(comat){
    class(comat) <- "data.frame"
    rownames(comat) <- comat$frag_id
    
-   pars <- expand.grid(coef = c("S","J","BS","BJ"),
-                       quant = c(FALSE,TRUE), stringsAsFactors = F)
+   # pars <- expand.grid(coef = c("S","J","BS","BJ"),
+   #                     quant = c(FALSE,TRUE), stringsAsFactors = F)
+   
+   # only calculate Jaccard and Ruzicka (= quantitative Jaccard) from Baselga family
+   pars <- expand.grid(coef = "BJ",
+                       quant = c(FALSE,TRUE),
+                       stringsAsFactors = F)
    
    frag_pairs <- list()
    study_level <- list()
@@ -151,44 +156,6 @@ get_beta_part <- function(comat){
    return(list(fragments = bind_rows(frag_pairs), study = bind_rows(study_level)))
 }
 
-# Sample subplots from community matrix
-betapart_subplots <- function(index, dat1, n){
-   dat_sample <- dat1 %>%
-      group_by(frag_id) %>%
-      sample_n(n)
-   
-   dat_frag <- dat_sample %>%
-      select(frag_id, frag_size_num) %>%
-      distinct()
-   
-   # sum abundances in the same fragment
-   dat_sample2 <- dat_sample %>%
-      select(-frag_size_num, -sample_id) %>%
-      group_by(frag_id) %>%
-      summarise_all(sum)
-   
-   dat_sample3 <- dat_frag %>%
-      left_join(dat_sample2, by = "frag_id") %>%
-      arrange(frag_size_num)
-   
-   beta_part <- get_beta_part(dat_sample3)
-   return(beta_part)
-}
-
-# Resample abundance data and calculate beta-div partitioning
-betapart_resample <- function(index, dat1, N_std){
-   
-   dat_abund_resample <- dat1 %>%
-      split(.$frag_id) %>%
-      map2_dfr(N_std, resample_fragment)
-   
-   dat_wide_resample <- dat_abund_resample %>% 
-      spread(key = species, value = abundance, fill = 0) 
-   
-   beta_part <- get_beta_part(dat_wide_resample)
-   return(beta_part)
-}
-
 # resample fragment with given N
 resample_fragment <- function(dat1, N){
    
@@ -206,6 +173,43 @@ resample_fragment <- function(dat1, N){
    names(dat_sample2) <- names(dat1)
    
    return(dat_sample2)
+}
+
+# get beta-diversity partitioning from bootstrap sample
+boot_betapart <- function(index, dat_w){
+   
+   # randomly select one subplot per fragment
+   dat_sample_w <- dat_w %>%
+      select(-dataset_label, -sample_id, -frag_size_char, -sample_design) %>%
+      group_by(frag_id) %>%
+      sample_n(size = 1) %>%
+      ungroup()
+   
+   # Calculate N, rel_sampling eff and N_std
+   dat_sample_w$N <- rowSums(select(dat_sample_w, -(frag_id:sample_eff)))
+   
+   dat_sample_w <- dat_sample_w %>%
+      mutate(rel_sample_eff = sample_eff/min(sample_eff),
+             N_std = N/rel_sample_eff) %>%
+      select(frag_id, frag_size_num, sample_eff, rel_sample_eff, N, N_std, everything())
+   
+   # convert to long format
+   dat_sample_l <- dat_sample_w %>% 
+      gather(key = species, value = abundance, -(frag_id:N_std)) %>%
+      filter(abundance > 0)
+   
+   # resample sub-plots to N_std
+   dat_sample_l_resample <- dat_sample_l %>%
+      split(.$frag_id) %>%
+      map2_dfr(round(dat_sample_w$N_std), resample_fragment)
+   
+   # convert to wide data
+   dat_resample_w <- dat_sample_l_resample %>% 
+      spread(key = species, value = abundance, fill = 0) 
+   
+   beta_part <- get_beta_part(dat_resample_w)
+   
+   return(beta_part)
 }
 
 # Function to calculate biodiversity indices for every fragment
@@ -328,100 +332,85 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
 
    # beta-diversity partitioning ---------------------------------------------
    
-   # # standardized sampling ----
-   # if (data_set$sample_design[1] == "standardized_fragment"){
-   #    
-   #    beta_div_comp <- get_beta_part(select(dat_wide, -sample_id, - sample_eff)) 
-   #    
-   #    beta_part_frag <- beta_div_comp$fragments 
-   #    beta_part_study <- beta_div_comp$study 
-   # }
-   # 
-   # # standardized subplots ----
-   # if (data_set$sample_design[1] == "standardized_subsamples"){
-   #    
-   #    # sum abundances in subsamples
-   #    dat_abund_sub <- data_set %>%
-   #       group_by(frag_id, frag_size_num, sample_id, species) %>%
-   #       summarise(abundance = sum(abundance)) %>%
-   #       ungroup()
-   #    
-   #    dat_wide_sub <- dat_abund_sub %>% 
-   #       spread(key = species, value = abundance, fill = 0) 
-   #    
-   #    n_sub <- min(dat_wide_sub %>% 
-   #                 group_by(frag_id) %>%
-   #                 count() %>% 
-   #                 ungroup() %>%
-   #                 select(n)) 
-   #    
-   #    beta_part_samples <- map(1:n_resamples, betapart_subplots, dat1 = dat_wide_sub, n = n_sub)
-   #    
-   #    beta_part_frag <- beta_part_samples %>% map_dfr("fragments")
-   #    beta_part_study <- beta_part_samples %>% map_dfr("study") 
-   # }
-   # 
-   # # pooled samples ----
-   # if (data_set$sample_design[1] == "pooled"){
-   # 
-   #    beta_part_samples <- map(1:n_resamples, betapart_resample,
-   #                             dat1 = dat_abund,
-   #                             N_std = round(dat_biodiv$N_std))
-   #    
-   #    beta_part_frag <- beta_part_samples %>% map_dfr("fragments") 
-   #    beta_part_study <- beta_part_samples %>% map_dfr("study") 
-   # }
-   # 
-   # # average across re-samples and partitioning methods
-   # beta_part_frag <- beta_part_frag %>%
-   #    group_by(frag_x, frag_y, coef, quant, method) %>%
-   #    summarise(repl = mean (repl),
-   #              rich = mean (rich)) %>% ungroup()
-   # 
-   # beta_part_study <- beta_part_study %>%
-   #    group_by(coef, quant, method) %>%
-   #    summarise(prop_repl = mean(prop_repl, na.rm = F),
-   #              prop_rich = mean(prop_rich, na.rm = F)) %>% ungroup()
-   # 
-   # # Add fragment areas difference and log-ratio
-   # dat_frag2 <- select(dat_frag, frag_id, frag_size_char, frag_size_num)
-   # 
-   # # dat_frag$site_label <- paste("Site", 1:nrow(dat_frag), sep = "")
-   # beta_part_frag <- beta_part_frag %>%
-   #    left_join(dat_frag2, by = c("frag_x" = "frag_id")) %>%
-   #    left_join(dat_frag2, by = c("frag_y" = "frag_id")) %>%
-   #    mutate(diff_area = frag_size_num.x - frag_size_num.y,
-   #           log10_ratio_area = log10(frag_size_num.x/frag_size_num.y)
-   #    )
-   # 
-   # # adjust beta-diversity partitioning dataframes
-   # beta_part_frag$dataset_label <- data_set$dataset_label[1]
-   # beta_part_frag$sample_design <- data_set$sample_design[1]
-   # 
-   # beta_part_study$dataset_label <- data_set$dataset_label[1]
-   # beta_part_study$sample_design <- data_set$sample_design[1]
-   # 
-   # beta_part_frag <- beta_part_frag %>% 
-   #    select(dataset_label,
-   #           sample_design,
-   #           frag_x,
-   #           frag_y,
-   #           frag_size_char.x,
-   #           frag_size_num.x,
-   #           frag_size_char.y,
-   #           frag_size_num.y,
-   #           diff_area,
-   #           log10_ratio_area,
-   #           everything())
-   # 
-   # beta_part_study <- beta_part_study %>% 
-   #    select(dataset_label,
-   #           sample_design,
-   #           everything())
+   # analyse sampling design
+   dat_design <- dat_long %>%
+      select(frag_id, frag_size_num, sample_id, sample_eff) %>%
+      distinct() %>%
+      group_by(frag_id, frag_size_num) %>% 
+      summarise(n_sub_samples = n(),
+                range_sample_eff = max(sample_eff) - min(sample_eff)) %>%
+      ungroup() %>%
+      arrange(frag_size_num)
    
-   out_list <- list("biodiv_frag" = dat_out #,
-                    #"betapart_frag" = beta_part_frag,
-                    #"betapart_study" = beta_part_study
+   # Equal sampling effort and one sub-sample per fragment
+   if (all(dat_design$n_sub_samples == 1) && all(dat_design$range_sample_eff == 0)){
+
+      beta_div_comp <- get_beta_part(select(dat_wide, -dataset_label, -sample_id,
+                                                      -frag_size_char, -sample_eff, - sample_design))
+
+      beta_part_frag <- beta_div_comp$fragments
+      beta_part_study <- beta_div_comp$study
+   
+   } else { # use bootstrap approach
+      
+      beta_part_samples <- map(1:n_resamples, boot_betapart,
+                               dat_w = dat_wide)
+      
+      beta_part_frag <- beta_part_samples %>% map_dfr("fragments")
+      beta_part_study <- beta_part_samples %>% map_dfr("study")
+   }
+    
+   # average across re-samples and partitioning methods
+   beta_part_frag <- beta_part_frag %>%
+      group_by(frag_x, frag_y, coef, quant, method) %>%
+      summarise(repl = mean (repl),
+                rich = mean (rich)) %>% ungroup()
+
+   beta_part_study <- beta_part_study %>%
+      group_by(coef, quant, method) %>%
+      summarise(prop_repl = mean(prop_repl, na.rm = F),
+                prop_rich = mean(prop_rich, na.rm = F)) %>% ungroup()
+
+   # Add fragment areas difference and log-ratio
+   dat_frag <- data_set %>%
+      select(frag_id, frag_size_char, frag_size_num) %>%
+      distinct()
+
+   beta_part_frag <- beta_part_frag %>%
+      left_join(dat_frag, by = c("frag_x" = "frag_id")) %>%
+      left_join(dat_frag, by = c("frag_y" = "frag_id")) %>%
+      mutate(diff_area = frag_size_num.x - frag_size_num.y,
+             log10_ratio_area = log10(frag_size_num.x/frag_size_num.y)
+      )
+
+   # adjust beta-diversity partitioning dataframes
+   beta_part_frag$dataset_label <- data_set$dataset_label[1]
+   beta_part_frag$sample_design <- data_set$sample_design[1]
+
+   beta_part_study$dataset_label <- data_set$dataset_label[1]
+   beta_part_study$sample_design <- data_set$sample_design[1]
+
+   beta_part_frag <- beta_part_frag %>%
+      select(dataset_label,
+             sample_design,
+             frag_x,
+             frag_y,
+             frag_size_char.x,
+             frag_size_num.x,
+             frag_size_char.y,
+             frag_size_num.y,
+             diff_area,
+             log10_ratio_area,
+             everything())
+
+   beta_part_study <- beta_part_study %>%
+      select(dataset_label,
+             sample_design,
+             everything())
+
+   out_list <- list("biodiv_frag" = dat_out,
+                    "betapart_frag" = beta_part_frag,
+                    "betapart_study" = beta_part_study
                     )
    
    return(out_list)
@@ -456,8 +445,8 @@ dat_all %>%
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
                       stringsAsFactors = F)
-# parset <- parset[c(1,2,3,8,11),]
-parset <- parset[2,]
+parset <- parset[c(1,2,3,8,11),]
+#parset <- parset[2,]
 
 for (i in 1:nrow(parset)){
    out1 <- dat_all %>%
@@ -465,11 +454,11 @@ for (i in 1:nrow(parset)){
       map(get_biodiv,
           fac_cont = parset$fac_cont[i],
           method_abund = parset$method_abund[i],
-          n_resamples = 100)
+          n_resamples = 200)
    
    out_biodiv_frag <- out1 %>% map_dfr("biodiv_frag")
-   # out_betapart_frag <- out1 %>% map_dfr("betapart_frag")
-   # out_betapart_study <- out1 %>% map_dfr("betapart_study")
+   out_betapart_frag <- out1 %>% map_dfr("betapart_frag")
+   out_betapart_study <- out1 %>% map_dfr("betapart_study")
    
    # prepare output
    outfile_name <- i %+% "_biodiv_frag_fcont_" %+% parset$fac_cont[i] %+%
@@ -477,15 +466,15 @@ for (i in 1:nrow(parset)){
    path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
    write_csv(out_biodiv_frag, path2outfile)
    
-   # outfile_name <- i %+% "_betapart_frag_fcont_" %+% parset$fac_cont[i] %+%
-   #    "_mabund_"%+% parset$method_abund[i] %+% ".csv"
-   # path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
-   # write_csv(out_betapart_frag, path2outfile)
-   # 
-   # outfile_name <- i %+% "_betapart_study_fcont_" %+% parset$fac_cont[i] %+%
-   #    "_mabund_"%+% parset$method_abund[i] %+% ".csv"
-   # path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
-   # write_csv(out_betapart_study, path2outfile)
+   outfile_name <- i %+% "_betapart_frag_fcont_" %+% parset$fac_cont[i] %+%
+      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
+   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   write_csv(out_betapart_frag, path2outfile)
+
+   outfile_name <- i %+% "_betapart_study_fcont_" %+% parset$fac_cont[i] %+%
+      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
+   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   write_csv(out_betapart_study, path2outfile)
 }
    
 
