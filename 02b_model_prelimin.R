@@ -1,4 +1,14 @@
-# code to do prior predictive checks for fitting Bayesian models to fragment diversity data
+# Prior predictive checks for fitting Bayesian models to fragment diversity data
+
+# We can think about the models we are fitting to the data, and some of the properties that
+# either: (1) have to be true: e.g., as we use a mean centred predictor (x), when x==0
+# we want the y-intercept of our linear model to be approximately equal to the mean of the response;
+# or, (2) are likely to be true: we don't want our priors to regularly predict impossibly strong (steep)
+# relationships between fragment size and the response variables.
+
+# NB: this work is not currently used in the subsequent analyses (due to extra verbiage required to justify it - and
+# it does very little for these particular analyses...). I'm putting it here as I want to move to having this
+# type of exercise become more common. See McElreath 2019 Statistical Rethinking 2nd Edition
 
 # load the data
 frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_10_mabund_as_is.csv'))

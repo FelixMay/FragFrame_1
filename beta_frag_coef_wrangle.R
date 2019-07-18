@@ -3,11 +3,11 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref-5311666.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_ref-5311668.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref.Rdata')
+# load('~/Dropbox/1current/fragmentation_synthesis/results/')
 
 load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_ref.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
+# load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
 
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
 
@@ -15,24 +15,6 @@ frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_
 meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
-
-# check names
-meta_labels <- meta %>% distinct(dataset_label)
-
-meta_labels %>% 
-  filter(!dataset_label %in% Jtu_z1i_fS$data$dataset_label) %>% 
-  distinct(dataset_label)
-
-Jtu_z1i_fS$data %>% 
-  filter(!dataset_label %in% meta_labels$dataset_label) %>% 
-  distinct(dataset_label)
-
-# change metadata labels (as the ones in frag were used for the model fitting)
-meta <- meta %>% 
-  mutate(dataset_label = as.character(dataset_label),
-         dataset_label = ifelse(dataset_label=='delaSancha_2014', 'DeLaSancha_2014', dataset_label),
-         dataset_label = ifelse(dataset_label=='deSouza_1994', 'DeSouza_1994', dataset_label))
-
 
 frag_beta <- frag_beta %>% 
   # centre covariate before fitting

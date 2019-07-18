@@ -4,7 +4,7 @@
 # so far: bayesian framework for approximately ML-like results (i.e.,
 # with non-informative priors - against the science of Gelman)
 
-frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
