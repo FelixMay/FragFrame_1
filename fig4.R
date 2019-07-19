@@ -43,7 +43,7 @@ study_slope_coefs <- Jtu_z1i_group_coefs %>%
     by = 'dataset_label'
   ) %>% 
   left_join(
-    Sstd2_lognorm_fragSize_group_coefs %>% 
+    Sstd_lognorm_fragSize_group_coefs %>% 
       mutate(Sstd = Slope,
              Sstd_upper = Slope_upper,
              Sstd_lower = Slope_lower) %>% 
@@ -206,7 +206,7 @@ bottom = cowplot::plot_grid(beta_turnover_sstd_slope,
                       y = 0.03, size = 12)
 
 cowplot::plot_grid(top, bottom, nrow = 2, rel_heights = c(0.1, 1))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour_flip.png', width = 170, height = 80, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour.png', width = 170, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 # relationship between the intercepts of turnover and nestedness tell us about their

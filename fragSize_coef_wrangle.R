@@ -4,7 +4,7 @@
 
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
 
-frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))

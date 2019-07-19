@@ -3,11 +3,11 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref.Rdata')
-# load('~/Dropbox/1current/fragmentation_synthesis/results/')
+load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref-5360307.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_ref-5360306.Rdata')
 
 load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_ref.Rdata')
-# load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
 
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
 

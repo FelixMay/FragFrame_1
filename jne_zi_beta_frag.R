@@ -21,9 +21,6 @@ frag_beta <- left_join(frag_beta,
 
 # want to add a grouping variable for the pairwise comparisons
 frag_beta <- frag_beta %>% 
-  group_by(dataset_label, sample_design, method, frag_x) %>% 
-  mutate(pair_group = paste0(frag_x, '_g')) %>% 
-  ungroup() %>% 
   # centre covariate before fitting
   mutate(cl10ra = log10_ratio_area - mean(log10_ratio_area))
 
@@ -42,37 +39,15 @@ rp <- c(prior(normal(0,2), class = Intercept),
         prior(exponential(1), class = sd))
 
 # fit models to baselga's components of jaccard 
-Jne_zi_fS_taxa <- brm(bf(rich ~ cl10ra*taxa + 
-                             (cl10ra | dataset_label / pair_group), 
-                           zi ~ cl10ra*taxa + 
-                             (cl10ra | dataset_label / pair_group),
+Jne_zi_fragSize <- brm(bf(rich ~ cl10ra + 
+                             (cl10ra | dataset_label), 
+                           zi ~ cl10ra + 
+                             (cl10ra | dataset_label),
                            family = zero_inflated_beta()),
                         # fit to data with variation in frag_size_num
                         data = frag_beta %>% filter(method=='Baselga family, Jaccard'),
                         prior = rp,
                         cores = 4, chains = 4, iter = 2000)
 
-save(Jne_zi_fS_taxa, file='~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fS_taxa.Rdata')
+save(Jne_zi_fragSize, file='~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_ref.Rdata')
 # plot(Jne_zi_fragSize)
-
-Rne_zi_fS_taxa <- brm(bf(rich ~ cl10ra*taxa + 
-                            (cl10ra | dataset_label / pair_group), 
-                          zi ~ cl10ra*taxa + 
-                            (cl10ra | dataset_label / pair_group),
-                          family = zero_inflated_beta()),
-                       # fit to data with variation in frag_size_num
-                       data = frag_beta %>% filter(method=='Baselga family, Ruzicka'),
-                       prior = rp,
-                       cores = 4, chains = 4, iter = 2000)
-
-save(Rne_zi_fS_taxa, file='~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fS_taxa.Rdata')
-# plot(Rne_zi_fragSize)
-
-# 1) taxa, 2) matrix, 3) no interaction (~5 waics difference between each)
-waic(Jne_zi_fragSize,
-     Jne_zi_fS_matrix,
-     Jne_zi_fS_taxa)
-# 1) no interaction, 2) matrix, 3) taxa (~3, then 6 more waics difference between each)
-waic(Rne_zi_fragSize,
-     Rne_zi_fS_matrix,
-     Rne_zi_fS_taxa)

@@ -55,15 +55,15 @@ turnover_regression <- ggplot() +
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = Inf, y = 0.1, hjust = 1.2, vjust = 0,
-         label = paste("beta[Jtu] == ", #[Frag.~size]
-                       round(Jtu_z1i_fixef['cl10ra','Estimate'],2),
-                       "  (",
-                       round(Jtu_z1i_fixef['cl10ra','Q2.5'],2),
-                       " - ",
-                       round(Jtu_z1i_fixef['cl10ra','Q97.5'],2),
-                       ")"),
-         parse = T) +
+  # annotate('text', x = Inf, y = 0.1, hjust = 1.2, vjust = 0,
+  #        label = paste("beta[Jtu] == ", #[Frag.~size]
+  #                      round(Jtu_z1i_fixef['cl10ra','Estimate'],2),
+  #                      "  (",
+  #                      round(Jtu_z1i_fixef['cl10ra','Q2.5'],2),
+  #                      " - ",
+  #                      round(Jtu_z1i_fixef['cl10ra','Q97.5'],2),
+  #                      ")"),
+  #        parse = T) +
   # annotate('text', x = Inf, y = 0, hjust = 1.2, vjust = 0,
   #          label = paste("sigma[beta[Jtu]*','~study] == ", #[Frag.~size]
   #                        round(study_sd %>% filter(model=='Jtu') %>% 
@@ -113,15 +113,15 @@ turnover_regression_ruzicka <- ggplot() +
                   ymin = plogis(Q2.5),
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
-  annotate('text', x = Inf, y = 0.1, hjust = 1.2, vjust = 0,
-           label = paste("beta[Rbal] == ", #[Frag.~size]
-                         round(Rtu_z1i_fixef['cl10ra','Estimate'],2),
-                         "  (",
-                         round(Rtu_z1i_fixef['cl10ra','Q2.5'],2),
-                         " - ",
-                         round(Rtu_z1i_fixef['cl10ra','Q97.5'],2),
-                         ")"),
-           parse = T) +
+  # annotate('text', x = Inf, y = 0.1, hjust = 1.2, vjust = 0,
+  #          label = paste("beta[Rbal] == ", #[Frag.~size]
+  #                        round(Rtu_z1i_fixef['cl10ra','Estimate'],2),
+  #                        "  (",
+  #                        round(Rtu_z1i_fixef['cl10ra','Q2.5'],2),
+  #                        " - ",
+  #                        round(Rtu_z1i_fixef['cl10ra','Q97.5'],2),
+  #                        ")"),
+  #          parse = T) +
   # annotate('text', x = Inf, y = 0, hjust = 1.2, vjust = 0,
   #          label = paste("sigma[study, fS] == ", #[Frag.~size]
   #                        round(study_sd %>% filter(model=='Rtu') %>% 
@@ -172,15 +172,15 @@ nestedness_regression <- ggplot() +
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = Inf, y = 1, hjust = 1.2, vjust = 1.4,
-         label = paste("beta[Jne] == ", #[Frag.~size]
-                       round(Jne_zi_fixef['cl10ra','Estimate'],2),
-                       "  (",
-                       round(Jne_zi_fixef['cl10ra','Q2.5'],2),
-                       " - ",
-                       round(Jne_zi_fixef['cl10ra','Q97.5'],2),
-                       ")"),
-         parse = T) +
+  # annotate('text', x = Inf, y = 1, hjust = 1.2, vjust = 1.4,
+  #        label = paste("beta[Jne] == ", #[Frag.~size]
+  #                      round(Jne_zi_fixef['cl10ra','Estimate'],2),
+  #                      "  (",
+  #                      round(Jne_zi_fixef['cl10ra','Q2.5'],2),
+  #                      " - ",
+  #                      round(Jne_zi_fixef['cl10ra','Q97.5'],2),
+  #                      ")"),
+  #        parse = T) +
   # annotate('text', x = Inf, y = 0.8, hjust = 1.2, vjust = 0,
   #          label = paste("sigma[study, fS] == ", #[Frag.~size]
   #                        round(study_sd %>% filter(model=='Jne') %>% 
@@ -231,15 +231,15 @@ nestedness_regression_ruzicka <- ggplot() +
                   ymax = plogis(Q97.5)),
               alpha = 0.3) +
   # add regression coefficient and uncertainty interval
-  annotate('text', x = Inf, y = 1, hjust = 1.2, vjust = 1.4,
-           label = paste("beta[Rgrad] == ", #[Frag.~size]
-                         round(Rne_zi_fixef['cl10ra','Estimate'],2),
-                         "  (",
-                         round(Rne_zi_fixef['cl10ra','Q2.5'],2),
-                         " - ",
-                         round(Rne_zi_fixef['cl10ra','Q97.5'],2),
-                         ")"),
-           parse = T) +
+  # annotate('text', x = Inf, y = 1, hjust = 1.2, vjust = 1.4,
+  #          label = paste("beta[Rgrad] == ", #[Frag.~size]
+  #                        round(Rne_zi_fixef['cl10ra','Estimate'],2),
+  #                        "  (",
+  #                        round(Rne_zi_fixef['cl10ra','Q2.5'],2),
+  #                        " - ",
+  #                        round(Rne_zi_fixef['cl10ra','Q97.5'],2),
+  #                        ")"),
+  #          parse = T) +
   # annotate('text', x = Inf, y = 0.8, hjust = 1.2, vjust = 0,
   #          label = paste("sigma[study, fS] == ", #[Frag.~size]
   #                        round(study_sd %>% filter(model=='Rne') %>% 
@@ -304,5 +304,5 @@ cowplot::plot_grid(top, bottom,
                       y = 0.02)
 
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig3_grey.png', width = 250, height = 220, units = 'mm')
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig3_taxa_colour.png', width = 250, height = 220, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS4_taxa_colour.png', width = 250, height = 220, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/beta_frag.png', width = 250, height = 125, units = 'mm')
