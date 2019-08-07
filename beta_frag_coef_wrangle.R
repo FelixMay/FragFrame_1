@@ -82,7 +82,13 @@ Jtu_z1i_group_coefs <- bind_cols(Jtu_z1i_coef[[1]][,,'Intercept'] %>%
                                                   mutate(Slope = Estimate,
                                                          Slope_lower = Q2.5,
                                                          Slope_upper = Q97.5) %>% 
-                                                  dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
+                                                  dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
+                                 Jtu_z1i_coef[[1]][,,'zoi_cl10ra'] %>% 
+                                   as_tibble() %>% 
+                                   mutate(zoi_Slope = Estimate,
+                                          zoi_Slope_lower = Q2.5,
+                                          zoi_Slope_upper = Q97.5) %>% 
+                                   dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
   # join with min and max of the x-values
   inner_join(frag_beta %>% 
                group_by(dataset_label) %>% 

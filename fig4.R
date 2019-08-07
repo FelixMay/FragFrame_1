@@ -14,8 +14,11 @@ study_slope_coefs <- Jtu_z1i_group_coefs %>%
   mutate(jtu_intercept = Intercept, 
          jtu_slope = Slope,
          jtu_upper = Slope_upper,
-         jtu_lower = Slope_lower) %>% 
-  select(dataset_label, jtu_intercept, jtu_slope, jtu_upper, jtu_lower) %>% 
+         jtu_lower = Slope_lower,
+         jtu_zoi_slope = zoi_Slope,
+         jtu_zoi_upper = zoi_Slope_upper,
+         jtu_zoi_lower = zoi_Slope_lower) %>% 
+  select(dataset_label, jtu_intercept, jtu_slope, jtu_upper, jtu_lower, jtu_zoi_slope, jtu_zoi_upper, jtu_zoi_lower) %>% 
   left_join(Rtu_z1i_group_coefs %>% 
               mutate(rtu_intercept = Intercept, 
                      rtu_slope = Slope, 
@@ -353,7 +356,7 @@ cowplot::plot_grid(beta_turnover_sstd_slope,
   cowplot::draw_label(expression(paste('Study-level ', S[std], 'slope')),
                       angle = 90, x = 0.02)
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig5.png', width = 170, height = 80, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig5.png', width = 170, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 

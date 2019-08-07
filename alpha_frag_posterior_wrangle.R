@@ -6,6 +6,11 @@ library(ggridges)
 # load model fits and the data
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
 
+frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+
+# add mean centred (log) fragsize
+frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
+
 meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
@@ -14,7 +19,40 @@ frag <- left_join(frag,
                   meta,
                   by = 'dataset_label')
 
-
+# get posterior distribution of global estimates
+frag_global <- tibble(
+  Sstd_global = posterior_samples(Sstd_lognorm_fragSize,
+                                  pars = 'b_c.lfs',
+                                  exact_match = TRUE,
+                                  subset = floor(runif(n = 1000,
+                                                       min = 1, max = 2000))) %>% unlist() %>% as.numeric(),
+  Scov_global = posterior_samples(Scov_lognorm_fragSize,
+                                  pars = 'b_c.lfs',
+                                  exact_match = TRUE,
+                                  subset = floor(runif(n = 1000,
+                                                       min = 1, max = 2000))) %>% unlist() %>% as.numeric(),
+  Sn_global = posterior_samples(Sn_lognorm_fragSize,
+                                  pars = 'b_c.lfs',
+                                  exact_match = TRUE,
+                                  subset = floor(runif(n = 1000,
+                                                       min = 1, max = 2000))) %>% unlist() %>% as.numeric(),
+  Schao_global = posterior_samples(S_chao_lognorm_fragSize,
+                                  pars = 'b_c.lfs',
+                                  exact_match = TRUE,
+                                  subset = floor(runif(n = 1000,
+                                                       min = 1, max = 2000))) %>% unlist() %>% as.numeric(),
+  S_PIE_global = posterior_samples(S_PIE_lognorm_fragSize,
+                                  pars = 'b_c.lfs',
+                                  exact_match = TRUE,
+                                  subset = floor(runif(n = 1000,
+                                                       min = 1, max = 2000))) %>% unlist() %>% as.numeric(),
+  Nstd_global = posterior_samples(Nstd_lognorm_fragSize,
+                                  pars = 'b_c.lfs',
+                                  exact_match = TRUE,
+                                  subset = floor(runif(n = 1000,
+                                                       min = 1, max = 2000))) %>% unlist() %>% as.numeric()
+  
+)
 
 # study-levels (no studies are missing N_std)
 study_levels <- Nstd_lognorm_fragSize$data %>% 
@@ -52,20 +90,11 @@ study_sample_posterior <- study_levels %>%
                                                     subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()))
 
 
-Sstd_lognorm_fragSize_fixef <- fixef(Sstd_lognorm_fragSize)
-S_PIE_lognorm_fragSize_fixef <- fixef(S_PIE_lognorm_fragSize)
-Scov_lognorm_fragSize_fixef <- fixef(Scov_lognorm_fragSize)
-Sn_lognorm_fragSize_fixef <- fixef(Sn_lognorm_fragSize)
-Schao_lognorm_fragSize_fixef <- fixef(S_chao_lognorm_fragSize)
-Nstd_lognorm_fragSize_fixef <- fixef(Nstd_lognorm_fragSize)
-
 Sstd_posterior <- study_sample_posterior  %>% 
   select(-data) %>% 
   unnest(S_std) %>% 
   mutate(response = 'Sstd',
-         Sstd_global_slope = Sstd_lognorm_fragSize_fixef['c.lfs','Estimate'],
-         Sstd_upper_slope = Sstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],
-         Sstd_lower_slope = Sstd_lognorm_fragSize_fixef['c.lfs','Q2.5']) %>% 
+         Sstd_global = rep(frag_global$Sstd_global, times = n_distinct(dataset_label))) %>% 
   left_join(meta, 
             by = 'dataset_label')
 
@@ -98,9 +127,7 @@ Spie_posterior <- study_sample_posterior  %>%
   select(-data) %>% 
   unnest(S_PIE) %>% 
   mutate(response = 'S_PIE',
-         S_PIE_global_slope = S_PIE_lognorm_fragSize_fixef['c.lfs','Estimate'],
-         S_PIE_upper_slope = S_PIE_lognorm_fragSize_fixef['c.lfs','Q97.5'],
-         S_PIE_lower_slope = S_PIE_lognorm_fragSize_fixef['c.lfs','Q2.5']) %>% 
+         S_PIE_global = rep(frag_global$S_PIE_global, times = n_distinct(dataset_label))) %>% 
   left_join(meta, 
             by = 'dataset_label')
 
@@ -128,9 +155,7 @@ Nstd_posterior <- study_sample_posterior  %>%
   select(-data) %>% 
   unnest(Nstd) %>% 
   mutate(response = 'Nstd',
-         Nstd_global_slope = Nstd_lognorm_fragSize_fixef['c.lfs','Estimate'],
-         Nstd_upper_slope = Nstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],
-         Nstd_lower_slope = Nstd_lognorm_fragSize_fixef['c.lfs','Q2.5']) %>% 
+         Nstd_global_slope = rep(frag_global$Nstd_global, times = n_distinct(dataset_label))) %>% 
   left_join(meta, 
             by = 'dataset_label')
 
