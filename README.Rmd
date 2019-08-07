@@ -1,11 +1,21 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-FragFrame\_1
-============
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# FragFrame_1
 
 <!-- badges: start -->
 <!-- badges: end -->
-The FragFrame\_1 repository includes R code and data to reproduce the analyses shown in the article
+
+The FragFrame_1 repository includes R code and data to reproduce the analyses shown in the article 
 
 **A global synthesis reveals general effects of ecosystem decay on multiple components of biodiversity in habitat fragments**
 
@@ -13,8 +23,7 @@ The FragFrame\_1 repository includes R code and data to reproduce the analyses s
 
 Here we give a brief overview on the code and data files in this repository
 
-Data
-----
+## Data
 
 There are two data files in `data`
 
@@ -22,10 +31,10 @@ There are two data files in `data`
 
 **Shane, please add the metadata here**
 
-R scripts
----------
+## R scripts
 
-`0_init_dirs_load_packages.R`
+`0_init_dirs_load_packages.R` 
+
 
 `0_preproc_ewers_et_al_2007.R`
 
