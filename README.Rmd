@@ -45,5 +45,7 @@ be re-run as they are.
 
 ### Main analysis
 
+`1_analysis_get_biodiv_new.R`: This file implements the first main part of the analysis, which includes the standardization and estimation of biodiversity parameters and the community dissimilarity partitioning. Based on the data in `fragSAD_predicts_ewers.csv`, this R-script calculates
+all biodiversity parameters for all fragments, as well as the incidence- and abundance-based turnover and nestedness components for all fragment pairs.
 
 
