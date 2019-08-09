@@ -64,7 +64,15 @@ for(i in 5:length(response)){
   dev.off()
 }
 
+# chain inspection
+plot(Sstd_lognorm_fragSize)
+plot(Nstd_lognorm_fragSize)
+plot(S_PIE_lognorm_fragSize)
+plot(Sn_lognorm_fragSize)
+plot(Scov_lognorm_fragSize)
+plot(S_chao_lognorm_fragSize)
 
+# posterior predictive checks
 Sstd_pp <- pp_check(Sstd_lognorm_fragSize) +
   scale_x_continuous(trans = 'log2') +
   labs(subtitle = expression(S[std]))
@@ -92,4 +100,4 @@ cowplot::plot_grid(Sstd_pp,
                    Schao_pp,
                    nrow = 3, align = 'hv')
 
-ggsave('Posterior_predictive_checks.png', width = 290, height = 200, units = 'mm')
+# ggsave('Posterior_predictive_checks.png', width = 290, height = 200, units = 'mm')

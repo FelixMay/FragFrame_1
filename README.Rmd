@@ -29,7 +29,7 @@ There are two data files in data folder:
 
 `fragSAD_predicts_ewers.csv`: This file contains the species abundance data and fragment areas for all studies
 
-**Shane, please add the metadata here**
+`new_meta_2_merge.csv`: This file contains the meta data for all studies
 
 ## R scripts
 
@@ -48,4 +48,12 @@ be re-run as they are.
 `1_analysis_get_biodiv_new.R`: This file implements the first main part of the analysis, which includes the standardization and estimation of biodiversity parameters and the community dissimilarity partitioning. Based on the data in `fragSAD_predicts_ewers.csv`, this R-script calculates
 all biodiversity parameters for all fragments, as well as the incidence- and abundance-based turnover and nestedness components for all fragment pairs.
 
+`02_`: these files do some preliminary visual inspection of the data. 
 
+`03_`: these files do the second main part of the analysis by fitting models to the standardized data.
+
+`04_`: this files contain code to conduct visual inpsection of model fits (e.g., plots of residuals, markov chain inspection, posterior predictive checks).
+
+`05_`: these files prepare coefficients and posterior distributions for plotting.
+
+`06_`: these files plot results as they are presented in the manuscript. 
