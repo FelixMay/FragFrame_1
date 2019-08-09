@@ -1,6 +1,6 @@
 # visual inspection of data for fragmentation synthesis
-# Please do not use absolute paths in a shared R script! Please adjust 00_InitializeDirectories_LoadPackages.R
-# ok, I changed some paths for myself. Felix, you might need to update yours for this to work?
+
+# need to run 0_init_dirs_load_packages.R for packages and directory paths
 
 frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 

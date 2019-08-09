@@ -12,7 +12,7 @@ source(paste0(path2wd, 'alpha_frag_posterior_wrangle.R'))
 three_grey_legend <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
   geom_density_ridges_gradient(data = Sstd_posterior,
-                               aes(x = S_std + Sstd_global_slope,
+                               aes(x = S_std + Sstd_global,
                                    y = time.since.fragmentation,
                                    fill = stat(quantile)
                                ),
@@ -413,7 +413,7 @@ bottom = cowplot::plot_grid(
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
   cowplot::draw_label(expression(paste('Study-level species richness slope estimate')), y = 0.01)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig3_colour.pdf',
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig3_colour.png',
 #        width = 240,
 #        height = 220,
 #        units = 'mm')
@@ -634,10 +634,10 @@ bottom = cowplot::plot_grid(
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
   cowplot::draw_label(expression(paste('Study-level number of individuals (', N[std], ') slope estimate')), y = 0.01)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_colour_abundance_density.png',
-#        width = 240,
-#        height = 220,
-#        units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS2_colour_abundance_density.png',
+       width = 240,
+       height = 220,
+       units = 'mm')
 
 ##repeat for S_PIE for supplement
 continent <- ggplot() +
@@ -855,7 +855,7 @@ bottom = cowplot::plot_grid(
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
   cowplot::draw_label(expression(paste('Study-level evenness (', S[PIE], ') slope estimate')), y = 0.01)
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS3_colour_evenness_density.png',
-       width = 240,
-       height = 220,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS3_colour_evenness_density.png',
+#        width = 240,
+#        height = 220,
+#        units = 'mm')

@@ -1,8 +1,9 @@
 # need to execute 0_init_dirs_load_packages.R first
 
 # code to fit models for fragmentation synthesis
-# so far: bayesian framework for approximately ML-like results (i.e.,
-# with non-informative priors - against the science of Gelman)
+# for this analysis I am sticking with the default priors for simplicity 
+# they are weakly regularising
+
 # load the data
 frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
@@ -15,7 +16,7 @@ get_prior(S_std ~ c.lfs + (c.lfs | dataset_label),
           family = lognormal(),
           data = frag)
 
-# set some weakly regularising priors
+# alternate: set some weakly regularising priors
 # rp <- c(prior(normal(0, 1), class = Intercept),
 #         prior(normal(0, 0.5), class = b),
 #         prior(exponential(1), class = sd))

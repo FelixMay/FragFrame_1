@@ -1,4 +1,6 @@
-# code to plot coefficient estimates of models fit to data standardised in different ways
+# code to plot coefficient estimates of models fit to data where the size of large fragments 
+# was imputed differently (i.e., different multiplicative factors: 2 or 100, 10 used for main text)
+# Or where non-integer data were handled differently (rounded) as opposed to left as is in main text
 library(tidyverse)
 
 # code to wrangle the coefs ready to inspect
