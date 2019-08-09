@@ -61,6 +61,7 @@ map_taxa <- ggplot() +
 
 
 # figure 1
+# we want the conceptual figure on the top panel
 top <- cowplot::ggdraw() + cowplot::draw_image('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig1_top.png',
                                                clip = 'on')
 cowplot::plot_grid(top, map_taxa,

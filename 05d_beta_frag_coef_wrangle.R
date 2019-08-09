@@ -1,3 +1,5 @@
+# execute 0_init_dirs_load_packages.R for packages and directory
+
 # plot results of fragment level beta-diversity
 library(tidyverse)
 library(brms)
@@ -12,7 +14,7 @@ load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rda
 frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
 
 # get the metadata
-meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
+meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 

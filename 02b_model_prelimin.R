@@ -10,6 +10,8 @@
 # it does very little for these particular analyses...). I'm putting it here as I want to move to having this
 # type of exercise become more common. See McElreath 2019 Statistical Rethinking 2nd Edition
 
+# need to run 0_init_dirs_load_packages.R for packages and directory paths
+
 # load the data
 frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_10_mabund_as_is.csv'))
 

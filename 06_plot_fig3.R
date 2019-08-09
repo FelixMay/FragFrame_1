@@ -1,3 +1,5 @@
+# need to execute 0_init_dirs_load_packages.R first
+
 # COLOUR VERSION
 
 # get study-level posterior samples from model with only study-level slope variation
@@ -6,7 +8,7 @@
 
 library(ggridges)
 
-source(paste0(path2wd, 'alpha_frag_posterior_wrangle.R'))
+source(paste0(path2wd, '05aa_alpha_frag_posterior_wrangle.R'))
 
 ## dummy plot for creating separate legend
 three_grey_legend <- ggplot() +

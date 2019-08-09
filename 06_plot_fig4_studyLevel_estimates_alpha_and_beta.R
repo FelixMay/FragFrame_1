@@ -1,13 +1,12 @@
 # plot study-level slopes: most interested in relationship between Std and Jtu for different times since fragmentation
 
 rm(list=ls())
-library(tidyverse)
-library(brms)
+# load packages and paths: 0_init_dirs_load_packages.R
 # get the beta-regression coefficients
-source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/beta_frag_coef_wrangle.R')
+source(paste0(path2wd, '05d_beta_frag_coef_wrangle.R'))
 
 # get the fragment area coefficients
-source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/fragSize_coef_wrangle.R')
+source(paste0(path2wd, '05a_fragSize_coef_wrangle.R'))
 
 # combine study-level estimates from the different analyses (beta vs alpha)
 study_slope_coefs <- Jtu_z1i_group_coefs %>% 
@@ -95,14 +94,14 @@ study_slope_coefs <- study_slope_coefs %>%
         remove = F, sep = ', ')
 
 
-# contribution of turnover and nestedness to dissimilarity: most studies have turnover > nestedness (119/123)
+# contribution of turnover and nestedness to dissimilarity: most studies have turnover > nestedness (116/123)
 study_slope_coefs %>% 
   filter(jtu_intercept > jne_intercept)
-study_slope_coefs %>% 
+study_slope_coefs %>% # 109/123
   filter(rtu_intercept > rne_intercept)
 
-# change in component with fragment size difference: 42/123 have delta_turnover > delta_nestedness, 
-# increases to 95/123 for abundance based distance
+# change in component with fragment size difference: 34/123 have delta_turnover > delta_nestedness, 
+# increases to 43/123 for abundance based distance
 study_slope_coefs %>% 
   filter(jtu_slope > jne_slope)
 study_slope_coefs %>% 
@@ -132,7 +131,7 @@ source('~/Dropbox/1current/R_random/functions/gg_legend.R')
 time_colour_legend <- gg_legend(timeLegend)
 
 beta_turnover_sstd_slope <-
-ggplot() +
+  ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
              aes(y = jtu_slope, x = Sstd, 
@@ -165,7 +164,7 @@ ggplot() +
 
 
 beta_nestedness_sstd_study <-
-ggplot() +
+  ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
            aes(y = jne_slope, x = Sstd, 

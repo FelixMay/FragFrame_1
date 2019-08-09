@@ -1,27 +1,21 @@
 # code to fit models to beta-diversity for fragmentation synthesis (fragment scale)
-# code to run on rstudio server
+
+
+# code to run on rstudio server or EVE 
 rm(list=ls())
 library(dplyr)
 library(tidyr)
 library(readr)
 library(brms)
 
-# load the data
+# alt, if running locally execute 0_init_dirs_load_packages.R
+# load the data: cluster version
 frag_beta <- read_csv('/gpfs1/data/idiv_chase/sablowes/fragmentation/data/2_betapart_frag_fcont_10_mabund_as_is.csv')
 # to fit locally: EVE (having older version of brms package does not start sampling for the zi models of nestedness component)
-frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
-# load the meta data
-meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep=';') %>% 
-  as_tibble() %>% 
-  dplyr::rename(dataset_label = dataset_id)
+frag_beta <- read_csv(paste0(path2data, '2_betapart_frag_fcont_10_mabund_as_is.csv'))
 
-frag_beta <- left_join(frag_beta,
-                  meta,
-                  by = 'dataset_label')
-
-# want to add a grouping variable for the pairwise comparisons
+# centre covariate before fitting
 frag_beta <- frag_beta %>% 
-  # centre covariate before fitting
   mutate(cl10ra = log10_ratio_area - mean(log10_ratio_area))
 
 

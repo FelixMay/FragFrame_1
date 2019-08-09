@@ -4,7 +4,9 @@ library(tidyr)
 library(readr)
 library(brms)
 
-# load the data
+# execute 0_init_dirs_load_packages.R
+
+# load the data: cluster version, then local
 frag_beta <- read_csv('/gpfs1/data/idiv_chase/sablowes/fragmentation/data/2_betapart_frag_fcont_10_mabund_as_is.csv')
 frag_beta <- read_csv(paste0(path2data, '2_betapart_frag_fcont_10_mabund_as_is.csv'))
 

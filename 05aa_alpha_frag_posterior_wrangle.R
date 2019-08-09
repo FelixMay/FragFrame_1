@@ -1,7 +1,6 @@
-# get study-level posterior samples from model with only study-level slope variation
-library(tidyverse)
-library(brms)
-library(ggridges)
+# execute 0_init_dirs_load_packages.R for packages and directory
+
+# get posterior samples from model for overall trend and study-level slopes
 
 # load model fits and the data
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')

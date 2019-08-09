@@ -1,3 +1,5 @@
+# execute 0_init_dirs_load_packages.R for packages and directory
+
 # code to wrangle the coefficients for the fragemnt area regressions (with no interactions)
 # for models fit to data standardised in slightly different ways
 

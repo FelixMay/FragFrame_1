@@ -1,10 +1,11 @@
 # code to plot coefficient estimates of models fit to data where the size of large fragments 
 # was imputed differently (i.e., different multiplicative factors: 2 or 100, 10 used for main text)
 # Or where non-integer data were handled differently (rounded) as opposed to left as is in main text
-library(tidyverse)
+
+# load packages and paths: 0_init_dirs_load_packages.R
 
 # code to wrangle the coefs ready to inspect
-source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/fragSize_coef_wrangle_4_sensitivity.R')
+source(paste0(path2wd, '05b_fragSize_coef_wrangle_4_robust_results.R'))
 
 fixed_effects <- bind_cols(
   # reference estimates

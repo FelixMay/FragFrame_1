@@ -1,3 +1,5 @@
+# need to execute 0_init_dirs_load_packages.R first
+
 # code to plot regressions for all metrics (no interaction models)
 
 # get the coefficients for all the results

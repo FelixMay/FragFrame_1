@@ -1,10 +1,11 @@
 # code to plot beta-diversity regression
 rm(list=ls())
-library(tidyverse)
-library(brms)
-source('~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/beta_frag_coef_wrangle.R')
+# need to execute 0_init_dirs_load_packages.R first
+
+source(paste0(path2wd, '05d_beta_frag_coef_wrangle.R'))
 
 ##--------get study-level sd for adding to figure----
+# not used for current version of figure
 study_sd <- bind_rows(
   cbind.data.frame(
     model = 'Jtu',
