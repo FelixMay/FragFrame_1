@@ -3,7 +3,7 @@
 # code to plot regressions for all metrics (no interaction models)
 
 # get the coefficients for all the results
-source(paste0(path2wd, 'fragSize_coef_wrangle.R'))
+source(paste0(path2wd, '05a_fragSize_coef_wrangle.R'))
 
 #---- regression plots showing study-level slopes-----
 setwd(paste0(path2Dropbox, '/analysis_apr19/figures/'))
@@ -126,7 +126,7 @@ Sn_regPlot <- ggplot() +
   # scale_colour_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Rarefied richness (', S[n], ')')),
+       y = expression(paste('Rarefied richness')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none', 
@@ -220,7 +220,7 @@ Scov_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(atop('Coverage standardised', paste('richness (', S[cov], ')'))),
+       y = 'Coverage standardised richness',
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -267,7 +267,7 @@ Schao_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Asymptotic richness (', S[chao], ')')),
+       y = expression(paste('Asymptotic richness')),
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -346,7 +346,7 @@ cowplot::plot_grid(top, bottom_supp,
                    nrow = 2,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05)
-# ggsave('figSx_otherMetrics_taxa_color.png', width = 250, height = 80, units = 'mm')
+# ggsave('figS1_otherMetrics_taxa_color.png', width = 250, height = 80, units = 'mm')
 
 ##---coef plots---------
 # get the metadata...

@@ -634,12 +634,12 @@ bottom = cowplot::plot_grid(
                             nrow = 2)
 
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Study-level number of individuals (', N[std], ') slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Study-level number of individuals slope estimate')), y = 0.01)
 
-ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS2_colour_abundance_density.png',
-       width = 240,
-       height = 220,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS2_colour_abundance_density.png',
+#        width = 240,
+#        height = 220,
+#        units = 'mm')
 
 ##repeat for S_PIE for supplement
 continent <- ggplot() +
@@ -855,7 +855,7 @@ bottom = cowplot::plot_grid(
   nrow = 2)
 
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Study-level evenness (', S[PIE], ') slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Study-level evenness slope estimate')), y = 0.01)
 
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS3_colour_evenness_density.png',
 #        width = 240,
