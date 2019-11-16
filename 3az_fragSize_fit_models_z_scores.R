@@ -165,3 +165,103 @@ loo::loo_compare(z_Scov_asymL_fragSize,
 model_weights(z_Scov_asymL_fragSize,
               z_Scov_studT_fragSize,
               weights = 'loo')
+
+# S_PIE
+z_S_PIE_asymL_fragSize <- brm(z_S_PIE ~ c.lfs + (c.lfs | dataset_label), 
+                             # some z-scores are infinite due to sd(expected) = 0
+                             data = frag %>% filter(S_PIE_mean>0 & 
+                                                      !is.na(z_S_PIE) & 
+                                                      !is.infinite(z_S_PIE)),
+                             # prior = rp,
+                             # spike in values near zero is not well described with gaussian error
+                             # alternate use asymmetric laplace
+                             family = asym_laplace(),
+                             cores = 4, 
+                             chains = 4
+)
+
+z_S_PIE_studT_fragSize <- brm(z_S_PIE ~ c.lfs + (c.lfs | dataset_label), 
+                              # some z-scores are infinite due to sd(expected) = 0
+                              data = frag %>% filter(S_PIE_mean>0 & 
+                                                       !is.na(z_S_PIE) & 
+                                                       !is.infinite(z_S_PIE)),
+                              # prior = rp,
+                              # spike in values near zero is not well described with gaussian error
+                              # alternate use student T
+                              family = student(),
+                              cores = 4, 
+                              chains = 4
+)
+
+
+pp_check(z_S_PIE_asymL_fragSize) +
+  scale_x_continuous(limits = c(-10, 10))
+
+pp_check(z_S_PIE_studT_fragSize) +
+  scale_x_continuous(limits = c(-10, 10))
+
+z_S_PIE_asymL_fragSize <- add_criterion(z_S_PIE_asymL_fragSize, criterion = 'loo')
+z_S_PIE_studT_fragSize <- add_criterion(z_S_PIE_studT_fragSize, criterion = 'loo')
+
+
+loo::loo_compare(z_S_PIE_asymL_fragSize,
+                 z_S_PIE_studT_fragSize,
+                 criterion = 'loo')
+
+model_weights(z_S_PIE_asymL_fragSize,
+              z_S_PIE_studT_fragSize,
+              weights = 'loo')
+
+# S_chao
+z_S_chao_asymL_fragSize <- brm(z_S_chao ~ c.lfs + (c.lfs | dataset_label), 
+                              # some z-scores are infinite due to sd(expected) = 0
+                              data = frag %>% filter(S_chao_mean>0 & 
+                                                       !is.na(z_S_chao) & 
+                                                       !is.infinite(z_S_chao)),
+                              # prior = rp,
+                              # spike in values near zero is not well described with gaussian error
+                              # alternate use asymmetric laplace
+                              family = asym_laplace(),
+                              cores = 4, 
+                              chains = 4
+)
+
+z_S_chao_studT_fragSize <- brm(z_S_chao ~ c.lfs + (c.lfs | dataset_label), 
+                              # some z-scores are infinite due to sd(expected) = 0
+                              data = frag %>% filter(S_chao_mean>0 & 
+                                                       !is.na(z_S_chao) & 
+                                                       !is.infinite(z_S_chao)),
+                              # prior = rp,
+                              # spike in values near zero is not well described with gaussian error
+                              # alternate use student T
+                              family = student(),
+                              cores = 4, 
+                              chains = 4
+)
+
+
+pp_check(z_S_chao_asymL_fragSize) +
+  scale_x_continuous(limits = c(-10, 10))
+
+pp_check(z_S_chao_studT_fragSize) +
+  scale_x_continuous(limits = c(-10, 10))
+
+z_S_chao_asymL_fragSize <- add_criterion(z_S_chao_asymL_fragSize, criterion = 'loo')
+z_S_chao_studT_fragSize <- add_criterion(z_S_chao_studT_fragSize, criterion = 'loo')
+
+
+loo::loo_compare(z_S_chao_asymL_fragSize,
+                 z_S_chao_studT_fragSize,
+                 criterion = 'loo')
+
+model_weights(z_S_chao_asymL_fragSize,
+              z_S_chao_studT_fragSize,
+              weights = 'loo')
+
+
+save(z_Sstd_studT_fragSize,
+     z_Sn_studT_fragSize,
+     z_Scov_studT_fragSize,
+     z_S_PIE_studT_fragSize,
+     z_S_chao_studT_fragSize,
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_z_score_ref.Rdata')
