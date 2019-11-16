@@ -82,16 +82,21 @@ biodiv_subplot <- function(abund_dat, N_std, n_base, cov_base, n_samples = 10){
    spec_abund <- data.frame(species  = names(abund_dat)[abund_dat > 0],
                             abundance = abund_dat[abund_dat > 0])
    
-   if (sum(spec_abund$abundance) == N_std){
-      biodiv <- biodiv_abund(spec_abund$abundance, n_base = n_base, cov_base = cov_base)
-   } else {
+   #if (sum(spec_abund$abundance) == N_std){
+      # biodiv <- biodiv_abund(spec_abund$abundance, n_base = n_base, cov_base = cov_base)
+   #} else {
       samples <- replicate(n_samples, biodiv_resample(spec_abund,
                                                       N_std = N_std,
                                                       n_base = n_base,
                                                       cov_base = cov_base))
-      biodiv <- rowMeans(samples)
-   }
-   
+      biodiv_mean <- rowMeans(samples)
+      biodiv_sd   <- apply(samples, 1, sd)
+      
+      names(biodiv_mean) <- paste(names(biodiv_mean), "mean", sep = "_")
+      names(biodiv_sd)   <- paste(names(biodiv_sd), "sd", sep = "_")
+   #}
+      
+   biodiv <- c(biodiv_mean, biodiv_sd)
    return(biodiv)
 }
 
@@ -304,21 +309,24 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
                             )
    dat_biodiv <- cbind(dat_biodiv, data.frame(t(biodiv_indices)))
    
-   
    # set indices to NA when there are no individuals
    empty_plots <- dat_biodiv$N == 0
-   dat_biodiv$S_PIE[empty_plots] <- NA
+   dat_biodiv$S_PIE_mean[empty_plots] <- NA
+   dat_biodiv$S_PIE_sd[empty_plots] <- NA
 
    # set indices to NA when they are Inf or NaN
    dat_biodiv[,9:ncol(dat_biodiv)] <- lapply(dat_biodiv[,9:ncol(dat_biodiv)], Inf_to_NA)
    
    # set coverage standardized richness equal to observed
    # when observed coverage and base coverage equal 1
-   coverage_eq_1 <- dat_biodiv$coverage == 1 & dat_biodiv$cov_base == 1
-   dat_biodiv$S_cov[coverage_eq_1] <- dat_biodiv$S_obs[coverage_eq_1]
+   # coverage_eq_1 <- dat_biodiv$coverage == 1 & dat_biodiv$cov_base == 1
+   # dat_biodiv$S_cov_mean[coverage_eq_1] <- dat_biodiv$S_obs[coverage_eq_1]
+   # What to do here with S_cov_sd
    
    # set S_n to NA when n_base < 5
-   dat_biodiv$S_n[dat_biodiv$n_base < n_thres] <- NA
+   dat_biodiv$S_n_mean[dat_biodiv$n_base < n_thres] <- NA
+   dat_biodiv$S_n_sd[dat_biodiv$n_base < n_thres] <- NA
+   
    
    # average across sub-samples
    dat_biodiv_avg <- dat_biodiv %>%
@@ -328,7 +336,22 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
       ungroup() %>%
       arrange(frag_size_num)
    
-   dat_out <- dat_biodiv_avg
+   # add mean and sd of largest fragment to all rows
+   largest_frag <- dat_biodiv_avg %>% 
+      filter(frag_size_num == max(frag_size_num)) %>%
+      select(S_std_mean:S_chao_sd) %>%
+      summarise_all(mean)
+   names(largest_frag) <- paste("exp", names(largest_frag), sep = "_")
+   
+   dat_out <- cbind(dat_biodiv_avg, largest_frag)
+   
+   dat_out <- dat_out %>%
+      mutate(z_S_std  = (S_std_mean - exp_S_std_mean)/exp_S_std_sd,
+             z_S_n    = (S_n_mean - exp_S_n_mean)/exp_S_n_sd,
+             z_S_PIE  = (S_PIE_mean - exp_S_PIE_mean)/exp_S_PIE_sd,
+             z_S_cov  = (S_cov_mean - exp_S_cov_mean)/exp_S_cov_sd,
+             z_S_chao = (S_chao_mean - exp_S_chao_mean)/exp_S_chao_sd
+             ) 
 
    # beta-diversity partitioning ---------------------------------------------
    
@@ -426,10 +449,10 @@ str(dat_all)
 
 head(dat_all)
 
-# dat_all %>% select(dataset_label, sample_design) %>% distinct()
- 
-data_set <- dat_all %>% filter(dataset_label == "Dauber_2006")
-#test <- get_biodiv(data_set)
+frag_label <- dat_all %>% select(dataset_label, frag_id) %>% distinct()
+dim(frag_label) 
+data_set <- dat_all %>% filter(dataset_label == "Brosi_2008")
+test <- get_biodiv(data_set)
 
 data_set %>% 
    select(frag_id, sample_id, sample_eff) %>%
