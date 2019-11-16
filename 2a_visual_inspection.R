@@ -210,3 +210,60 @@ ggplot() +
   guides(colour = guide_legend(ncol = 2))
 
 # ggsave('Sn_fragmentSize_x_taxa_x_timeSinceFrag_studyLevel.pdf', width = 290, height = 140, units = 'mm')
+
+## new: inspection of z-scores
+# we are mostly interested in diversity as a function of fragment size
+ggplot() +
+  geom_point(data = frag,
+             aes(x = c.lfs, y = z_S_PIE, colour = 'S_PIE'),
+             alpha = 0.5) +
+  geom_point(data = frag,
+             aes(x = c.lfs, y = z_S_n, colour = 'S_n'),
+             alpha = 0.5) +
+  geom_point(data = frag,
+             aes(x = c.lfs, y = z_S_cov, colour = 'S_cov'),
+             alpha = 0.5) +
+  geom_point(data = frag,
+             aes(x = c.lfs, y = z_S_std, colour = 'S_std_2'),
+             alpha = 0.5) +
+  stat_smooth(data = frag,
+              method = 'lm', 
+              aes(x = c.lfs, y = z_S_PIE,
+                  colour = 'S_PIE')) +
+  stat_smooth(data = frag,
+              method = 'lm',
+              aes(x = c.lfs, y = z_S_n, colour = 'S_n')) +
+  stat_smooth(data = frag,
+              method = 'lm',
+              aes(x = c.lfs, y = z_S_cov, colour = 'S_cov')) +
+  stat_smooth(data = frag,
+              method = 'lm',
+              aes(x = c.lfs, y = z_S_std, colour = 'S_std_2')) +
+  # scale_x_continuous(trans = 'log10') +
+  # scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128, 256)) +
+  scale_colour_manual(name = 'metric',
+                      values = c('N_std' = '#00455c', 'S_PIE' = '#006a6f', 
+                                 'S_n' = '#008c57', 'S_cov' = '#83a51b', 
+                                 'S_std_2' = '#ffa600')) +
+  labs(x = 'Fragment size (hectares)',
+       y = 'z-score') +
+  theme_bw() +
+  theme(legend.key = element_blank(),
+        legend.position = c(0.1,0.9)) +
+  guides(colour = guide_legend(override.aes = list(fill=NA)))
+
+ggplot() +
+  geom_histogram(data = frag %>% filter(S_std_mean>0),
+                 aes(x = z_S_std))
+
+ggplot() +
+  geom_histogram(data = frag,
+                 aes(x = z_S_PIE))
+
+ggplot() +
+  geom_histogram(data = frag,
+                 aes(x = z_S_cov))
+
+ggplot() +
+  geom_histogram(data = frag,
+                 aes(x = z_S_cov))

@@ -12,23 +12,40 @@ frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
 
 #----- simplest model: diversity as a function of fragment size; allow fragment size to vary by study----
-get_prior(S_std ~ c.lfs + (c.lfs | dataset_label),
-          family = lognormal(),
+get_prior(z_S_std ~ c.lfs + (c.lfs | dataset_label),
+          # family = lognormal(),
           data = frag)
 
+code <- make_stancode(formula = z_S_std ~ c.lfs + (c.lfs | dataset_label),
+          # family = lognormal(),
+          data = frag)
 # alternate: set some weakly regularising priors
-# rp <- c(prior(normal(0, 1), class = Intercept),
-#         prior(normal(0, 0.5), class = b),
-#         prior(exponential(1), class = sd))
+rp <- c(prior(normal(0, 1), class = Intercept),
+        prior(normal(0, 0.5), class = b),
+        prior(exponential(1), class = sd))
 # 
 
 # fit with default priors
-Sstd_lognorm_fragSize <- brm(S_std ~ c.lfs + (c.lfs | dataset_label), 
+Sstd_lognorm_fragSize <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
                               # fit to data with variation in frag_size_num
-                              data = frag %>% filter(S_std>0),
+                              data = frag %>% filter(S_std_mean>0),
                               #prior = rp,
                               family = 'lognormal', # our standardised richness are not integer values
                               cores = 4, chains = 4)
+
+z_Sstd_norm_fragSize_asymL <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label), 
+                             # some z-scores are infinite due to sd(expected) = 0
+                            data = frag %>% filter(S_std_mean>0 & 
+                                                     !is.na(z_S_std) & 
+                                                     !is.infinite(z_S_std)),
+                             # prior = rp,
+                             # our z-scores are distributed around zero so leave family as default gaussian
+                            # alternate use asymmetric laplace to do better job of modelling spike in z-scores
+                            # centred at zero
+                            family = asym_laplace(),
+                             cores = 4, 
+                            chains = 4
+                            )
 
 # refit without the studies with pooled sampling designs
 Sstd_lognorm_fragSize_pool <- brm(S_std ~ c.lfs + (c.lfs | dataset_label), 
