@@ -45,6 +45,11 @@ z_Sstd_studT_fragSize <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label),
                              chains = 4
 )
 
+pp_check(z_Sstd_asymL_fragSize) +
+  scale_x_continuous(limits = c(-20, 20))
+
+pp_check(z_Sstd_studT_fragSize) +
+  scale_x_continuous(limits = c(-20, 20))
 
 z_Sstd_studT_fragSize <- add_criterion(z_Sstd_studT_fragSize, criterion = 'loo')
 z_Sstd_asymL_fragSize <- add_criterion(z_Sstd_asymL_fragSize, criterion = 'loo')
@@ -99,13 +104,13 @@ z_Sn_skewN_fragSize <- brm(z_S_n ~ c.lfs + (c.lfs | dataset_label),
 )
 
 pp_check(z_Sn_asymL_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 pp_check(z_Sn_studT_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 pp_check(z_Sn_skewN_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 z_Sn_asymL_fragSize <- add_criterion(z_Sn_asymL_fragSize, criterion = 'loo')
 z_Sn_studT_fragSize <- add_criterion(z_Sn_studT_fragSize, criterion = 'loo')
@@ -149,10 +154,10 @@ z_Scov_studT_fragSize <- brm(z_S_cov ~ c.lfs + (c.lfs | dataset_label),
 )
 
 pp_check(z_Scov_asymL_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 pp_check(z_Scov_studT_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 z_Scov_asymL_fragSize <- add_criterion(z_Scov_asymL_fragSize, criterion = 'loo')
 z_Scov_studT_fragSize <- add_criterion(z_Scov_studT_fragSize, criterion = 'loo')
@@ -195,10 +200,10 @@ z_S_PIE_studT_fragSize <- brm(z_S_PIE ~ c.lfs + (c.lfs | dataset_label),
 
 
 pp_check(z_S_PIE_asymL_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 pp_check(z_S_PIE_studT_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 z_S_PIE_asymL_fragSize <- add_criterion(z_S_PIE_asymL_fragSize, criterion = 'loo')
 z_S_PIE_studT_fragSize <- add_criterion(z_S_PIE_studT_fragSize, criterion = 'loo')
@@ -241,10 +246,10 @@ z_S_chao_studT_fragSize <- brm(z_S_chao ~ c.lfs + (c.lfs | dataset_label),
 
 
 pp_check(z_S_chao_asymL_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 pp_check(z_S_chao_studT_fragSize) +
-  scale_x_continuous(limits = c(-10, 10))
+  scale_x_continuous(limits = c(-20, 20))
 
 z_S_chao_asymL_fragSize <- add_criterion(z_S_chao_asymL_fragSize, criterion = 'loo')
 z_S_chao_studT_fragSize <- add_criterion(z_S_chao_studT_fragSize, criterion = 'loo')
