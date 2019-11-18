@@ -30,7 +30,9 @@ taxa_colour = gg_legend(taxa_legend)
 z_S_std_regPlot <-
 ggplot() +
   # data
-  geom_point(data = frag,
+  geom_point(data = frag %>% filter(S_std_mean>0 & 
+                                      !is.na(z_S_std) & 
+                                      !is.infinite(z_S_std)),
              aes(x = frag_size_num, y = z_S_std, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = z_Sstd_studT_fragSize_group_coefs,
@@ -80,7 +82,9 @@ ggplot() +
 # Sn
 z_Sn_regPlot <- ggplot() +
   # data
-  geom_point(data = frag,
+  geom_point(data = frag %>% filter(S_n_mean>0 & 
+                                      !is.na(z_S_n) & 
+                                      !is.infinite(z_S_n)),
              aes(x = frag_size_num, y = z_S_n, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = z_Sn_studT_fragSize_group_coefs,
@@ -130,7 +134,9 @@ z_Sn_regPlot <- ggplot() +
 # S_PIE
 z_Spie_regPlot <- ggplot() +
   # data
-  geom_point(data = frag,
+  geom_point(data = frag %>% filter(S_PIE_mean>0 & 
+                                      !is.na(z_S_PIE) & 
+                                      !is.infinite(z_S_PIE)),
              aes(x = frag_size_num, y = z_S_PIE, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = z_S_PIE_fragSize_group_coefs,
@@ -180,7 +186,9 @@ z_Spie_regPlot <- ggplot() +
 # S_cov
 z_Scov_regPlot <- ggplot() +
   # data
-  geom_point(data = frag,
+  geom_point(data = frag %>% filter(S_cov_mean>0 & 
+                                      !is.na(z_S_cov) & 
+                                      !is.infinite(z_S_cov)),
              aes(x = frag_size_num, y = z_S_cov, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = z_Scov_studT_fragSize_group_coefs,
@@ -229,7 +237,9 @@ z_Scov_regPlot <- ggplot() +
 # S_cov
 z_Schao_regPlot <- ggplot() +
   # data
-  geom_point(data = frag,
+  geom_point(data = frag %>% filter(S_chao_mean>0 & 
+                                      !is.na(z_S_chao) & 
+                                      !is.infinite(z_S_chao)),
              aes(x = frag_size_num, y = z_S_chao, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = z_Schao_studT_fragSize_group_coefs,
