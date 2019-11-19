@@ -122,10 +122,16 @@ timeLegend <-
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
   theme_bw() +
-  theme(legend.position = 'top',
-        legend.direction = 'horizontal',
-        # legend.justification = c(1,1),
-        legend.background = element_blank())
+  theme(legend.position = 'right',
+        legend.direction = 'vertical',
+        # legend.justification = c(0,0),
+        legend.box.spacing = unit(0, units = 'mm'),
+        legend.background = element_blank(),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 8),
+        # legend.text.align = 0.8
+        ) +
+  guides(colour = guide_legend(title = 'Time since\nfragmentation'))
 
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
 time_colour_legend <- gg_legend(timeLegend)
@@ -134,11 +140,11 @@ beta_turnover_sstd_slope <-
   ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-             aes(y = jtu_slope, x = Sstd, 
+             aes(x = jtu_slope, y = Sstd, 
                   colour = time.since.fragmentation
                  )) +
   stat_smooth(data = study_slope_coefs,
-            aes(y = jtu_slope, x = Sstd
+            aes(x = jtu_slope, y = Sstd
                 ),
             method = 'lm', se = F, colour = 'black'
             ) +
@@ -155,22 +161,24 @@ beta_turnover_sstd_slope <-
                      values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
-  labs(y = 'Study-level turnover slope',
-       x = ''
+  labs(x = 'Standardised turnover ~ fragment size slope',
+       y = ''
        # y = expression(paste('Study-level ', S[std], 'slope'))
        ) +
   theme_bw() +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+        axis.title = element_text(size = 10),
+        plot.margin = unit(c(0,4,0,0), units = 'mm'))
 
 
 beta_nestedness_sstd_study <-
   ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-           aes(y = jne_slope, x = Sstd, 
+           aes(x = jne_slope, y = Sstd, 
                colour = time.since.fragmentation)) +
   stat_smooth(data = study_slope_coefs,
-              aes(y = jne_slope, x = Sstd,
+              aes(x = jne_slope, y = Sstd,
                   # colour = time.since.fragmentation
                   ),
               method = 'lm', se = F, colour = 'black'
@@ -187,28 +195,29 @@ beta_nestedness_sstd_study <-
   scale_color_manual(values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
-  labs(y = 'Study-level nestedness slope',
-       x = ''
+  labs(x = 'Standardised nestedness ~ fragment size slope',
+       y = ''
        # y = expression(paste('Study-level biodiversity measure slope'))
        ) +
   theme_bw() +
   theme(legend.position = 'none',
         legend.justification = c(1,1),
         legend.direction = 'horizontal',
-        legend.background = element_blank())
+        legend.background = element_blank(), 
+        axis.title = element_text(size = 10))
 
-top = time_colour_legend
-bottom = cowplot::plot_grid(beta_turnover_sstd_slope, 
+right = time_colour_legend
+left = cowplot::plot_grid(beta_turnover_sstd_slope, 
                    beta_nestedness_sstd_study,
                    align = 'hv',
                    nrow = 1,
                    labels = 'auto') +
-  cowplot::draw_label(expression(paste('Study-level species richness slope')),
-                      # angle = 90,
-                      y = 0.03, size = 12)
+  cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
+                      angle = 90,
+                      x = 0.03, y = 0.5, size = 10)
 
-cowplot::plot_grid(top, bottom, nrow = 2, rel_heights = c(0.1, 1))
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/Fig4_colour.png', width = 170, height = 80, units = 'mm')
+cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/Fig4_revision.png', width = 200, height = 80, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
 
 # relationship between the intercepts of turnover and nestedness tell us about their

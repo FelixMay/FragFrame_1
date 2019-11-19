@@ -3,7 +3,7 @@
 # get posterior samples from model for overall trend and study-level slopes
 
 # load model fits and the data
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref_revision.Rdata')
 
 frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 

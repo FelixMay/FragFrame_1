@@ -6,14 +6,14 @@
 source(paste0(path2wd, '05a_fragSize_coef_wrangle.R'))
 
 #---- regression plots showing study-level slopes-----
-setwd(paste0(path2Dropbox, '/analysis_apr19/figures/'))
+setwd(paste0(path2Dropbox, '/Manuscript for Nature/revision1/figures/'))
 # setwd(paste(path2temp,"figs/", sep = ""))
 
 # plot to generate legend 
 taxa_legend <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std, colour = taxa),
+             aes(x = frag_size_num, y = S_std_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -40,7 +40,7 @@ taxa_colour = gg_legend(taxa_legend)
 S_std_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std, colour = taxa),
+             aes(x = frag_size_num, y = S_std_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -78,8 +78,8 @@ S_std_regPlot <- ggplot() +
   # scale_color_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Species richness')),
-       tag = 'b') +
+       y = expression(paste('Standardised species richness')),
+       tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
         text = element_text(size = 13))
@@ -88,7 +88,7 @@ S_std_regPlot <- ggplot() +
 Sn_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_n, colour = taxa),
+             aes(x = frag_size_num, y = S_n_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Sn_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -126,7 +126,7 @@ Sn_regPlot <- ggplot() +
   # scale_colour_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Rarefied richness')),
+       y = expression(paste('Standardised and \nrarefied richness')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none', 
@@ -136,7 +136,7 @@ Sn_regPlot <- ggplot() +
 Spie_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_PIE, colour = taxa),
+             aes(x = frag_size_num, y = S_PIE_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = S_PIE_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -174,8 +174,8 @@ Spie_regPlot <- ggplot() +
   # scale_color_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Evenness')),
-       tag = 'c') +
+       y = expression(paste('Standardised evenness')),
+       tag = 'd') +
   theme_bw() +
   theme(legend.position = 'none', text = element_text(size = 13))
 
@@ -183,7 +183,7 @@ Spie_regPlot <- ggplot() +
 Scov_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_cov, colour = taxa),
+             aes(x = frag_size_num, y = S_cov_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Scov_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -220,7 +220,7 @@ Scov_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = 'Coverage standardised richness',
+       y = 'Sampling and coverage\nstandardised richness',
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -230,7 +230,7 @@ Scov_regPlot <- ggplot() +
 Schao_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_chao, colour = taxa),
+             aes(x = frag_size_num, y = S_chao_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Schao_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -267,7 +267,7 @@ Schao_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Asymptotic richness')),
+       y = expression(paste('Standardised\nasymptotic richness')),
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -318,8 +318,8 @@ Nstd_regPlot <- ggplot() +
   # scale_color_grey(guide = F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Number of individuals')),
-       tag = 'a') +
+       y = expression(paste('Standardised number of individuals')),
+       tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
         text = element_text(size = 13))
@@ -329,14 +329,20 @@ top <- cowplot::plot_grid(taxa_colour)
 bottom <- cowplot::plot_grid(Nstd_regPlot,
                    S_std_regPlot,
                    Spie_regPlot,
-                   nrow = 1, align = 'hv')
-
-cowplot::plot_grid(top, bottom, 
-                   nrow = 2,
-                   rel_heights = c(0.1,1)) +
+                   nrow = 1, align = 'hv') +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05)
 
-# ggsave('fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
+# bottom_panel <- cowplot::plot_grid(top, bottom, 
+#                    nrow = 2,
+#                    rel_heights = c(0.1,1)) 
+
+# new figure two has map on it
+source(paste0(path2wd, '6_plot_map.R'))
+
+cowplot::plot_grid(map_taxa,
+                   bottom,
+                   nrow = 2)
+# ggsave('fig2_revision.png', width = 270, height = 180, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
                                   Scov_regPlot,
@@ -346,7 +352,7 @@ cowplot::plot_grid(top, bottom_supp,
                    nrow = 2,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05)
-# ggsave('figS1_otherMetrics_taxa_color.png', width = 250, height = 80, units = 'mm')
+# ggsave('figS1_otherMetrics_revision.png', width = 250, height = 80, units = 'mm')
 
 ##---coef plots---------
 # get the metadata...

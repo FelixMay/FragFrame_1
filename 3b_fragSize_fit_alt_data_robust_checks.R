@@ -6,7 +6,7 @@
 # list of files
 files = list.files(path = path2data,
                    pattern = 'biodiv_frag_fcont')
-# I have already fit modesl to 2_biodiv_frag_fcont_10_mabund_as_is.csv
+# I have already fit models to 2_biodiv_frag_fcont_10_mabund_as_is.csv
 files = files[-which(files=='2_biodiv_frag_fcont_10_mabund_as_is.csv')]
 
 for(i in 1:length(files)){
@@ -23,32 +23,32 @@ for(i in 1:length(files)){
   #         prior(normal(0,1), class = b),
   #         prior(exponential(1), class = sd))  
   
-  Sstd_lognorm_fragSize <- brm(S_std ~ c.lfs + (c.lfs | dataset_label), 
+  Sstd_lognorm_fragSize <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
                                 # fit to data with variation in frag_size_num
-                                data = frag %>% filter(S_std > 0),
+                                data = frag %>% filter(S_std_mean > 0),
                                 # prior = rp,
                                 family = 'lognormal', # our standardised richness are not integer values
                                 cores = 4, chains = 4)
 
-  Sn_lognorm_fragSize <- brm(S_n ~ c.lfs + (c.lfs | dataset_label), 
-                             data = frag %>% filter(S_n > 0),
+  Sn_lognorm_fragSize <- brm(S_n_mean ~ c.lfs + (c.lfs | dataset_label), 
+                             data = frag %>% filter(S_n_mean > 0),
                              # prior = rp,
                              family = 'lognormal',
                              cores = 4, chains = 4)
   
-  Scov_lognorm_fragSize <- brm(S_cov ~ c.lfs + (c.lfs | dataset_label), 
-                               data = frag %>% filter(S_cov > 0),
+  Scov_lognorm_fragSize <- brm(S_cov_mean ~ c.lfs + (c.lfs | dataset_label), 
+                               data = frag %>% filter(S_cov_mean > 0),
                                # prior = rp,
                                family = hurdle_lognormal(),
                                cores = 4, chains = 4)
 
-  S_PIE_lognorm_fragSize <- brm(S_PIE ~ c.lfs + (c.lfs | dataset_label), 
-                                data = frag %>% filter(S_PIE > 0),
+  S_PIE_lognorm_fragSize <- brm(S_PIE_mean ~ c.lfs + (c.lfs | dataset_label), 
+                                data = frag %>% filter(S_PIE_mean > 0),
                                 # prior = rp,
                                 family = 'lognormal',
                                 cores = 4, chains = 4)
-  S_chao_lognorm_fragSize <- brm(S_chao ~ c.lfs + (c.lfs | dataset_label), 
-                                 data = frag %>% filter(S_chao > 0),
+  S_chao_lognorm_fragSize <- brm(S_chao_mean ~ c.lfs + (c.lfs | dataset_label), 
+                                 data = frag %>% filter(S_chao_mean > 0),
                                  # prior = rp,
                                  family = 'lognormal',
                                  cores = 4, chains = 4)

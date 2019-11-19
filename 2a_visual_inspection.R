@@ -20,30 +20,30 @@ setwd(paste(path2temp,"figs/visual_inspection/", sep = ""))
 # we are mostly interested in diversity as a function of fragment size
 ggplot() +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_PIE, colour = 'S_PIE'),
+             aes(x = frag_size_num, y = S_PIE_mean, colour = 'S_PIE'),
              alpha = 0.5) +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_n, colour = 'S_n'),
+             aes(x = frag_size_num, y = S_n_mean, colour = 'S_n'),
              alpha = 0.5) +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_cov, colour = 'S_cov'),
+             aes(x = frag_size_num, y = S_cov_mean, colour = 'S_cov'),
              alpha = 0.5) +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std_2, colour = 'S_std_2'),
+             aes(x = frag_size_num, y = S_std_mean, colour = 'S_std_2'),
              alpha = 0.5) +
   stat_smooth(data = frag,
               method = 'lm', 
-              aes(x = frag_size_num, y = S_PIE,
+              aes(x = frag_size_num, y = S_PIE_mean,
                   colour = 'S_PIE')) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = frag_size_num, y = S_n, colour = 'S_n')) +
+              aes(x = frag_size_num, y = S_n_mean, colour = 'S_n')) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = frag_size_num, y = S_cov, colour = 'S_cov')) +
+              aes(x = frag_size_num, y = S_cov_mean, colour = 'S_cov')) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = frag_size_num, y = S_std_2, colour = 'S_std_2')) +
+              aes(x = frag_size_num, y = S_std_mean, colour = 'S_std_2')) +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128, 256)) +
   scale_colour_manual(name = 'metric',
@@ -82,14 +82,14 @@ ggplot() +
 # what does the study-level variation look like?
 ggplot() +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_n, colour = sample_design)) +
+             aes(x = frag_size_num, y = S_n_mean, colour = sample_design)) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = frag_size_num, y = S_n),
+              aes(x = frag_size_num, y = S_n_mean),
               colour = 'black') +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_n,
+              aes(x = frag_size_num, y = S_n_mean,
                   group = dataset_label,
                   colour = sample_design),
               lwd = 0.3) +
@@ -107,12 +107,12 @@ ggplot() +
 # this plot is taxa across all studies...
 ggplot() +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_n, 
+             aes(x = frag_size_num, y = S_n_mean, 
                  colour = taxa),
              alpha = 0.3) +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_n, 
+              aes(x = frag_size_num, y = S_n_mean, 
                   colour = taxa)) +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128,256)) +
@@ -123,17 +123,17 @@ ggplot() +
 #....but I think we should allow the taxa to vary within studies too:
 ggplot() +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_n, 
+             aes(x = frag_size_num, y = S_n_mean, 
                  colour = taxa), 
              alpha = 0.3, size = 1.5) +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_n,
+              aes(x = frag_size_num, y = S_n_mean,
                   colour = taxa),
               size = 1.5) +
   stat_smooth(data = frag,
               method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_n, group = dataset_label,
+              aes(x = frag_size_num, y = S_n_mean, group = dataset_label,
                   colour = taxa),
               size = 0.3) +
   scale_x_continuous(trans = 'log10') +
@@ -155,15 +155,15 @@ ggplot() +
   facet_wrap(~f.Matrix.category) +
   # throw out the fragments for which we don't have Matrix.category data
   geom_point(data = frag %>% filter(!is.na(Matrix.category)),
-             aes(x = frag_size_num, y = S_n, 
+             aes(x = frag_size_num, y = S_n_mean, 
                  colour = taxa)) +
   stat_smooth(data = frag %>% filter(!is.na(Matrix.category)),
               method = 'lm',
-              aes(x = frag_size_num, y = S_n),
+              aes(x = frag_size_num, y = S_n_mean),
               colour = 'black') +
   stat_smooth(data = frag %>% filter(!is.na(Matrix.category)),
               method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_n, group = dataset_label,
+              aes(x = frag_size_num, y = S_n_mean, group = dataset_label,
                   colour = taxa),
               lwd = 0.3) +
   scale_x_continuous(trans = 'log10') +
@@ -188,15 +188,15 @@ ggplot() +
   facet_wrap(~f.tsf) +
   # throw out the fragments for which we don't have Matrix.category data
   geom_point(data = frag %>% filter(!is.na(time.since.fragmentation)),
-             aes(x = frag_size_num, y = S_n, 
+             aes(x = frag_size_num, y = S_n_mean, 
                  colour = taxa)) +
   stat_smooth(data = frag %>% filter(!is.na(time.since.fragmentation)),
               method = 'lm',
-              aes(x = frag_size_num, y = S_n),
+              aes(x = frag_size_num, y = S_n_mean),
               colour = 'black') +
   stat_smooth(data = frag %>% filter(!is.na(time.since.fragmentation)),
               method = 'lm', se = F,
-              aes(x = frag_size_num, y = S_n, group = dataset_label,
+              aes(x = frag_size_num, y = S_n_mean, group = dataset_label,
                   colour = taxa),
               lwd = 0.3) +
   scale_x_continuous(trans = 'log10') +

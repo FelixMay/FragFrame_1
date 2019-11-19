@@ -235,6 +235,6 @@ save(Sstd_ln_fS_matrix, Sstd_ln_fS_taxa, Sstd_ln_fS_tsf, Sstd_ln_fS_biome, Sstd_
      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome, S_PIE_ln_fS_region,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome, N_std_ln_fS_region,
      Sstd_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref_revision.Rdata')
 
 

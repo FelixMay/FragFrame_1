@@ -413,9 +413,9 @@ bottom = cowplot::plot_grid(
                             sstd_study_posterior_matrix, 
                             nrow = 2)
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Study-level species richness slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Standardised species richness ~ fragment size slope estimate')), y = 0.01)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig3_colour.png',
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/fig3_revision.png',
 #        width = 240,
 #        height = 220,
 #        units = 'mm')
@@ -634,9 +634,9 @@ bottom = cowplot::plot_grid(
                             nrow = 2)
 
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Study-level number of individuals slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), y = 0.01)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS2_colour_abundance_density.png',
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figS2_revision.png',
 #        width = 240,
 #        height = 220,
 #        units = 'mm')
@@ -855,9 +855,9 @@ bottom = cowplot::plot_grid(
   nrow = 2)
 
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Study-level evenness slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), y = 0.01)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figS3_colour_evenness_density.png',
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figS3_revision.png',
 #        width = 240,
 #        height = 220,
 #        units = 'mm')
