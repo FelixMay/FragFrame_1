@@ -443,12 +443,12 @@ cowplot::plot_grid(Nstd_robust,
                    S_PIE_robust,
                    nrow = 1, align = 'hv',
                    labels = 'auto') +
-  cowplot::draw_label('Slope estimate for reference standardisation',
-                      y = 0.03, size = 13) +
-  cowplot::draw_label('Slope estimate for\nalternate standardisation',
-                      x = 0.02, angle = 90, size = 13)
+  cowplot::draw_label('Reference standardisation',
+                      y = 0.03, size = 12) +
+  cowplot::draw_label('Alternate standardisation',
+                      x = 0.01, angle = 90, size = 12)
 
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/figSx_robust_main.png',
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figs6_robust.png',
 #        width = 250,
 #        height = 80,
 #        units = 'mm')

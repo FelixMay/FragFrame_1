@@ -4,7 +4,7 @@
 # for models fit to data standardised in slightly different ways
 
 # code to get coefs for reference fits------
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref_revision.Rdata')
 
 frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
@@ -299,7 +299,7 @@ S_PIE_ref_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 1------
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_1_biodiv_frag_fcont_2_mabund_as_is.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_1_biodiv_frag_fcont_2_mabund_as_is_revision.Rdata')
 
 frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_2_mabund_as_is.csv'))
 # add mean centred (log) fragsize
@@ -592,7 +592,7 @@ S_PIE_sens1_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 3------
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_3_biodiv_frag_fcont_100_mabund_as_is.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_3_biodiv_frag_fcont_100_mabund_as_is_revision.Rdata')
 
 frag <- read_csv(paste0(path2data, '3_biodiv_frag_fcont_100_mabund_as_is.csv'))
 
@@ -885,7 +885,7 @@ S_PIE_sens3_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 8------
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_4_biodiv_frag_fcont_10_mabund_ceiling.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_4_biodiv_frag_fcont_10_mabund_ceiling_revision.Rdata')
 
 frag <- read_csv(paste0(path2data, '4_biodiv_frag_fcont_10_mabund_ceiling.csv'))
 
@@ -1178,7 +1178,7 @@ S_PIE_sens4_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 11------
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_5_biodiv_frag_fcont_10_mabund_multiply.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_5_biodiv_frag_fcont_10_mabund_multiply_revision.Rdata')
 
 frag <- read_csv(paste0(path2data, '5_biodiv_frag_fcont_10_mabund_multiply.csv'))
 
