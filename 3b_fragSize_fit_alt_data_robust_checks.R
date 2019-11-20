@@ -59,7 +59,7 @@ for(i in 1:length(files)){
                                family = 'lognormal',
                                cores = 4, chains = 4)
   name_2_save = paste0('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_', 
-                       strsplit(files[i], split = '.csv')[[1]], '.Rdata')
+                       strsplit(files[i], split = '.csv')[[1]], '_revision.Rdata')
   
   save(#Sstd1_lognorm_fragSize, 
     Sstd_lognorm_fragSize,
