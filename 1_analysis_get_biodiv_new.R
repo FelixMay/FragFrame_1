@@ -37,19 +37,25 @@ Inf_to_NA <- function(x)
 }
 
 # Get biodiversity indices from abundance vector
-biodiv_abund <- function(abund_vec, n_base, cov_base){
+biodiv_abund <- function(abund_vec, N_std, n_base, cov_base){
    
-   abund_vec <- as.numeric(abund_vec)
+   abund_vec <- as.numeric(abund_vec[abund_vec > 0])
    
    # get mobr indices
    mob <- calc_biodiv(abund_mat = matrix(abund_vec, nrow = 1, ncol = length(abund_vec)),
                       groups = "sample1",
-                      index = c("S", "S_n", "S_asymp", "S_PIE"), 
+                      index = c("S_n", "S_asymp", "S_PIE"), 
                       effort = n_base[1],
                       extrapolate = T,
                       return_NA = F)
    
-   out <- c(S_std     = mob$value[mob$index == "S"],
+   S_std2 <- rarefaction(as.numeric(abund_vec),
+                         method = "indiv",
+                         effort = N_std,
+                         extrapolate = T,
+                         quiet_mode = T)
+   
+   out <- c(S_std2    = as.numeric(S_std2),
             S_n       = mob$value[mob$index  == "S_n"],
             S_PIE     = mob$value[mob$index == "S_PIE"],
             S_cov     = NA,
@@ -61,7 +67,7 @@ biodiv_abund <- function(abund_vec, n_base, cov_base){
                                          level = cov_base,
                                          conf = NULL))
    if (!is.error(S_cov)){
-      out["S_cov"] <- S_cov[["q = 1"]]
+      out["S_cov"] <- S_cov[["q = 0"]]
    }
    
   return(out)
@@ -70,11 +76,12 @@ biodiv_abund <- function(abund_vec, n_base, cov_base){
 
 biodiv_resample <- function(dat, N_std, n_base, cov_base){
    sample1 <- sample(dat$species,
-                     size = round(N_std),
-                     prob = dat$species,
+                     #size = round(N_std),
+                     size = sum(dat$abundance),
+                     prob = dat$abundance,
                      replace = T)
    abund_sample <- table(sample1)
-   biodiv_sample <- biodiv_abund(abund_sample, n_base, cov_base)
+   biodiv_sample <- biodiv_abund(abund_sample, N_std, n_base, cov_base)
 }
 
 biodiv_subplot <- function(abund_dat, N_std, n_base, cov_base, n_samples = 10){
@@ -85,15 +92,29 @@ biodiv_subplot <- function(abund_dat, N_std, n_base, cov_base, n_samples = 10){
    #if (sum(spec_abund$abundance) == N_std){
       # biodiv <- biodiv_abund(spec_abund$abundance, n_base = n_base, cov_base = cov_base)
    #} else {
-      samples <- replicate(n_samples, biodiv_resample(spec_abund,
+   
+   # Calculate S_std by resample using N_std
+   S_std1 <- replicate(n_samples, {
+      sample1 <- sample(spec_abund$species,
+                        size = N_std,
+                        prob = spec_abund$abundance,
+                        replace = T)
+      abund_sample <- table(sample1)
+      sum(abund_sample > 0)
+      })
+   
+   samples <- replicate(n_samples, biodiv_resample(spec_abund,
                                                       N_std = N_std,
                                                       n_base = n_base,
                                                       cov_base = cov_base))
-      biodiv_mean <- rowMeans(samples)
-      biodiv_sd   <- apply(samples, 1, sd)
+   samples <- rbind(S_std1, samples)
+   
+   biodiv_mean <- rowMeans(samples)
+   biodiv_sd   <- apply(samples, 1, sd)
       
-      names(biodiv_mean) <- paste(names(biodiv_mean), "mean", sep = "_")
-      names(biodiv_sd)   <- paste(names(biodiv_sd), "sd", sep = "_")
+   names(biodiv_mean) <- paste(names(biodiv_mean), "mean", sep = "_")
+   names(biodiv_sd)   <- paste(names(biodiv_sd), "sd", sep = "_")
+   
    #}
       
    biodiv <- c(biodiv_mean, biodiv_sd)
@@ -280,6 +301,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    n_min_r <- min(2 * dat_biodiv$N)
    
    dat_biodiv$n_base <- round(min(n_max, n_min_r))   
+   # dat_biodiv$n_base <- round(max(n_max, n_min_r))   
 
    # Chao et al. 2014 suggests using the maximum here,
    # we decided to go for a more conservative measure
@@ -302,7 +324,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    # calculate biodiv indices
    biodiv_indices <- mapply(biodiv_subplot,
                             split(abund_mat, 1:nrow(abund_mat)), 
-                            N_std = dat_biodiv$N_std,
+                            N_std = round(dat_biodiv$N_std),
                             MoreArgs = list(n_base = dat_biodiv$n_base[1],
                                             cov_base = dat_biodiv$cov_base[1],
                                             n_samples = n_resamples)
@@ -339,14 +361,14 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    # add mean and sd of largest fragment to all rows
    largest_frag <- dat_biodiv_avg %>% 
       filter(frag_size_num == max(frag_size_num)) %>%
-      select(S_std_mean:S_chao_sd) %>%
+      select(S_std1_mean:S_chao_sd) %>%
       summarise_all(mean)
    names(largest_frag) <- paste("exp", names(largest_frag), sep = "_")
    
    dat_out <- cbind(dat_biodiv_avg, largest_frag)
    
    dat_out <- dat_out %>%
-      mutate(z_S_std  = (S_std_mean - exp_S_std_mean)/exp_S_std_sd,
+      mutate(z_S_std  = (S_std1_mean - exp_S_std1_mean)/exp_S_std1_sd,
              z_S_n    = (S_n_mean - exp_S_n_mean)/exp_S_n_sd,
              z_S_PIE  = (S_PIE_mean - exp_S_PIE_mean)/exp_S_PIE_sd,
              z_S_cov  = (S_cov_mean - exp_S_cov_mean)/exp_S_cov_sd,
@@ -451,7 +473,7 @@ head(dat_all)
 
 frag_label <- dat_all %>% select(dataset_label, frag_id) %>% distinct()
 dim(frag_label) 
-data_set <- dat_all %>% filter(dataset_label == "Brosi_2008")
+data_set <- dat_all %>% filter(dataset_label == "Andresen_2003")
 test <- get_biodiv(data_set)
 
 data_set %>% 
