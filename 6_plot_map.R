@@ -46,7 +46,8 @@ map_taxa <- ggplot() +
                      labels = c('Amphibians & reptiles', 'Birds',
                                 'Plants', 'Invertebrates', 'Mammals')) +
   labs(x = '', 
-       y = '') +
+       y = '',
+       subtitle = 'a') +
   theme_bw() +
   theme(panel.grid.major = element_line(colour = 'black', size = 0.1), 
         panel.border = element_blank(),
@@ -54,7 +55,8 @@ map_taxa <- ggplot() +
         axis.text = element_blank(),
         legend.position = 'top',
         legend.direction = 'horizontal',
-        plot.margin = unit(c(0,0,0,0), units = 'mm')) +
+        plot.margin = unit(c(0,0,0,0), units = 'mm'),
+        text = element_text(size = 13)) +
   guides(shape = guide_legend(nrow = 2),
          colour = guide_legend(nrow = 2)
          )
@@ -62,13 +64,13 @@ map_taxa <- ggplot() +
 
 # figure 1
 # we want the conceptual figure on the top panel
-top <- cowplot::ggdraw() + cowplot::draw_image('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig1_top.png',
-                                               clip = 'on')
-cowplot::plot_grid(top, map_taxa,
-                   nrow = 2, align = 'hv',
-                   labels = 'auto',
-                   rel_heights = c(0.5,1),
-                   rel_widths = c(0.5,1))
+# top <- cowplot::ggdraw() + cowplot::draw_image('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig1_top.png',
+#                                                clip = 'on')
+# cowplot::plot_grid(top, map_taxa,
+#                    nrow = 2, align = 'hv',
+#                    labels = 'auto',
+#                    rel_heights = c(0.5,1),
+#                    rel_widths = c(0.5,1))
 
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig1_solidPoints.pdf',
 #        width = 150, height = 150, units = 'mm')

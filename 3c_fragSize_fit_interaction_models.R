@@ -29,31 +29,31 @@ frag$time.since.fragmentation <- factor(frag$time.since.fragmentation,
 frag %>% distinct(continent8)
 
 # load fragSize only models
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref.Rdata')
+load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref_revision.Rdata')
 # two-way interactions: matrix permeability first
 Sstd_ln_fS_matrix <- update(Sstd_lognorm_fragSize,
                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                            newdata = frag %>% filter(S_std > 0), 
+                            newdata = frag %>% filter(S_std_mean > 0), 
                             cores = 4)
 
 Sn_ln_fS_matrix <- update(Sn_lognorm_fragSize, 
                           formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_n > 0),
+                          newdata = frag %>% filter(S_n_mean > 0),
                           cores = 4)
 
 Scov_ln_fS_matrix <- update(Scov_lognorm_fragSize, 
                           formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_cov > 0), 
+                          newdata = frag %>% filter(S_cov_mean > 0), 
                           cores = 4)
 
 Schao_ln_fS_matrix <- update(S_chao_lognorm_fragSize, 
                              formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                             newdata = frag %>% filter(S_chao > 0), 
+                             newdata = frag %>% filter(S_chao_mean > 0), 
                              cores = 4)
 
 S_PIE_ln_fS_matrix <- update(S_PIE_lognorm_fragSize, 
                              formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                             newdata = frag %>% filter(S_PIE > 0),
+                             newdata = frag %>% filter(S_PIE_mean > 0),
                              cores = 4)
 
 N_std_ln_fS_matrix <- update(Nstd_lognorm_fragSize, 
@@ -64,27 +64,27 @@ N_std_ln_fS_matrix <- update(Nstd_lognorm_fragSize,
 # repeat for taxa
 Sstd_ln_fS_taxa <- update(Sstd_lognorm_fragSize, 
                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_std > 0), 
+                          newdata = frag %>% filter(S_std_mean > 0), 
                           cores = 4)
 
 Sn_ln_fS_taxa <- update(Sn_lognorm_fragSize, 
                         formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                        newdata = frag %>% filter(S_n > 0), 
+                        newdata = frag %>% filter(S_n_mean > 0), 
                         cores = 4)
 
 Scov_ln_fS_taxa <- update(Scov_lognorm_fragSize, 
                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_cov > 0), 
+                          newdata = frag %>% filter(S_cov_mean > 0), 
                           cores = 4)
 
 Schao_ln_fS_taxa <- update(S_chao_lognorm_fragSize, 
                            formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                           newdata = frag %>% filter(S_chao > 0), 
+                           newdata = frag %>% filter(S_chao_mean > 0), 
                            cores = 4)
 
 S_PIE_ln_fS_taxa <- update(S_PIE_lognorm_fragSize, 
                            formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                           newdata = frag %>% filter(S_PIE > 0), 
+                           newdata = frag %>% filter(S_PIE_mean > 0), 
                            cores = 4)
 
 N_std_ln_fS_taxa <- update(Nstd_lognorm_fragSize, 
@@ -95,27 +95,27 @@ N_std_ln_fS_taxa <- update(Nstd_lognorm_fragSize,
 # repeat for time since fragmentation
 Sstd_ln_fS_tsf <- update(Sstd_lognorm_fragSize, 
                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                         newdata = frag %>% filter(S_std > 0), 
+                         newdata = frag %>% filter(S_std_mean > 0), 
                          cores = 4)
 
 Sn_ln_fS_tsf <- update(Sn_lognorm_fragSize, 
                        formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                       newdata = frag %>% filter(S_n > 0), 
+                       newdata = frag %>% filter(S_n_mean > 0), 
                        cores = 4)
 
 Scov_ln_fS_tsf <- update(Scov_lognorm_fragSize, 
                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                         newdata = frag %>% filter(S_cov > 0),
+                         newdata = frag %>% filter(S_cov_mean > 0),
                          cores = 4)
 
 Schao_ln_fS_tsf <- update(S_chao_lognorm_fragSize, 
                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_chao > 0), 
+                          newdata = frag %>% filter(S_chao_mean > 0), 
                           cores = 4)
 
 S_PIE_ln_fS_tsf <- update(S_PIE_lognorm_fragSize, 
                           formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_PIE > 0), 
+                          newdata = frag %>% filter(S_PIE_mean > 0), 
                           cores = 4)
 
 N_std_ln_fS_tsf <- update(Nstd_lognorm_fragSize, 
@@ -126,27 +126,27 @@ N_std_ln_fS_tsf <- update(Nstd_lognorm_fragSize,
 # repeat for biome
 Sstd_ln_fS_biome <- update(Sstd_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_std > 0),
+                          newdata = frag %>% filter(S_std_mean > 0),
                           cores = 4)
 
 Sn_ln_fS_biome <- update(Sn_lognorm_fragSize, 
                        formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                       newdata = frag %>% filter(S_n > 0),
+                       newdata = frag %>% filter(S_n_mean > 0),
                        cores = 4)
 
 Scov_ln_fS_biome <- update(Scov_lognorm_fragSize, 
                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                         newdata = frag %>% filter(S_cov > 0),
+                         newdata = frag %>% filter(S_cov_mean > 0),
                          cores = 4)
 
 Schao_ln_fS_biome <- update(S_chao_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_chao > 0),
+                          newdata = frag %>% filter(S_chao_mean > 0),
                           cores = 4)
 
 S_PIE_ln_fS_biome <- update(S_PIE_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_PIE > 0),
+                          newdata = frag %>% filter(S_PIE_mean > 0),
                           cores = 4)
 
 N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize, 
@@ -156,27 +156,27 @@ N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize,
 # region
 Sstd_ln_fS_region <- update(Sstd_lognorm_fragSize,
                             formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                            newdata = frag %>% filter(S_std > 0),
+                            newdata = frag %>% filter(S_std_mean > 0),
                             cores = 4)
 
 Sn_ln_fS_region <- update(Sn_lognorm_fragSize, 
                           formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_n > 0),
+                          newdata = frag %>% filter(S_n_mean > 0),
                           cores = 4)
 
 Scov_ln_fS_region <- update(Scov_lognorm_fragSize, 
                             formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                            newdata = frag %>% filter(S_cov > 0),
+                            newdata = frag %>% filter(S_cov_mean > 0),
                             cores = 4)
 
 Schao_ln_fS_region <- update(S_chao_lognorm_fragSize, 
                              formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                             newdata = frag %>% filter(S_chao > 0),
+                             newdata = frag %>% filter(S_chao_mean > 0),
                              cores = 4)
 
 S_PIE_ln_fS_region <- update(S_PIE_lognorm_fragSize, 
                              formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                             newdata = frag %>% filter(S_PIE > 0),
+                             newdata = frag %>% filter(S_PIE_mean > 0),
                              cores = 4)
 
 N_std_ln_fS_region <- update(Nstd_lognorm_fragSize, 
@@ -235,6 +235,6 @@ save(Sstd_ln_fS_matrix, Sstd_ln_fS_taxa, Sstd_ln_fS_tsf, Sstd_ln_fS_biome, Sstd_
      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome, S_PIE_ln_fS_region,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome, N_std_ln_fS_region,
      Sstd_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref.Rdata')
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref_revision.Rdata')
 
 
