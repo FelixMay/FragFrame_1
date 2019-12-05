@@ -22,21 +22,38 @@ frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
  
 
 # sample effort standardised species richness 
-Sstd_lognorm_fragSize <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
+Sstd1_lognorm_fragSize <- brm(S_std1_mean ~ c.lfs + (c.lfs | dataset_label), 
                               # fit to data with variation in frag_size_num
-                              data = frag %>% filter(S_std_mean>0),
+                              data = frag %>% filter(S_std1_mean>0),
                               #prior = rp,
                               family = 'lognormal', # our standardised richness are not integer values
                               cores = 4, chains = 4)
 
 # refit without the studies with pooled sampling designs
-Sstd_lognorm_fragSize_pool <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
+Sstd1_lognorm_fragSize_pool <- brm(S_std1_mean ~ c.lfs + (c.lfs | dataset_label), 
                               # fit to data with variation in frag_size_num
                               data = frag %>% filter(sample_design!='pooled'),
                               #prior = rp,
                               family = 'lognormal', # our standardised richness are not integer values
                               cores = 4, chains = 4,
                               control = list(adapt_delta = 0.95))
+
+# sample effort standardised species richness 
+Sstd2_lognorm_fragSize <- brm(S_std2_mean ~ c.lfs + (c.lfs | dataset_label), 
+                              # fit to data with variation in frag_size_num
+                              data = frag %>% filter(S_std1_mean>0),
+                              #prior = rp,
+                              family = 'lognormal', # our standardised richness are not integer values
+                              cores = 4, chains = 4)
+
+# refit without the studies with pooled sampling designs
+Sstd2_lognorm_fragSize_pool <- brm(S_std2_mean ~ c.lfs + (c.lfs | dataset_label), 
+                                  # fit to data with variation in frag_size_num
+                                  data = frag %>% filter(sample_design!='pooled'),
+                                  #prior = rp,
+                                  family = 'lognormal', # our standardised richness are not integer values
+                                  cores = 4, chains = 4,
+                                  control = list(adapt_delta = 0.95))
 
 # richness standardised by number of individuals
 Sn_lognorm_fragSize <- brm(S_n_mean ~ c.lfs + (c.lfs | dataset_label), 
@@ -108,8 +125,10 @@ Nstd_lognorm_fragSize_pool <- brm(N_std ~ c.lfs + (c.lfs | dataset_label),
                              cores = 4, chains = 4)
 
 
-save(Sstd_lognorm_fragSize,
-     Sstd_lognorm_fragSize_pool,
+save(Sstd1_lognorm_fragSize,
+     Sstd1_lognorm_fragSize_pool,
+     Sstd2_lognorm_fragSize,
+     Sstd2_lognorm_fragSize_pool,
      Sn_lognorm_fragSize,
      Sn_lognorm_fragSize_pool,
      S_PIE_lognorm_fragSize,
