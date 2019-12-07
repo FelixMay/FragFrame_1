@@ -3,7 +3,7 @@
 # code to plot regressions for all metrics (no interaction models)
 
 # get the coefficients for all the results
-source(paste0(path2wd, '05a_fragSize_coef_wrangle.R'))
+source(paste0(path2wd, '5a_fragSize_coef_wrangle.R'))
 
 #---- regression plots showing study-level slopes-----
 setwd(paste0(path2Dropbox, '/Manuscript for Nature/revision1/figures/'))
@@ -370,9 +370,10 @@ meta <- meta %>%
 # there are different studies retained for each metric, so put 'em together for each plot separately
 S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>% 
     mutate(S_std_slope = Slope,
+           error = error,
            S_std_lower = Slope_lower,
            S_std_upper = Slope_upper) %>% 
-    select(dataset_label, S_std_slope, S_std_lower, S_std_upper) %>% 
+    select(dataset_label, S_std_slope, error, S_std_lower, S_std_upper) %>% 
   left_join(meta,
             by = 'dataset_label')
 
@@ -502,3 +503,15 @@ ggplot() +
 
 # ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/decay_latitude.png', width = 120, height = 120, units = 'mm')
 with(S_std_study_slope, summary(lm(S_std_slope ~ abs(y))))
+# include uncertainty in the study-level estimate of the 
+S_std_study_slope <- S_std_study_slope %>% 
+  mutate(abs_lat = abs(y))
+
+slope_lat <- brms::brm(bf(S_std_slope | se(error) ~ abs_lat + (1|dataset_label)),
+                       data = S_std_study_slope,
+                       cores = 4, chains = 4)
+
+pp_check(slope_lat)
+plot(slope_lat)
+brms::marginal_effects(slope_lat, 
+                      re_formula = NULL)

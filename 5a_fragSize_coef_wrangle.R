@@ -87,6 +87,7 @@ Sstd2_lognorm_fragSize_group_coefs <- bind_cols(Sstd2_lognorm_fragSize_coef[[1]]
                                                 Sstd2_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
                                                   as_tibble() %>% 
                                                   mutate(Slope = Estimate,
+                                                         error = Est.Error,
                                                          Slope_lower = Q2.5,
                                                          Slope_upper = Q97.5) %>% 
                                                   dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5)) %>% 
