@@ -13,9 +13,9 @@ setwd(paste0(path2Dropbox, '/Manuscript for Nature/revision1/figures/'))
 taxa_legend <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std_mean, colour = taxa),
+             aes(x = frag_size_num, y = S_std2_mean, colour = taxa),
              size = 1, alpha = 0.25) +
-  geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
+  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = taxa,
                    x = xmin,
@@ -40,9 +40,9 @@ taxa_colour = gg_legend(taxa_legend)
 S_std_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std_mean, colour = taxa),
+             aes(x = frag_size_num, y = S_std2_mean, colour = taxa),
              size = 1, alpha = 0.25) +
-  geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
+  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = taxa,
                    x = xmin,
@@ -51,12 +51,12 @@ S_std_regPlot <- ggplot() +
                    yend = exp(Intercept + Slope * cxmax)),
                size = 0.5) +
   # fixed effect
-  geom_line(data = Sstd_fS_fitted, 
+  geom_line(data = Sstd2_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
             size = 1.5) +
   # fixed effect uncertainty
-  geom_ribbon(data = Sstd_fS_fitted,
+  geom_ribbon(data = Sstd2_fS_fitted,
               aes(x = frag_size_num,
                   ymin = Q2.5,
                   ymax = Q97.5),
@@ -64,11 +64,11 @@ S_std_regPlot <- ggplot() +
   # add regression coefficient and uncertainty interval
   annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
-                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
+                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          " (",
-                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Q2.5'],2),
+                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Q2.5'],2),
                          " - ",
-                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
+                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
            parse = T) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
@@ -362,7 +362,7 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep = ';'
 
 # create unique dataframes with columns for plotting relationships between change in different metrics
 # there are different studies retained for each metric, so put 'em together for each plot separately
-S_std_study_slope <- Sstd_lognorm_fragSize_group_coefs %>% 
+S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>% 
     mutate(S_std_slope = Slope,
            S_std_lower = Slope_lower,
            S_std_upper = Slope_upper) %>% 
@@ -415,7 +415,7 @@ inner_join(S_std_study_slope %>%
              select(dataset_label, S_std_slope, S_std_lower, S_std_upper),
            Nstd_study_slope,
            by = 'dataset_label') %>% 
-  # mutate(Sstd_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
+  # mutate(Sstd2_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
   #        N_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
   ggplot() +
   # facet_wrap(time.since.fragmentation ~ taxa) +
@@ -439,7 +439,7 @@ inner_join(S_std_study_slope %>%
              select(dataset_label, S_std_slope, S_std_lower, S_std_upper),
            Spie_study_slope,
            by = 'dataset_label') %>% 
-  # mutate(Sstd_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
+  # mutate(Sstd2_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
   #        N_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
   ggplot() +
   # facet_wrap(time.since.fragmentation ~ taxa) +
@@ -466,7 +466,7 @@ inner_join(Sn_study_slope %>%
   mutate(Scov_change = ifelse(S_cov_lower > 0, 'delta S_cov > 0', 'no change S_cov '),
          Sn_change = ifelse(S_n_lower > 0, 'delta S_n > 0', 'no change S_n')) %>% 
   ggplot() +
-  facet_wrap(time.since.fragmentation ~ taxa) +
+  # facet_wrap(time.since.fragmentation ~ taxa) +
   geom_point(aes(x = S_n_slope, y = S_cov_slope, colour = interaction(Scov_change, Sn_change)),
              size = 2) +
   geom_linerange(aes(x = S_n_slope, ymin = S_cov_lower, ymax = S_cov_upper),

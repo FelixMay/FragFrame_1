@@ -20,13 +20,13 @@ frag <- left_join(frag,
 
 #------wrangle for plotting
 # for plotting fixed effects----------------
-Sstd_fS_fitted <- cbind(Sstd_lognorm_fragSize$data,
-                         fitted(Sstd_lognorm_fragSize, re_formula = NA)) %>% 
+Sstd2_fS_fitted <- cbind(Sstd2_lognorm_fragSize$data,
+                         fitted(Sstd2_lognorm_fragSize, re_formula = NA)) %>% 
   as_tibble() %>% 
   inner_join(frag %>% distinct(dataset_label, c.lfs, frag_size_num),
              by = c('dataset_label', 'c.lfs'))
 
-Sstd_lognorm_fragSize_fixef <- fixef(Sstd_lognorm_fragSize)
+Sstd2_lognorm_fragSize_fixef <- fixef(Sstd2_lognorm_fragSize)
 
 Sn_fS_fitted <- cbind(Sn_lognorm_fragSize$data,
                       fitted(Sn_lognorm_fragSize, re_formula = NA)) %>% 
@@ -70,21 +70,21 @@ Nstd_lognorm_fragSize_fixef <- fixef(Nstd_lognorm_fragSize)
 
 
 # for plotting the random-effects----------------
-Sstd_lognorm_fragSize_coef <- coef(Sstd_lognorm_fragSize)
+Sstd2_lognorm_fragSize_coef <- coef(Sstd2_lognorm_fragSize)
 Sn_lognorm_fragSize_coef <- coef(Sn_lognorm_fragSize)
 Scov_lognorm_fragSize_coef <- coef(Scov_lognorm_fragSize)
 Schao_lognorm_fragSize_coef <- coef(S_chao_lognorm_fragSize)
 S_PIE_fS_coef <- coef(S_PIE_lognorm_fragSize)
 Nstd_fS_coef <- coef(Nstd_lognorm_fragSize)
 
-Sstd_lognorm_fragSize_group_coefs <- bind_cols(Sstd_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
+Sstd2_lognorm_fragSize_group_coefs <- bind_cols(Sstd2_lognorm_fragSize_coef[[1]][,,'Intercept'] %>% 
                                                   as_tibble() %>% 
                                                   mutate(Intercept = Estimate,
                                                          Intercept_lower = Q2.5,
                                                          Intercept_upper = Q97.5,
-                                                         dataset_label = rownames(Sstd_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
+                                                         dataset_label = rownames(Sstd2_lognorm_fragSize_coef[[1]][,,'Intercept'])) %>% 
                                                   dplyr::select(-Estimate, -Est.Error, -Q2.5, -Q97.5),
-                                                Sstd_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
+                                                Sstd2_lognorm_fragSize_coef[[1]][,,'c.lfs'] %>% 
                                                   as_tibble() %>% 
                                                   mutate(Slope = Estimate,
                                                          Slope_lower = Q2.5,

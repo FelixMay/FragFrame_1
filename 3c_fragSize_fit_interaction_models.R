@@ -31,9 +31,9 @@ frag %>% distinct(continent8)
 # load fragSize only models
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref_revision.Rdata')
 # two-way interactions: matrix permeability first
-Sstd_ln_fS_matrix <- update(Sstd_lognorm_fragSize,
+Sstd2_ln_fS_matrix <- update(Sstd2_lognorm_fragSize,
                             formula. = ~ c.lfs * Matrix.category + (c.lfs | dataset_label),
-                            newdata = frag %>% filter(S_std_mean > 0), 
+                            newdata = frag %>% filter(S_std1_mean > 0), 
                             cores = 4)
 
 Sn_ln_fS_matrix <- update(Sn_lognorm_fragSize, 
@@ -62,9 +62,9 @@ N_std_ln_fS_matrix <- update(Nstd_lognorm_fragSize,
                              cores = 4)  
 
 # repeat for taxa
-Sstd_ln_fS_taxa <- update(Sstd_lognorm_fragSize, 
+Sstd2_ln_fS_taxa <- update(Sstd2_lognorm_fragSize, 
                           formula. = ~ c.lfs * taxa + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_std_mean > 0), 
+                          newdata = frag %>% filter(S_std1_mean > 0), 
                           cores = 4)
 
 Sn_ln_fS_taxa <- update(Sn_lognorm_fragSize, 
@@ -93,9 +93,9 @@ N_std_ln_fS_taxa <- update(Nstd_lognorm_fragSize,
                            cores = 4)  
 
 # repeat for time since fragmentation
-Sstd_ln_fS_tsf <- update(Sstd_lognorm_fragSize, 
+Sstd2_ln_fS_tsf <- update(Sstd2_lognorm_fragSize, 
                          formula. = ~ c.lfs * time.since.fragmentation + (c.lfs | dataset_label),
-                         newdata = frag %>% filter(S_std_mean > 0), 
+                         newdata = frag %>% filter(S_std1_mean > 0), 
                          cores = 4)
 
 Sn_ln_fS_tsf <- update(Sn_lognorm_fragSize, 
@@ -124,9 +124,9 @@ N_std_ln_fS_tsf <- update(Nstd_lognorm_fragSize,
                           cores = 4)  
 
 # repeat for biome
-Sstd_ln_fS_biome <- update(Sstd_lognorm_fragSize, 
+Sstd2_ln_fS_biome <- update(Sstd2_lognorm_fragSize, 
                           formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_std_mean > 0),
+                          newdata = frag %>% filter(S_std1_mean > 0),
                           cores = 4)
 
 Sn_ln_fS_biome <- update(Sn_lognorm_fragSize, 
@@ -154,9 +154,9 @@ N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize,
                             newdata = frag,
                             cores = 4)
 # region
-Sstd_ln_fS_region <- update(Sstd_lognorm_fragSize,
+Sstd2_ln_fS_region <- update(Sstd2_lognorm_fragSize,
                             formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
-                            newdata = frag %>% filter(S_std_mean > 0),
+                            newdata = frag %>% filter(S_std1_mean > 0),
                             cores = 4)
 
 Sn_ln_fS_region <- update(Sn_lognorm_fragSize, 
@@ -185,19 +185,19 @@ N_std_ln_fS_region <- update(Nstd_lognorm_fragSize,
                              cores = 4)  
 
 # compare the model fits (with versus without interactions
-Sstd_lognorm_fragSize <- add_criterion(Sstd_lognorm_fragSize, criterion =  'loo') 
-Sstd_ln_fS_matrix <- add_criterion(Sstd_ln_fS_matrix, criterion = 'loo')
-Sstd_ln_fS_taxa <- add_criterion(Sstd_ln_fS_taxa, criterion = 'loo')
-Sstd_ln_fS_tsf <- add_criterion(Sstd_ln_fS_tsf, criterion = 'loo')
-Sstd_ln_fS_biome <- add_criterion(Sstd_ln_fS_biome, criterion = 'loo')
-Sstd_ln_fS_region <- add_criterion(Sstd_ln_fS_region, criterion = 'loo')
+Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion =  'loo') 
+Sstd2_ln_fS_matrix <- add_criterion(Sstd2_ln_fS_matrix, criterion = 'loo')
+Sstd2_ln_fS_taxa <- add_criterion(Sstd2_ln_fS_taxa, criterion = 'loo')
+Sstd2_ln_fS_tsf <- add_criterion(Sstd2_ln_fS_tsf, criterion = 'loo')
+Sstd2_ln_fS_biome <- add_criterion(Sstd2_ln_fS_biome, criterion = 'loo')
+Sstd2_ln_fS_region <- add_criterion(Sstd2_ln_fS_region, criterion = 'loo')
 
-loo_compare(Sstd_lognorm_fragSize,
-            Sstd_ln_fS_matrix,
-            Sstd_ln_fS_taxa,
-            Sstd_ln_fS_tsf,
-            Sstd_ln_fS_biome,
-            Sstd_ln_fS_region)
+loo_compare(Sstd2_lognorm_fragSize,
+            Sstd2_ln_fS_matrix,
+            Sstd2_ln_fS_taxa,
+            Sstd2_ln_fS_tsf,
+            Sstd2_ln_fS_biome,
+            Sstd2_ln_fS_region)
 
 S_PIE_lognorm_fragSize <- add_criterion(S_PIE_lognorm_fragSize, criterion =  'loo') 
 S_PIE_ln_fS_matrix <- add_criterion(S_PIE_ln_fS_matrix, criterion = 'loo')
@@ -228,13 +228,13 @@ loo_compare(Nstd_lognorm_fragSize,
             N_std_ln_fS_region)
 
 
-save(Sstd_ln_fS_matrix, Sstd_ln_fS_taxa, Sstd_ln_fS_tsf, Sstd_ln_fS_biome, Sstd_ln_fS_region,
+save(Sstd2_ln_fS_matrix, Sstd2_ln_fS_taxa, Sstd2_ln_fS_tsf, Sstd2_ln_fS_biome, Sstd2_ln_fS_region,
      Sn_ln_fS_matrix, Sn_ln_fS_taxa, Sn_ln_fS_tsf, Sn_ln_fS_biome,
      Scov_ln_fS_matrix, Scov_ln_fS_taxa, Scov_ln_fS_tsf, Scov_ln_fS_biome,
      Schao_ln_fS_matrix, Schao_ln_fS_taxa, Schao_ln_fS_tsf, Schao_ln_fS_biome,
      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome, S_PIE_ln_fS_region,
      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome, N_std_ln_fS_region,
-     Sstd_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
+     Sstd2_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
      file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_interactions_ref_revision.Rdata')
 
 

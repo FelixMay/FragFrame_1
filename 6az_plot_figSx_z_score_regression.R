@@ -30,7 +30,7 @@ taxa_colour = gg_legend(taxa_legend)
 z_S_std_regPlot <-
 ggplot() +
   # data
-  geom_point(data = frag %>% filter(S_std_mean>0 & 
+  geom_point(data = frag %>% filter(S_std1_mean>0 & 
                                       !is.na(z_S_std) & 
                                       !is.infinite(z_S_std)),
              aes(x = frag_size_num, y = z_S_std, colour = taxa),
@@ -301,7 +301,7 @@ cowplot::plot_grid(top, bottom,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.025)
 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/z_score_regression.png', width = 250, height = 190, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figS2_z_score_regression.png', width = 250, height = 190, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
                                   Scov_regPlot,

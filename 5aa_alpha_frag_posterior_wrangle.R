@@ -20,7 +20,7 @@ frag <- left_join(frag,
 
 # get posterior distribution of global estimates
 frag_global <- tibble(
-  Sstd_global = posterior_samples(Sstd_lognorm_fragSize,
+  Sstd2_global = posterior_samples(Sstd2_lognorm_fragSize,
                                   pars = 'b_c.lfs',
                                   exact_match = TRUE,
                                   subset = floor(runif(n = 1000,
@@ -61,7 +61,7 @@ study_levels <- Nstd_lognorm_fragSize$data %>%
   nest(level) 
 
 study_sample_posterior <- study_levels %>%
-  mutate(S_std = purrr::map(data, ~posterior_samples(Sstd_lognorm_fragSize, 
+  mutate(S_std = purrr::map(data, ~posterior_samples(Sstd2_lognorm_fragSize, 
                                                      pars = paste('r_dataset_label[', as.character(.x$level), ',c.lfs]', sep=''),
                                                      exact = TRUE,
                                                      subset = floor(runif(n = 1000,
@@ -89,15 +89,15 @@ study_sample_posterior <- study_levels %>%
                                                     subset = floor(runif(n = 1000, 1, max = 2000))) %>%  unlist() %>%  as.numeric()))
 
 
-Sstd_posterior <- study_sample_posterior  %>% 
+Sstd2_posterior <- study_sample_posterior  %>% 
   select(-data) %>% 
   unnest(S_std) %>% 
   mutate(response = 'Sstd',
-         Sstd_global = rep(frag_global$Sstd_global, times = n_distinct(dataset_label))) %>% 
+         Sstd2_global = rep(frag_global$Sstd2_global, times = n_distinct(dataset_label))) %>% 
   left_join(meta, 
             by = 'dataset_label')
 
-Sstd_posterior$time.since.fragmentation <- factor(Sstd_posterior$time.since.fragmentation,
+Sstd2_posterior$time.since.fragmentation <- factor(Sstd2_posterior$time.since.fragmentation,
                                                   levels = c('Recent (less than 20 years)',
                                                              'Intermediate (20-100 years)',
                                                              'long (100+ years)'),
@@ -105,20 +105,20 @@ Sstd_posterior$time.since.fragmentation <- factor(Sstd_posterior$time.since.frag
                                                              '20-100 years',
                                                              '> 100 years'))
 
-Sstd_posterior$Matrix.category <- factor(Sstd_posterior$Matrix.category,
+Sstd2_posterior$Matrix.category <- factor(Sstd2_posterior$Matrix.category,
                                                   levels = c('light filter', 'intermediate', 'harsh filter'),
                                                   labels = c('Light',
                                                              'Intermediate',
                                                              'Harsh'))
 
-Sstd_posterior$biome <- factor(Sstd_posterior$biome,
+Sstd2_posterior$biome <- factor(Sstd2_posterior$biome,
                                          levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
                                          labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
-Sstd_posterior$taxa <- factor(Sstd_posterior$taxa,
+Sstd2_posterior$taxa <- factor(Sstd2_posterior$taxa,
                                levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
                                labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
 
-Sstd_posterior <- Sstd_posterior %>% 
+Sstd2_posterior <- Sstd2_posterior %>% 
   unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
         remove = F, sep = ', ')
 
