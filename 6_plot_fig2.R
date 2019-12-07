@@ -360,6 +360,12 @@ meta <- read.csv('~/Dropbox/Frag Database (new)/new_meta_2_merge.csv', sep = ';'
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
+meta <- meta %>% 
+  separate(coordinates, into = c('y', 'x'), sep = ', ', remove = F) %>% 
+  mutate(x = as.numeric(x),
+         y = as.numeric(y),
+         latitude = climate)
+
 # create unique dataframes with columns for plotting relationships between change in different metrics
 # there are different studies retained for each metric, so put 'em together for each plot separately
 S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>% 
@@ -483,3 +489,11 @@ inner_join(Sn_study_slope %>%
   theme(panel.grid.minor = element_blank())
   
 
+ggplot() +
+  geom_point(data = S_std_study_slope,
+             aes(x = abs(y), y = S_std_slope)) +
+  stat_smooth(data = S_std_study_slope,
+              aes(x = abs(y), y = S_std_slope),
+              method = 'lm')
+
+with(S_std_study_slope, summary(lm(S_std_slope ~ abs(y))))
