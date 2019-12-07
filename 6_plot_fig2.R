@@ -491,9 +491,14 @@ inner_join(Sn_study_slope %>%
 
 ggplot() +
   geom_point(data = S_std_study_slope,
-             aes(x = abs(y), y = S_std_slope)) +
+             aes(x = abs(y), y = S_std_slope),
+             size = 1.5) +
+  geom_linerange(data = S_std_study_slope,
+                 aes(x = abs(y), ymin = S_std_lower, ymax = S_std_upper),
+                 size = 0.5, alpha = 0.5) +
   stat_smooth(data = S_std_study_slope,
               aes(x = abs(y), y = S_std_slope),
               method = 'lm')
 
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/decay_latitude.png', width = 120, height = 120, units = 'mm')
 with(S_std_study_slope, summary(lm(S_std_slope ~ abs(y))))
