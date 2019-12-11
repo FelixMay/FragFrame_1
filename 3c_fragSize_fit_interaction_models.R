@@ -16,7 +16,11 @@ meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>%
   mutate(x = as.numeric(x),
          y = as.numeric(y),
          abs_lat = abs(y),
-         latitude = climate)
+         latitude = climate,
+         abs_lat_bin = cut(abs_lat,
+                                  breaks = seq(0,70, by = 10),
+                                  labels = c('0-10', '10-20','20-30','30-40',
+                                             '40-50','50-60','60-70')))
 
 
 
@@ -39,32 +43,24 @@ frag %>% distinct(continent8)
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref_revision.Rdata')
 
 # latitude: for revision
-Sstd2_lognorm_fragSize_latitude <- brm(S_std2_mean ~ c.lfs*abs_lat + (c.lfs | dataset_label), 
+Sstd2_lognorm_fragSize_latitude <- update(Sstd2_lognorm_fragSize,
+                                          formula. = ~ c.lfs*abs_lat + (c.lfs | dataset_label), 
                                        # fit to data with variation in frag_size_num
-                                       data = frag %>% filter(S_std1_mean>0) %>% 
-                                         left_join(meta %>% 
-                                                     select(dataset_label,
-                                                            abs_lat,
-                                                            y), by = 'dataset_label'),
+                                       newdata = frag %>% filter(S_std1_mean>0),
                                        #prior = rp,
                                        family = 'lognormal', # our standardised richness are not integer values
                                        cores = 4, chains = 4)
+
 # alt model: include variation at the study-level in latitude;
 # as there is only one latitude per study, I'm going to add it as an intercept only
-Sstd2_lognorm_fragSize_latitude2 <- brm(S_std2_mean ~ c.lfs*abs_lat + (c.lfs | dataset_label) + (1|abs_lat_bin), 
+Sstd2_lognorm_fragSize_latitude2 <- update(Sstd2_lognorm_fragSize,
+                                           formula. = ~ c.lfs*abs_lat + (c.lfs | dataset_label) + (1|abs_lat_bin), 
                                        # fit to data with variation in frag_size_num
-                                       data = frag %>% filter(S_std1_mean>0) %>% 
-                                         left_join(meta %>% 
-                                                     select(dataset_label,
-                                                            abs_lat,
-                                                            y), by = 'dataset_label') %>% 
-                                         mutate(abs_lat_bin = cut(abs_lat,
-                                                                  breaks = seq(0,70, by = 10),
-                                                                  labels = c('0-10', '10-20','20-30','30-40',
-                                                                             '40-50','50-60','60-70'))),
+                                       newdata = frag %>% filter(S_std1_mean>0),
                                        #prior = rp,
                                        family = 'lognormal', # our standardised richness are not integer values
-                                       cores = 4, chains = 4)
+                                       cores = 4, chains = 4,
+                                       control = list(adapt_delta = 0.9))
 
 
 # two-way interactions: matrix permeability first
@@ -223,6 +219,15 @@ N_std_ln_fS_region <- update(Nstd_lognorm_fragSize,
 
 # compare the model fits (with versus without interactions
 Sstd2_lognorm_fragSize <- add_criterion(Sstd2_lognorm_fragSize, criterion =  'loo') 
+Sstd2_lognorm_fragSize_latitude <- add_criterion(Sstd2_lognorm_fragSize_latitude, criterion =  'loo') 
+Sstd2_lognorm_fragSize_latitude2 <- add_criterion(Sstd2_lognorm_fragSize_latitude2, criterion =  'loo') 
+loo_compare(Sstd2_lognorm_fragSize,
+            Sstd2_lognorm_fragSize_latitude,
+            Sstd2_lognorm_fragSize_latitude2)
+model_weights(Sstd2_lognorm_fragSize,
+            Sstd2_lognorm_fragSize_latitude,
+            Sstd2_lognorm_fragSize_latitude2, criterion = 'loo') # support for the simpler of the two models that includes latitude
+
 Sstd2_ln_fS_matrix <- add_criterion(Sstd2_ln_fS_matrix, criterion = 'loo')
 Sstd2_ln_fS_taxa <- add_criterion(Sstd2_ln_fS_taxa, criterion = 'loo')
 Sstd2_ln_fS_tsf <- add_criterion(Sstd2_ln_fS_tsf, criterion = 'loo')

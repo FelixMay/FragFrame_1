@@ -513,5 +513,37 @@ slope_lat <- brms::brm(bf(S_std_slope | se(error) ~ abs_lat + (1|dataset_label))
 
 pp_check(slope_lat)
 plot(slope_lat)
-brms::marginal_effects(slope_lat, 
-                      re_formula = NULL)
+
+slope_lat_fixef <- cbind(slope_lat$data,
+                             fitted(slope_lat, 
+                                    re_formula = NA)) %>% 
+  as_tibble()
+
+ggplot() +
+  geom_point(data = S_std_study_slope,
+             aes(x = abs(y), y = S_std_slope),
+             size = 1.5) +
+  geom_linerange(data = S_std_study_slope,
+                 aes(x = abs(y), ymin = S_std_lower, ymax = S_std_upper),
+                 size = 0.5, alpha = 0.5) +
+  geom_line(data = slope_lat_fixef,
+            aes(x = abs_lat, y = Estimate), 
+            size = 1.2) +
+  geom_ribbon(data = slope_lat_fixef,
+              aes(x = abs_lat, ymin = Q2.5, ymax = Q97.5), 
+              alpha = 0.5) +
+  labs(x = '|Latitude|',
+       y = 'Richness ~ fragment size slope estimate')
+              
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/decay_latitude_option1.png',
+#        width = 120, height = 120, units = 'mm')              
+
+slope_lat_taxa <- brms::brm(bf(S_std_slope | se(error) ~ abs_lat*taxa + (1|dataset_label)),
+                       data = S_std_study_slope,
+                       cores = 4, chains = 4)
+
+slope_lat <- add_criterion(slope_lat, criterion = c('loo', 'waic'))
+slope_lat_taxa <- add_criterion(slope_lat_taxa, criterion = c('loo', 'waic'))
+
+model_weights(slope_lat, slope_lat_taxa)
+loo_compare(slope_lat, slope_lat_taxa, criterion = 'waic')
