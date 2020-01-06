@@ -126,7 +126,7 @@ Sn_regPlot <- ggplot() +
   # scale_colour_grey(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Standardised and \nrarefied richness')),
+       y = expression(paste('Rarefied richness')),
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none', 
@@ -220,7 +220,7 @@ Scov_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = 'Sampling and coverage\nstandardised richness',
+       y = 'Coverage standardised richness',
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
@@ -267,7 +267,7 @@ Schao_regPlot <- ggplot() +
   # scale_colour_viridis_d(guide=F) +
   scale_colour_brewer(name = 'Taxa', type = 'qual', palette = 'Dark2') +
   labs(x = '',
-       y = expression(paste('Standardised\nasymptotic richness')),
+       y = expression(paste('Asymptotic richness')),
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',

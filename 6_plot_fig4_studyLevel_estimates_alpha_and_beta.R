@@ -1,12 +1,11 @@
 # plot study-level slopes: most interested in relationship between Std and Jtu for different times since fragmentation
 
-rm(list=ls())
 # load packages and paths: 0_init_dirs_load_packages.R
 # get the beta-regression coefficients
-source(paste0(path2wd, '05d_beta_frag_coef_wrangle.R'))
+source(paste0(path2wd, '5d_beta_frag_coef_wrangle.R'))
 
 # get the fragment area coefficients
-source(paste0(path2wd, '05a_fragSize_coef_wrangle.R'))
+source(paste0(path2wd, '5a_fragSize_coef_wrangle.R'))
 
 # combine study-level estimates from the different analyses (beta vs alpha)
 study_slope_coefs <- Jtu_z1i_group_coefs %>% 
@@ -45,7 +44,7 @@ study_slope_coefs <- Jtu_z1i_group_coefs %>%
     by = 'dataset_label'
   ) %>% 
   left_join(
-    Sstd_lognorm_fragSize_group_coefs %>% 
+    Sstd2_lognorm_fragSize_group_coefs %>% 
       mutate(Sstd = Slope,
              Sstd_upper = Slope_upper,
              Sstd_lower = Slope_lower) %>% 
@@ -144,7 +143,8 @@ beta_turnover_sstd_slope <-
                   colour = time.since.fragmentation
                  )) +
   stat_smooth(data = study_slope_coefs,
-            aes(x = jtu_slope, y = Sstd
+            aes(x = jtu_slope, y = Sstd,
+                # colour = time.since.fragmentation
                 ),
             method = 'lm', se = F, colour = 'black'
             ) +
@@ -157,7 +157,7 @@ beta_turnover_sstd_slope <-
   #          parse = T, size = 2.5) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_vline(xintercept = 0, lty = 2) +
-  scale_color_manual(name = 'Time since fragmentation', 
+  scale_color_manual(name = 'Time since\nfragmentation', 
                      values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
@@ -166,7 +166,12 @@ beta_turnover_sstd_slope <-
        # y = expression(paste('Study-level ', S[std], 'slope'))
        ) +
   theme_bw() +
-  theme(legend.position = 'none',
+  theme(legend.position = c(0,0),#'none', #
+        legend.justification = c(0,0),
+        legend.box.spacing = unit(0, units = 'mm'),
+        legend.background = element_blank(),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 8),
         axis.title = element_text(size = 10),
         plot.margin = unit(c(0,4,0,0), units = 'mm'))
 
@@ -202,11 +207,50 @@ beta_nestedness_sstd_study <-
   theme_bw() +
   theme(legend.position = 'none',
         legend.justification = c(1,1),
-        legend.direction = 'horizontal',
+        # legend.direction = 'horizontal',
         legend.background = element_blank(), 
         axis.title = element_text(size = 10))
 
-right = time_colour_legend
+# alt plot with nestedness related to matrix harshness to complement text
+beta_nestedness_sstd_study <-
+  ggplot() +
+  # facet_grid(.~climate) +
+  geom_point(data = study_slope_coefs,
+             aes(x = jne_slope, y = Sstd, 
+                 colour = Matrix.category)) +
+  stat_smooth(data = study_slope_coefs,
+              aes(x = jne_slope, y = Sstd,
+                  # colour = Matrix.category
+              ),
+              method = 'lm', se = F, colour = 'black'
+  ) +
+  # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
+  #          label = paste("paste(italic(rho) == " , 
+  #                        round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
+  #                        round(s_jne_corr$conf.int[1], 2),
+  #                        " ~`???`~",
+  #                        round(s_jne_corr$conf.int[2], 2),"))"),
+  #          parse = T, size = 2.5) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  scale_color_manual(name = 'Matrix filter', 
+                     values = c('Light' = '#fee6ce',
+                                'Intermediate' = '#fdae6b',
+                                'Harsh' = '#e6550d')) +
+  labs(x = 'Standardised nestedness ~ fragment size slope',
+       y = ''
+       # y = expression(paste('Study-level biodiversity measure slope'))
+  ) +
+  theme_bw() +
+  theme(legend.position = c(1,0),
+        legend.justification = c(1,0),
+        legend.box.spacing = unit(0, units = 'mm'),
+        legend.background = element_blank(),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 8),
+        axis.title = element_text(size = 10))
+
+# right = time_colour_legend
 left = cowplot::plot_grid(beta_turnover_sstd_slope, 
                    beta_nestedness_sstd_study,
                    align = 'hv',
@@ -214,11 +258,16 @@ left = cowplot::plot_grid(beta_turnover_sstd_slope,
                    labels = 'auto') +
   cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
                       angle = 90,
-                      x = 0.03, y = 0.5, size = 10)
+                      x = 0.015, y = 0.5, size = 10)
 
 cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/Fig4_revision.png', width = 200, height = 80, units = 'mm')
+left
+
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/Fig4_revision_alt.png', width = 210, height = 90, units = 'mm')
 # ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
+
+
+
 
 # relationship between the intercepts of turnover and nestedness tell us about their
 # relative contribution to total dissimilarity
