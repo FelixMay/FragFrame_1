@@ -1,7 +1,21 @@
 infile <- path2Dropbox %+% "/files_datapaper/Analysis/2_biodiv_frag_fcont_10_mabund_as_is.csv"
 frag_div <- read.csv(infile, stringsAsFactors = F)
 
+# Get numbers of fragments per study
+frag_div %>%
+   select(dataset_label, frag_id) %>%
+   distinct() %>% 
+   group_by(dataset_label) %>%
+   count() %>% 
+   arrange(desc(n))
+
 summary(frag_div)
+
+plot(S_std1_mean ~ S_std2_mean, data = frag_div)
+cor(frag_div$S_std1_mean, frag_div$S_std2_mean)
+cor_mat <- cor(select(frag_div, S_obs, S_std1_mean:S_chao_mean), use = "pairwise")
+write.csv(cor_mat,"correlation_matrix.csv")
+pairs(select(frag_div, S_obs, S_std1_mean:S_chao_mean))
 
 # get number of studies with specific sampling design
 frag_div %>% 
@@ -16,7 +30,12 @@ sample_designs <- frag_div %>%
 outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/sample_designs_overview.csv"
 write.csv(sample_designs, outfile, row.names = F)
 
+# get numbers of samples per fragmennt
 
+sample_designs <- frag_div %>% 
+   select(dataset_label, sample_design) %>%
+   distinct() %>% 
+   arrange(sample_design, dataset_label)
    
 
 

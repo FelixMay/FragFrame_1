@@ -485,6 +485,16 @@ dat_all %>%
    select(dataset_label, sample_design) %>%
    distinct() %>% count(sample_design)
 
+# get numbers of samples per fragment
+samples_per_fragment <- dat_all %>% 
+   select(dataset_label, frag_id, sample_id, sample_design) %>%
+   distinct() %>%
+   group_by(dataset_label, frag_id, sample_design) %>%
+   count(frag_id) %>%
+   ungroup() %>%
+   arrange(sample_design)
+
+
 # dat_all <- filter(dat_all, dataset_label != "Andresen_2003" & dataset_label != "Bernard_2007" )
 
 parset <- expand.grid(fac_cont = c(2,10,100),
