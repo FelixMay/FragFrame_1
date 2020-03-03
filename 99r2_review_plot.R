@@ -1,4 +1,4 @@
-# Nature article review - Map figure
+# Review - Map figure
 
 rm(list=ls())
 set.seed(33)

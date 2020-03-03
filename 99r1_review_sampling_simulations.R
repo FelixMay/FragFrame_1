@@ -1,6 +1,5 @@
-# Nature article review - Simulation
+# Review - Simulation
 
-# Version 2: pseudoreplicatyion correction: each repetition computes a new community
 
 ## Roadmap
 
