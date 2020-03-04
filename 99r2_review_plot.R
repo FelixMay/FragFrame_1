@@ -3,6 +3,8 @@
 rm(list=ls())
 set.seed(33)
 
+
+
 ## Simulation parametres
 ### S, N and SAD
 
@@ -17,7 +19,7 @@ sigma_values <- c(1, 0.1, 0.02)
 sigma_names <- c("Random distribution","Medium aggregation","High aggregation")
 
 
-png(filename = paste0("sampling", "S", s_pool, "_N", n_sim, "_mp", n_mother_points,".png"), width = 16, height = 5.5, unit="in", res=600)
+png(filename = paste0("sampling", "S", s_pool, "_N", n_sim, "_mp", n_mother_points,".png"), width = 16, height = 5.6, unit="in", res=600)
 par(mfrow = c(1,3), mex = 0.9)
 
 lapply(1:length(sigma_values), function(sigma_i)   {
@@ -88,17 +90,17 @@ lapply(1:length(sigma_values), function(sigma_i)   {
    
    ## Graphical check
    plotting_range <- c(0.5, 1.5)
-   plotting_range <- plotting_range + c(-1, 1) * diff(plotting_range)*0.04   # adding the R usual 4% extra
-   colour_palette <- rainbow(s_pool)[comm$census[,'species']] 
+   colour_palette <- viridisLite::viridis(s_pool)[comm$census[,'species']] # rainbow is a basic R possibility, inferno, magma, plasma and cividis are other viridisLite possibilities (and they are all colourblind friendly palettes)
    
-   plot(comm$census[,'x'], comm$census[,'y'], col = colour_palette, main = sigma_names[sigma_i], xlim = plotting_range, ylim = plotting_range, pch = 19, xlab = "X", ylab = "Y", las = 1, asp = 1, xaxt = 'n', yaxt = 'n')   # plotting individual points
-   # creating axes with shifted labels
+   plot(comm$census[,'x'], comm$census[,'y'], col = colour_palette, main = sigma_names[sigma_i], pch = 19, 
+        xlim = plotting_range, ylim = plotting_range, xlab = "X", ylab = "Y", las = 1, asp = 1, xaxt = 'n', yaxt = 'n', cex = 1, xaxs = 'r', yaxs = 'r')   # plotting individual points
+   # creating axes with shifted labels from 0.5-1.5 to 0-1.
    axis(side = 1,
         at = seq(from = sampling_range[1], to = sampling_range[2], by = 0.2),
-        labels = seq(from = 0, to = 1, by = 0.2))
+        labels = seq(from = 0, to = diff(sampling_range), by = 0.2))
    axis(side = 2,
         at = seq(from = sampling_range[1], to = sampling_range[2], by = 0.2),
-        labels = seq(from = 0, to = 1, by = 0.2), las = 1)
+        labels = seq(from = 0, to = diff(sampling_range), by = 0.2), las = 1)
    graphics::rect(patch_ranges[, 1],   # 'xmin
                   patch_ranges[, 3],   # 'ymin
                   patch_ranges[, 2],   # 'xmax
