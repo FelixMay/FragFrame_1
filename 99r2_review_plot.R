@@ -87,17 +87,28 @@ lapply(1:length(sigma_values), function(sigma_i)   {
    quadrat_yrange$ymax <- quadrat_yrange$ymin + quadrat_width
    
    ## Graphical check
-   plot(comm, main = sigma_names[sigma_i])
-   graphics::rect(patch_ranges[, 1],
-                  patch_ranges[, 3],
-                  patch_ranges[, 2],
-                  patch_ranges[, 4],
+   plotting_range <- c(0.5, 1.5)
+   plotting_range <- plotting_range + c(-1, 1) * diff(plotting_range)*0.04   # adding the R usual 4% extra
+   colour_palette <- rainbow(s_pool)[comm$census[,'species']] 
+   
+   plot(comm$census[,'x'], comm$census[,'y'], col = colour_palette, main = sigma_names[sigma_i], xlim = plotting_range, ylim = plotting_range, pch = 19, xlab = "X", ylab = "Y", las = 1, asp = 1, xaxt = 'n', yaxt = 'n')   # plotting individual points
+   # creating axes with shifted labels
+   axis(side = 1,
+        at = seq(from = sampling_range[1], to = sampling_range[2], by = 0.2),
+        labels = seq(from = 0, to = 1, by = 0.2))
+   axis(side = 2,
+        at = seq(from = sampling_range[1], to = sampling_range[2], by = 0.2),
+        labels = seq(from = 0, to = 1, by = 0.2), las = 1)
+   graphics::rect(patch_ranges[, 1],   # 'xmin
+                  patch_ranges[, 3],   # 'ymin
+                  patch_ranges[, 2],   # 'xmax
+                  patch_ranges[, 4],   # 'ymax
                   lwd = 2, col = grDevices::adjustcolor("white", alpha.f = 0.6))
    
-   graphics::rect(quadrat_xrange[, 1],
-                  quadrat_yrange[, 1],
-                  quadrat_xrange[, 2],
-                  quadrat_yrange[, 2],
+   graphics::rect(quadrat_xrange[, 1],   # 'xmin
+                  quadrat_yrange[, 1],   # 'ymin
+                  quadrat_xrange[, 2],   # 'xmax
+                  quadrat_yrange[, 2],   # 'ymax
                   lwd = 1.4, col = grDevices::adjustcolor("forestgreen", alpha.f = 0.4), border = "forestgreen")
    
 })
