@@ -289,7 +289,7 @@ Sstd2_robust <- ggplot() +
   geom_abline(intercept = 0, slope = 1, lty = 2) +
   # geom_vline(xintercept = 0, lty = 2) +
   # geom_hline(yintercept = 0, lty = 2) +
-  scale_colour_manual(name = 'Standardisation',
+  scale_colour_manual(name = 'Imputation',
                       guide = F,
                       values = c('sens1' = '#003f5c',
                                  'sens3' = '#7a5195',
@@ -298,7 +298,7 @@ Sstd2_robust <- ggplot() +
                       labels = c('1', '2', '3', '4')) +
   labs(x = '',
        y = '',
-       subtitle = expression(paste('Species richness'))) +# (', S[std], ')
+       subtitle = expression(paste('Standardised species richness'))) +# (', S[std], ')
   theme_bw()
 
 
@@ -356,7 +356,7 @@ Nstd_robust <-
   geom_abline(intercept = 0, slope = 1, lty = 2) +
   # geom_vline(xintercept = 0, lty = 2) +
   # geom_hline(yintercept = 0, lty = 2) +
-  scale_colour_manual(name = 'Standardisation',
+  scale_colour_manual(name = 'Imputation',
                       values = c('sens1' = '#003f5c',
                                  'sens3' = '#7a5195',
                                  'sens8' = '#ef5675',
@@ -364,7 +364,7 @@ Nstd_robust <-
                       labels = c('1', '2', '3', '4')) +
   labs(x = '',
        y = '',
-       subtitle = expression(paste('Number of individuals'))) +# (', N[std], ')
+       subtitle = expression(paste('Standardised number of individuals'))) +# (', N[std], ')
   theme_bw() +
   theme(legend.position = c(1,0),
         legend.background = element_blank(),
@@ -423,7 +423,7 @@ S_PIE_robust <- ggplot() +
   geom_linerange(data = fixed_effects,
                  aes(x = S_PIE_ref, ymin = S_PIE_sens5_lower, ymax = S_PIE_sens5_upper, colour = 'sens11')) +
   # 1:1 line and zero lines
-  scale_colour_manual(name = 'Standardisation',
+  scale_colour_manual(name = 'Imputation',
                       guide = F,
                       values = c('sens1' = '#003f5c',
                                  'sens3' = '#7a5195',
@@ -435,7 +435,7 @@ S_PIE_robust <- ggplot() +
   # geom_hline(yintercept = 0, lty = 2) +
   labs(x = '',
        y = '',
-       subtitle = expression(paste('Evenness'))) +# (', S[PIE], ')
+       subtitle = expression(paste('Standardised evenness'))) +# (', S[PIE], ')
   theme_bw()
 
 cowplot::plot_grid(Nstd_robust,
@@ -443,12 +443,12 @@ cowplot::plot_grid(Nstd_robust,
                    S_PIE_robust,
                    nrow = 1, align = 'hv',
                    labels = 'auto') +
-  cowplot::draw_label('Reference standardisation',
+  cowplot::draw_label('Reference imputation',
                       y = 0.03, size = 12) +
-  cowplot::draw_label('Alternate standardisation',
+  cowplot::draw_label('Alternate imputation',
                       x = 0.01, angle = 90, size = 12)
 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figs6_robust.png',
-#        width = 250,
-#        height = 80,
-#        units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figsED3_robust.png',
+       width = 250,
+       height = 80,
+       units = 'mm')
