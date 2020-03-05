@@ -23,8 +23,8 @@
    else {#FM
       path2wd <- "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1/" 
       path2Dropbox <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/"
-      path2data <- '~/Dropbox/Frag Database (new)/files_datapaper/Analysis/'
-      path2meta <- '~/Dropbox/Frag Database (new)/'
+      path2data <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/files_datapaper/Analysis/"
+      path2meta <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/"
       path2temp <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/Analysis/"
    }
    return(list(path2temp,path2Dropbox,path2wd, path2data, path2meta))

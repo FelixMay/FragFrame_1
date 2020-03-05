@@ -1,6 +1,6 @@
 # Review - Map figure
 
-rm(list=ls())
+# rm(list=ls())
 set.seed(33)
 
 
@@ -16,11 +16,11 @@ sampling_range = c(0.5,1.5)
 
 ### Spatial distribution (Random, medium, high)
 sigma_values <- c(1, 0.1, 0.02)
-sigma_names <- c("Random distribution","Medium aggregation","High aggregation")
+sigma_names <- c("Random","Intermediate aggregation","High aggregation")
 
 
 png(filename = paste0("sampling", "S", s_pool, "_N", n_sim, "_mp", n_mother_points,".png"), width = 16, height = 5.6, unit="in", res=600)
-par(mfrow = c(1,3), mex = 0.9)
+par(mfrow = c(1,3), mex = 1.2, cex.main = 2, cex.axis = 2, cex.lab = 2)
 
 lapply(1:length(sigma_values), function(sigma_i)   {
    ### Simulating the community
