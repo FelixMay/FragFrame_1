@@ -5,7 +5,7 @@
 # load packages and paths: 0_init_dirs_load_packages.R
 
 # code to wrangle the coefs ready to inspect
-source(paste0(path2wd, '05b_fragSize_coef_wrangle_4_robust_results.R'))
+source(paste0(path2wd, '5b_fragSize_coef_wrangle_4_robust_results.R'))
 
 fixed_effects <- bind_cols(
   # reference estimates
