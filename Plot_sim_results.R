@@ -115,3 +115,12 @@ ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex
 
 ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex_Dat_Fig1.png',
        height = 250, width = 250, units = 'mm')
+
+
+## calculate the summary stats to report
+# slope_coefs %>% 
+#   group_by(sigma, metric) %>% 
+#   summarise(mean_slope = mean(slope),
+#             median_slope = median(slope)) %>% 
+#   write.table(file = '~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/sim_slopes.csv', sep = ',')
+  
