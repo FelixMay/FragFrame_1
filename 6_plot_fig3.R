@@ -37,7 +37,10 @@ three_grey_legend <- ggplot() +
         legend.position = 'top', 
         legend.direction = 'horizontal',
         # legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        legend.margin = margin(),
+        legend.box.spacing = unit(c(0,0,0,0), units = 'mm')) #+
 
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
 legend <- gg_legend(three_grey_legend)
@@ -81,7 +84,7 @@ Sstd2_study_posterior_time <- ggplot() +
               distinct(time.since.fragmentation, n_study, .keep_all = T),
             aes(x=0.3, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Time since fragmentation',
@@ -98,7 +101,9 @@ Sstd2_study_posterior_time <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
 Sstd2_study_posterior_matrix <- ggplot() +
@@ -132,7 +137,7 @@ Sstd2_study_posterior_matrix <- ggplot() +
               distinct(Matrix.category, n_study, .keep_all = T),
             aes(x=0.3, y=Matrix.category, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Matrix filter',
@@ -149,7 +154,9 @@ Sstd2_study_posterior_matrix <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
 Sstd2_study_posterior_biome <- ggplot() +
@@ -183,7 +190,7 @@ Sstd2_study_posterior_biome <- ggplot() +
               distinct(biome, n_study, .keep_all = T),
             aes(x=0.3, y=biome, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Biome',
@@ -200,7 +207,9 @@ Sstd2_study_posterior_biome <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_taxa <- ggplot() +
   geom_density_ridges_gradient(data = Sstd2_posterior,
@@ -233,7 +242,7 @@ Sstd2_study_posterior_taxa <- ggplot() +
               distinct(taxa, n_study, .keep_all = T),
             aes(x=0.3, y=taxa, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Taxon group',
@@ -250,7 +259,9 @@ Sstd2_study_posterior_taxa <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_continent <- ggplot() +
   geom_density_ridges_gradient(data = Sstd2_posterior,
@@ -282,7 +293,7 @@ Sstd2_study_posterior_continent <- ggplot() +
               distinct(continent8, n_study, .keep_all = T),
             aes(x=0.3, y=continent8, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
@@ -301,7 +312,9 @@ Sstd2_study_posterior_continent <- ggplot() +
         legend.position = 'none',
         # legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_climate <- ggplot() +
   geom_density_ridges_gradient(data = Sstd2_posterior,
@@ -334,7 +347,7 @@ Sstd2_study_posterior_climate <- ggplot() +
               distinct(climate, n_study, .keep_all = T),
             aes(x=0.3, y=climate, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Climate',
@@ -349,7 +362,9 @@ Sstd2_study_posterior_climate <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none',
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_sphere.frag <- ggplot() +
   geom_density_ridges_gradient(data = Sstd2_posterior,
@@ -382,7 +397,7 @@ Sstd2_study_posterior_sphere.frag <- ggplot() +
               distinct(climate, n_study, .keep_all = T),
             aes(x=0.3, y=frag_matrix, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Fragment and matrix sphere',
@@ -399,7 +414,9 @@ Sstd2_study_posterior_sphere.frag <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none',
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 8),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
 top = cowplot::plot_grid(NULL, legend, NULL,
@@ -413,12 +430,13 @@ bottom = cowplot::plot_grid(
                             Sstd2_study_posterior_matrix, 
                             nrow = 2)
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Standardised species richness ~ fragment size slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Standardised species richness ~ fragment size slope estimate')), y = 0.01, size = 8)
 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/fig3_revision.png',
-#        width = 240,
-#        height = 220,
-#        units = 'mm')
+# plot for 2 column width 
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig3_2column.pdf',
+       width = 183,
+       height = 170,
+       units = 'mm')
 # 
 ##repeat for Nstd and Nstd for supplement
 continent <- ggplot() +
@@ -451,7 +469,7 @@ continent <- ggplot() +
               distinct(continent8, n_study, .keep_all = T),
             aes(x=-0.2, y=continent8, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
@@ -503,7 +521,7 @@ taxa <- ggplot() +
               distinct(taxa, n_study, .keep_all = T),
             aes(x=-0.2, y=taxa, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Taxon group',
@@ -554,7 +572,7 @@ time <- ggplot() +
               distinct(time.since.fragmentation, n_study, .keep_all = T),
             aes(x=-0.2, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Time since fragmentation',
@@ -605,7 +623,7 @@ matrix <- ggplot() +
               distinct(Matrix.category, n_study, .keep_all = T),
             aes(x=-0.2, y=Matrix.category, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Matrix filter',
@@ -672,7 +690,7 @@ continent <- ggplot() +
               distinct(continent8, n_study, .keep_all = T),
             aes(x=-0.2, y=continent8, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
@@ -724,7 +742,7 @@ taxa <- ggplot() +
               distinct(taxa, n_study, .keep_all = T),
             aes(x=-0.2, y=taxa, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Taxon group',
@@ -775,7 +793,7 @@ time <- ggplot() +
               distinct(time.since.fragmentation, n_study, .keep_all = T),
             aes(x=-0.2, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Time since fragmentation',
@@ -826,7 +844,7 @@ matrix <- ggplot() +
               distinct(Matrix.category, n_study, .keep_all = T),
             aes(x=-0.2, y=Matrix.category, 
                 label=paste('n[study] == ', n_study)),
-            size=3.5,
+            size=2,
             nudge_y = 0.1, parse = T) +
   theme_bw() +
   labs(y = 'Matrix filter',
