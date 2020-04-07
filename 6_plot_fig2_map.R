@@ -61,8 +61,8 @@ map_taxa <- ggplot() +
         # weird that the face argument is not working for plot.tag, 
         # it inherits from title, so...
         title = element_text(face = 'bold', size = 8),
-        legend.text = element_text(size = 8, face = 'plain'),
-        legend.title = element_text(size = 8, face = 'plain'),
+        legend.text = element_text(size = 6, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain'),
         ) +
   guides(shape = guide_legend(nrow = 2, label.hjust = 0),
          colour = guide_legend(nrow = 2, label.hjust = 0)

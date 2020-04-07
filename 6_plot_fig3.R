@@ -38,7 +38,8 @@ three_grey_legend <- ggplot() +
         legend.direction = 'horizontal',
         # legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        legend.text = element_text(size = 6, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain'),
         legend.margin = margin(),
         legend.box.spacing = unit(c(0,0,0,0), units = 'mm')) #+
 
@@ -102,7 +103,7 @@ Sstd2_study_posterior_time <- ggplot() +
         legend.position = 'none', 
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
@@ -155,7 +156,7 @@ Sstd2_study_posterior_matrix <- ggplot() +
         legend.position = 'none', 
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
@@ -208,7 +209,7 @@ Sstd2_study_posterior_biome <- ggplot() +
         legend.position = 'none', 
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_taxa <- ggplot() +
@@ -260,7 +261,7 @@ Sstd2_study_posterior_taxa <- ggplot() +
         legend.position = 'none', 
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_continent <- ggplot() +
@@ -297,7 +298,7 @@ Sstd2_study_posterior_continent <- ggplot() +
             nudge_y = 0.1, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
-  labs(y = 'Continent',
+  labs(y = 'Region',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
        tag = 'b'
@@ -313,7 +314,7 @@ Sstd2_study_posterior_continent <- ggplot() +
         # legend.position = 'none', 
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_climate <- ggplot() +
@@ -363,7 +364,7 @@ Sstd2_study_posterior_climate <- ggplot() +
         legend.position = 'none',
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 Sstd2_study_posterior_sphere.frag <- ggplot() +
@@ -415,7 +416,7 @@ Sstd2_study_posterior_sphere.frag <- ggplot() +
         legend.position = 'none',
         legend.justification = c(1, 1),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
@@ -430,7 +431,7 @@ bottom = cowplot::plot_grid(
                             Sstd2_study_posterior_matrix, 
                             nrow = 2)
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Standardised species richness ~ fragment size slope estimate')), y = 0.01, size = 8)
+  cowplot::draw_label(expression(paste('Standardised species richness ~ fragment size slope estimate')), y = 0.01, size = 7)
 
 # plot for 2 column width 
 ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig3_2column.pdf',

@@ -125,7 +125,8 @@ timeLegend <-
         legend.direction = 'vertical',
         # legend.justification = c(0,0),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        legend.text = element_text(size = 6, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain'),
         legend.margin = margin(),
         legend.box.spacing = unit(c(0,0,0,0), units = 'mm')
         ) +
@@ -169,7 +170,7 @@ beta_turnover_sstd_slope <-
         legend.justification = c(0,0),
         legend.box.spacing = unit(0, units = 'mm'),
         legend.background = element_blank(),
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.margin = unit(c(0,4,0,0), units = 'mm'))
 
 
@@ -206,17 +207,17 @@ beta_nestedness_sstd_study <-
         legend.justification = c(1,1),
         # legend.direction = 'horizontal',
         legend.background = element_blank(), 
-        text = element_text(size = 8))
+        text = element_text(size = 7))
 
 right = time_colour_legend
 left = cowplot::plot_grid(beta_turnover_sstd_slope, 
                    beta_nestedness_sstd_study,
                    align = 'hv',
                    nrow = 1,
-                   labels = 'auto',label_size = 8) +
+                   labels = 'auto',label_size = 8, label_fontface = 'bold') +
   cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
                       angle = 90,
-                      x = 0.015, y = 0.5, size = 8)
+                      x = 0.015, y = 0.5, size = 7)
 
 cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
 

@@ -30,7 +30,7 @@ taxa_legend <- ggplot() +
   theme_bw() +
   theme(legend.position = 'top',
         legend.direction = 'horizontal',
-        text = element_text(size = 8)) +
+        text = element_text(size = 7)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1)))
 
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
@@ -82,7 +82,7 @@ S_std_regPlot <- ggplot() +
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold'))
 
 # Sn
@@ -131,7 +131,7 @@ Sn_regPlot <- ggplot() +
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none', 
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold'))
 
 # S_PIE
@@ -180,7 +180,7 @@ Spie_regPlot <- ggplot() +
        tag = 'd') +
   theme_bw() +
   theme(legend.position = 'none', 
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold'))
 
 # S_cov
@@ -228,7 +228,7 @@ Scov_regPlot <- ggplot() +
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold'))
 
 # S_cov
@@ -276,7 +276,7 @@ Schao_regPlot <- ggplot() +
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold'))
 
 # N_std
@@ -328,7 +328,7 @@ Nstd_regPlot <- ggplot() +
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 8),
+        text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold'))
 
 # main text: N, S, Spie
@@ -337,7 +337,7 @@ bottom <- cowplot::plot_grid(Nstd_regPlot,
                    S_std_regPlot,
                    Spie_regPlot,
                    nrow = 1, align = 'hv') +
-  cowplot::draw_label('Fragment size (hectares)', y = 0.05, size = 9)
+  cowplot::draw_label('Fragment size (hectares)', y = 0.05, size = 7)
 
 # bottom_panel <- cowplot::plot_grid(top, bottom, 
 #                    nrow = 2,
