@@ -299,7 +299,8 @@ Sstd2_robust <- ggplot() +
   labs(x = '',
        y = '',
        subtitle = expression(paste('Standardised species richness'))) +# (', S[std], ')
-  theme_bw()
+  theme_bw() +
+  theme(text = element_text(size = 7))
 
 
 Nstd_robust <-
@@ -369,7 +370,10 @@ Nstd_robust <-
   theme(legend.position = c(1,0),
         legend.background = element_blank(),
         # legend.box = element_blank(),
-        legend.justification = c(1,0)) +
+        legend.justification = c(1,0),
+        text = element_text(size = 7),
+        legend.title = element_text(size = 7),
+        legend.text = element_text(size = 6)) +
   guides(colour = guide_legend(nrow = 2))
   
 
@@ -436,19 +440,21 @@ S_PIE_robust <- ggplot() +
   labs(x = '',
        y = '',
        subtitle = expression(paste('Standardised evenness'))) +# (', S[PIE], ')
-  theme_bw()
+  theme_bw() +
+  theme(text = element_text(size = 7))
 
 cowplot::plot_grid(Nstd_robust,
                    Sstd2_robust,
                    S_PIE_robust,
                    nrow = 1, align = 'hv',
-                   labels = 'auto') +
+                   labels = 'auto', label_size = 8, label_fontface = 'bold') +
   cowplot::draw_label('Reference imputation',
-                      y = 0.03, size = 12) +
+                      y = 0.03, size = 7) +
   cowplot::draw_label('Alternate imputation',
-                      x = 0.01, angle = 90, size = 12)
+                      x = 0.01, angle = 90, size = 7)
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figsED3_robust.png',
-       width = 250,
-       height = 80,
+# 2 column
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig4.png',
+       width = 183,
+       height = 60,
        units = 'mm')

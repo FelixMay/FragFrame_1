@@ -20,7 +20,7 @@ taxa_legend <- ggplot() +
   theme_bw() +
   theme(legend.position = 'right',
         # legend.direction = 'horizontal',
-        text = element_text(size = 13)) +
+        text = element_text(size = 7)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1)))
 
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
@@ -47,7 +47,7 @@ ggplot() +
   geom_line(data = z_Sstd_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
-            size = 1.5) +
+            size = 1) +
   # fixed effect uncertainty
   geom_ribbon(data = z_Sstd_fS_fitted,
               aes(x = frag_size_num,
@@ -63,7 +63,7 @@ ggplot() +
                          " - ",
                          round(z_Sstd_studT_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
-           parse = T) +
+           parse = T, size = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
@@ -76,8 +76,8 @@ ggplot() +
        tag = 'a') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 13),
-        panel.grid = element_blank())
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold'))
 
 # Sn
 z_Sn_regPlot <- ggplot() +
@@ -99,7 +99,7 @@ z_Sn_regPlot <- ggplot() +
   geom_line(data = z_Sn_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
-            size = 1.5) +
+            size = 1) +
   # fixed effect uncertainty
   geom_ribbon(data = z_Sn_fS_fitted,
               aes(x = frag_size_num,
@@ -115,7 +115,7 @@ z_Sn_regPlot <- ggplot() +
                          " - ",
                          round(z_Sn_studT_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
-           parse = T) +
+           parse = T, size = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
@@ -128,8 +128,8 @@ z_Sn_regPlot <- ggplot() +
        tag = 'c') +
   theme_bw() +
   theme(legend.position = 'none', 
-        text = element_text(size = 13),
-        panel.grid = element_blank())
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold'))
 
 # S_PIE
 z_Spie_regPlot <- ggplot() +
@@ -151,7 +151,7 @@ z_Spie_regPlot <- ggplot() +
   geom_line(data = z_S_PIE_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
-            size = 1.5) +
+            size = 1) +
   # fixed effect uncertainty
   geom_ribbon(data = z_S_PIE_fS_fitted,
               aes(x = frag_size_num,
@@ -167,7 +167,7 @@ z_Spie_regPlot <- ggplot() +
                          " - ",
                          round(z_S_PIE_studT_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
-           parse = T) +
+           parse = T, size = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
@@ -180,8 +180,8 @@ z_Spie_regPlot <- ggplot() +
        tag = 'b') +
   theme_bw() +
   theme(legend.position = 'none', 
-        text = element_text(size = 13),
-        panel.grid = element_blank())
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold'))
 
 # S_cov
 z_Scov_regPlot <- ggplot() +
@@ -203,7 +203,7 @@ z_Scov_regPlot <- ggplot() +
   geom_line(data = z_Scov_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
-            size = 1.5) +
+            size = 1) +
   # fixed effect uncertainty
   geom_ribbon(data = z_Scov_fS_fitted,
               aes(x = frag_size_num,
@@ -219,7 +219,7 @@ z_Scov_regPlot <- ggplot() +
                          " - ",
                          round(z_Scov_studT_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
-           parse = T) +
+           parse = T, size = 2) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -231,8 +231,8 @@ z_Scov_regPlot <- ggplot() +
        tag = 'd') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 13),
-        panel.grid = element_blank())
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold'))
 
 # S_cov
 z_Schao_regPlot <- ggplot() +
@@ -254,7 +254,7 @@ z_Schao_regPlot <- ggplot() +
   geom_line(data = z_Schao_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
-            size = 1.5) +
+            size = 1) +
   # fixed effect uncertainty
   geom_ribbon(data = z_Schao_fS_fitted,
               aes(x = frag_size_num,
@@ -270,7 +270,7 @@ z_Schao_regPlot <- ggplot() +
                          " - ",
                          round(z_Schao_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
-           parse = T) +
+           parse = T, size = 2) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
                 labels = scales::trans_format("log10", scales::math_format(10^.x))) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -282,8 +282,8 @@ z_Schao_regPlot <- ggplot() +
        tag = 'e') +
   theme_bw() +
   theme(legend.position = 'none',
-        text = element_text(size = 13),
-        panel.grid = element_blank())
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold'))
 
 
 # main text: N, S, Spie
@@ -301,7 +301,8 @@ cowplot::plot_grid(bottom
                    # nrow = 2,
                    # rel_heights = c(0.1,1)
                    ) +
-  cowplot::draw_label('Fragment size (hectares)', y = 0.025)
+  cowplot::draw_label('Fragment size (hectares)', y = 0.025, size = 7)
 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figS2_z_score_regression.png', width = 270, height = 180, units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig3.png', 
+       width = 183, height = 120, units = 'mm')
 

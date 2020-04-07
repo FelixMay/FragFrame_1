@@ -298,7 +298,7 @@ Sstd2_study_posterior_continent <- ggplot() +
             nudge_y = 0.1, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
-  labs(y = 'Region',
+  labs(y = 'Continent',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
        tag = 'b'
@@ -489,7 +489,9 @@ continent <- ggplot() +
         legend.position = 'none',
         # legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 taxa <- ggplot() +
   geom_density_ridges_gradient(data = Nstd_posterior,
@@ -539,7 +541,9 @@ taxa <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 time <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
@@ -590,7 +594,9 @@ time <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
 matrix <- ggplot() +
@@ -641,7 +647,9 @@ matrix <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 bottom = cowplot::plot_grid(
                             #Sstd2_study_posterior_biome,
@@ -653,11 +661,13 @@ bottom = cowplot::plot_grid(
                             nrow = 2)
 
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), 
+                      y = 0.01, size = 7)
 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figS3_revision.png',
-#        width = 240,
-#        height = 220,
+# # plot for 2 column width 
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig5_2column.png',
+#        width = 183,
+#        height = 170,
 #        units = 'mm')
 
 ##repeat for S_PIE for supplement
@@ -710,7 +720,9 @@ continent <- ggplot() +
         legend.position = 'none',
         # legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 taxa <- ggplot() +
   geom_density_ridges_gradient(data = Spie_posterior,
@@ -760,7 +772,9 @@ taxa <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 time <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
@@ -811,7 +825,9 @@ time <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
 matrix <- ggplot() +
@@ -862,7 +878,9 @@ matrix <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none', 
         legend.justification = c(1, 1),
-        legend.background = element_blank()) #+
+        legend.background = element_blank(),
+        text = element_text(size = 7),
+        plot.tag = element_text(size = 8, face = 'bold')) #+
 
 bottom = cowplot::plot_grid(
   #Sstd2_study_posterior_biome,
@@ -874,9 +892,11 @@ bottom = cowplot::plot_grid(
   nrow = 2)
 
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
-  cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), y = 0.01)
+  cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), 
+                      y = 0.01, size = 7)
 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/figS4_revision.png',
-#        width = 240,
-#        height = 220,
-#        units = 'mm')
+# plot for 2 column width
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig6_2column.png',
+       width = 183,
+       height = 170,
+       units = 'mm')
