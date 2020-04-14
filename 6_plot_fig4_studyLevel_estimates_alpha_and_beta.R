@@ -124,11 +124,11 @@ timeLegend <-
   theme(legend.position = 'right',
         legend.direction = 'vertical',
         # legend.justification = c(0,0),
-        legend.box.spacing = unit(0, units = 'mm'),
         legend.background = element_blank(),
-        legend.title = element_text(size = 9),
-        legend.text = element_text(size = 8),
-        # legend.text.align = 0.8
+        legend.text = element_text(size = 6, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain'),
+        legend.margin = margin(),
+        legend.box.spacing = unit(c(0,0,0,0), units = 'mm')
         ) +
   guides(colour = guide_legend(title = 'Time since\nfragmentation'))
 
@@ -166,13 +166,11 @@ beta_turnover_sstd_slope <-
        # y = expression(paste('Study-level ', S[std], 'slope'))
        ) +
   theme_bw() +
-  theme(legend.position = c(0,0),#'none', #
+  theme(legend.position = 'none',# #
         legend.justification = c(0,0),
         legend.box.spacing = unit(0, units = 'mm'),
         legend.background = element_blank(),
-        legend.title = element_text(size = 9),
-        legend.text = element_text(size = 8),
-        axis.title = element_text(size = 10),
+        text = element_text(size = 7),
         plot.margin = unit(c(0,4,0,0), units = 'mm'))
 
 
@@ -209,62 +207,22 @@ beta_nestedness_sstd_study <-
         legend.justification = c(1,1),
         # legend.direction = 'horizontal',
         legend.background = element_blank(), 
-        axis.title = element_text(size = 10))
+        text = element_text(size = 7))
 
-# alt plot with nestedness related to matrix harshness to complement text
-beta_nestedness_sstd_study <-
-  ggplot() +
-  # facet_grid(.~climate) +
-  geom_point(data = study_slope_coefs,
-             aes(x = jne_slope, y = Sstd, 
-                 colour = Matrix.category)) +
-  stat_smooth(data = study_slope_coefs,
-              aes(x = jne_slope, y = Sstd,
-                  # colour = Matrix.category
-              ),
-              method = 'lm', se = F, colour = 'black'
-  ) +
-  # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
-  #          label = paste("paste(italic(rho) == " , 
-  #                        round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
-  #                        round(s_jne_corr$conf.int[1], 2),
-  #                        " ~`???`~",
-  #                        round(s_jne_corr$conf.int[2], 2),"))"),
-  #          parse = T, size = 2.5) +
-  geom_hline(yintercept = 0, lty = 2) +
-  geom_vline(xintercept = 0, lty = 2) +
-  scale_color_manual(name = 'Matrix filter', 
-                     values = c('Light' = '#fee6ce',
-                                'Intermediate' = '#fdae6b',
-                                'Harsh' = '#e6550d')) +
-  labs(x = 'Standardised nestedness ~ fragment size slope',
-       y = ''
-       # y = expression(paste('Study-level biodiversity measure slope'))
-  ) +
-  theme_bw() +
-  theme(legend.position = c(1,0),
-        legend.justification = c(1,0),
-        legend.box.spacing = unit(0, units = 'mm'),
-        legend.background = element_blank(),
-        legend.title = element_text(size = 9),
-        legend.text = element_text(size = 8),
-        axis.title = element_text(size = 10))
-
-# right = time_colour_legend
+right = time_colour_legend
 left = cowplot::plot_grid(beta_turnover_sstd_slope, 
                    beta_nestedness_sstd_study,
                    align = 'hv',
                    nrow = 1,
-                   labels = 'auto') +
+                   labels = 'auto',label_size = 8, label_fontface = 'bold') +
   cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
                       angle = 90,
-                      x = 0.015, y = 0.5, size = 10)
+                      x = 0.015, y = 0.5, size = 7)
 
 cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
-left
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/Fig4_revision_alt.png', width = 210, height = 90, units = 'mm')
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig2_taxa_colour.png', width = 250, height = 80, units = 'mm')
+# two column for print version
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig4_2column.pdf', width = 183, height = 80, units = 'mm')
 
 
 

@@ -58,7 +58,8 @@ three_grey_legend <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'top', 
         legend.direction = 'horizontal',
-        # legend.justification = c(1, 1),
+        legend.text = element_text(size = 6, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain'),
         legend.background = element_blank()) #+
 
 source('~/Dropbox/1current/R_random/functions/gg_legend.R')
@@ -93,9 +94,11 @@ sim_slopes <- ggplot() +
         legend.key = element_blank(),
         legend.position = 'none',
         legend.justification = c(1, 1),
+        text = element_text(size = 7),
         legend.background = element_blank()) 
 
-top1 <- cowplot::ggdraw() + cowplot::draw_image('~/samplingS2000_N40000_mp1.png',
+top1 <- cowplot::ggdraw() + 
+  cowplot::draw_image('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/samplingS2000_N40000_mp1.png',
                                                 clip = 'on')
 
 legend_row <- cowplot::plot_grid(legend)
@@ -108,10 +111,32 @@ cowplot::plot_grid(top1,
                    nrow = 3, 
                    axis = 'tblr',
                    rel_heights = c(1,0.1,2),
-                   labels = list('a', '', 'b'))
+                   labels = list('a', '', 'b'),
+                   label_size = 8,
+                   label_fontface = 'bold')
 
 ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex_Dat_Fig1.pdf',
-       height = 250, width = 250, units = 'mm')
+       height = 183, width = 183, units = 'mm')
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex_Dat_Fig1.png',
-       height = 250, width = 250, units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig1.png',
+       height = 183, width = 183, units = 'mm')
+
+
+## calculate the summary stats to report
+# slope_coefs %>% 
+#   group_by(sigma, metric) %>% 
+#   summarise(mean_slope = mean(slope),
+#             median_slope = median(slope)) %>% 
+#   write.table(file = '~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/sim_slopes.csv', sep = ',')
+
+# test whether distribution of slopes differ between random and aggregated simulations
+dist_test <- slope_coefs %>% 
+  select(metric, aggregation, slope) %>% 
+  group_by(metric) %>% 
+  nest(aggregation, slope) %>% 
+  mutate(random_aggr = purrr::map(data, ~t.test(.x %>% 
+                                                  filter(aggregation=='Random') %>% 
+                                                  select(slope) %>% .$slope,
+                                                .x %>% 
+                                                  filter(aggregation=='High aggregation') %>% 
+                                                  select(slope) %>% .$slope)))

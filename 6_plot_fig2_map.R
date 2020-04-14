@@ -27,9 +27,8 @@ map_taxa <- ggplot() +
                aes(long, lat, group = group), colour=NA, fill='#CCCCCC', size=0) +
   geom_point(data = meta,
              aes(x = x, y = y, colour = taxa),#,shape = taxa),
-             # position = position_jitter(width = .5),
              alpha = 0.6,
-             size = 1.5) +
+             size = 1) +
   coord_map('mollweide', ylim = c(-60, 90), xlim = c(-180, 180)) +
   scale_x_continuous(breaks = seq(-180, 180, by = 30)) +
   scale_y_continuous(breaks = c(0, -23.5, 23.5, -60, 60)) +
@@ -55,10 +54,18 @@ map_taxa <- ggplot() +
         axis.text = element_blank(),
         legend.position = 'top',
         legend.direction = 'horizontal',
+        plot.tag = element_text(size = 8, face = "bold"),
         plot.margin = unit(c(0,0,0,0), units = 'mm'),
-        text = element_text(size = 13)) +
-  guides(shape = guide_legend(nrow = 2),
-         colour = guide_legend(nrow = 2)
+        legend.margin = margin(),
+        legend.box.spacing = unit(c(0,0,0,0), units = 'mm'),
+        # weird that the face argument is not working for plot.tag, 
+        # it inherits from title, so...
+        title = element_text(face = 'bold', size = 8),
+        legend.text = element_text(size = 6, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain'),
+        ) +
+  guides(shape = guide_legend(nrow = 2, label.hjust = 0),
+         colour = guide_legend(nrow = 2, label.hjust = 0)
          )
 
 
