@@ -128,4 +128,15 @@ ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex
 #   summarise(mean_slope = mean(slope),
 #             median_slope = median(slope)) %>% 
 #   write.table(file = '~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/sim_slopes.csv', sep = ',')
-  
+
+# test whether distribution of slopes differ between random and aggregated simulations
+dist_test <- slope_coefs %>% 
+  select(metric, aggregation, slope) %>% 
+  group_by(metric) %>% 
+  nest(aggregation, slope) %>% 
+  mutate(random_aggr = purrr::map(data, ~t.test(.x %>% 
+                                                  filter(aggregation=='Random') %>% 
+                                                  select(slope) %>% .$slope,
+                                                .x %>% 
+                                                  filter(aggregation=='High aggregation') %>% 
+                                                  select(slope) %>% .$slope)))
