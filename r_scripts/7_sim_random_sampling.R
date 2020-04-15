@@ -27,6 +27,8 @@
 
 #### Saved simulations summary values
 
+####################################################################
+
 rm(list=ls())
 set.seed(33)
 
@@ -50,17 +52,19 @@ sigma_values <- c(1, 0.1, 0.02)
 communities <- array(NA, dim = c(n_sim, 3, length(sigma_values), nrep), dimnames = list(c(), c('x','y','species'), paste0("sigma_", sigma_values), c()))
 for (sigma_i in 1:length(sigma_values))   {
    for(i in 1:nrep)   {
-      communities[,, sigma_i, i] <- unlist(mobsim::sim_thomas_community(s_pool = s_pool, n_sim = n_sim, sad_type="lnorm", fix_s_sim = TRUE, sad_coef = list("cv_abund" = 1),  sigma = sigma_values[sigma_i], mother_points = n_mother_points, xrange = c(0, max_range), yrange = c(0, max_range))$census)
+      communities[,, sigma_i, i] <- unlist(
+			mobsim::sim_thomas_community(s_pool = s_pool, n_sim = n_sim, sad_type="lnorm", fix_s_sim = TRUE, sad_coef = list("cv_abund" = 1),  sigma = sigma_values[sigma_i], mother_points = n_mother_points, xrange = c(0, max_range), yrange = c(0, max_range))$census
+		)
    }
 }
-save(communities, file = paste0("C:/Users/as80fywe/idiv/mob/mobsim/Nature review simulation project/communitiesS", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
+
 
 ##### map of the community
 
-# svg(filename = paste0("C:/Users/as80fywe/idiv/mob/mobsim/Nature review simulation project/figures/", "mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
+# svg(filename = paste0(path2wd, "/data/", "mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
 # par(mfrow=c(1,3))
 # lapply(1:length(sigma_values), function(sigma_i) {
-#    plot(communities[,'x',sigma_i, 1], communities[,'y',sigma_i, 1], main = paste("sigma =", sigma_values[sigma_i]), cex = 0.8, las = 1, asp = 1, col = communities[,'species',sigma_i, 1], pch = 19)
+   # plot(communities[,'x',sigma_i, 1], communities[,'y',sigma_i, 1], main = paste("sigma =", sigma_values[sigma_i]), cex = 0.8, las = 1, asp = 1, col = communities[,'species',sigma_i, 1], pch = 19)
 # })
 # dev.off()
 
@@ -170,14 +174,14 @@ for(i in 1:nrep)   {
    }
 }
 
-save(res, file = paste0("results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
+save(res, file = paste0(path2wd, "data/results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
 
 # saving results in long format
 restable <- as.data.frame.table(res)
 colnames(restable) <- c("rep","patch_area","sigma","metric","value")
-# restable$rep <- rep(1:nrep, 4*3)
+
 restable$patch_area <- as.numeric(gsub(restable$patch_area, pattern = "patch_area_", replacement = ""))
 restable$sigma <- as.numeric(gsub(restable$sigma, pattern = "sigma_", replacement = ""))
-write.table(restable, file = paste0("results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
+write.table(restable, file = paste0(path2wd, "data/results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
 
 

@@ -12,7 +12,8 @@ user <- Sys.info()["user"]
 
 path2wd <- switch(user,
                   "May" = "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1",
-                  "sb25gaqy" = "~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/"
+                  "sb25gaqy" = "~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/",
+						"as80fywe" = "C:/Users/as80fywe/idiv/mob/mobsim/FragFrame_1/"
 )
 
 setwd(path2wd)
@@ -31,6 +32,7 @@ is.error <- function(x) inherits(x, "try-error")
 ############################################################################
 needed_libs <- c("devtools",
                  "mobr", # calculation of biodiversity indices
+					  "mobsim", # for random community simulation
                  #"vegan", # for diversity indices
                  "adespatial" , # for beta-diversity partitioning
                  "lme4", # for lmer
