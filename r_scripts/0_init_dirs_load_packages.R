@@ -18,15 +18,11 @@ path2wd <- switch(user,
 setwd(path2wd)
    
 ############################################################################
-### some helper functions
+### helper functions
 ############################################################################
-### helper function to combine strings
-
-# Are these needed??? I do not think so!!!
-#"%+%" <- function(x,y) paste(x, y, sep="")
 
 ### helper function to try things out
-#is.error <- function(x) inherits(x, "try-error")
+is.error <- function(x) inherits(x, "try-error")
 
 ############################################################################
 ### Load all needed libraries
@@ -39,9 +35,10 @@ needed_libs <- c("adespatial" , # for beta-diversity partitioning
                  "mobr", # calculation of biodiversity indices,
                  "mobsim",
                  "tidyverse",
-                 "stringr"
+                 "stringr",
+                 "iNEXT" # for coverage standardized richness
                  #"vegan", # for diversity indices
-                 #"iNEXT", # for coverage standardized richness
+                 
 )
 
 usePackage <- function(p) {

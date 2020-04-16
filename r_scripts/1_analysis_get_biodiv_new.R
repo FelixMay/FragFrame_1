@@ -464,21 +464,23 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
 # Execution of script -----------------------------------------------------
 
 # read long format data file
-infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_predicts_ewers.csv"
-dat_all <- read.csv(infile, stringsAsFactors = F)
+infile <- paste(path2wd, "/data/fragSAD_predicts_ewers.csv", sep = "")
+dat_all <- read_csv(infile,
+                    col_types = cols(
+                       dataset_label = col_character(),
+                       frag_id = col_character(),
+                       sample_id = col_character(),
+                       frag_size_char = col_character(),
+                       frag_size_num = col_double(),
+                       sample_eff = col_double(),
+                       sample_design = col_character(),
+                       species = col_character(),
+                       abundance = col_double())
+                   )
 dim(dat_all)
 str(dat_all)
-
 head(dat_all)
-
-frag_label <- dat_all %>% select(dataset_label, frag_id) %>% distinct()
-dim(frag_label) 
-data_set <- dat_all %>% filter(dataset_label == "Andresen_2003")
-test <- get_biodiv(data_set)
-
-data_set %>% 
-   select(frag_id, sample_id, sample_eff) %>%
-   distinct()
+summary(dat_all)
 
 # get number of studies with specific sampling design
 dat_all %>% 
@@ -494,14 +496,10 @@ samples_per_fragment <- dat_all %>%
    ungroup() %>%
    arrange(sample_design)
 
-
-# dat_all <- filter(dat_all, dataset_label != "Andresen_2003" & dataset_label != "Bernard_2007" )
-
 parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
                       stringsAsFactors = F)
 parset <- parset[c(1,2,3,8,11),]
-#parset <- parset[2,]
 
 for (i in 1:nrow(parset)){
    out1 <- dat_all %>%
@@ -516,25 +514,18 @@ for (i in 1:nrow(parset)){
    out_betapart_study <- out1 %>% map_dfr("betapart_study")
    
    # prepare output
-   outfile_name <- i %+% "_biodiv_frag_fcont_" %+% parset$fac_cont[i] %+%
-      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
-   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   outfile_name <- paste(i, "_biodiv_frag_fcont_", parset$fac_cont[i],
+                         "_mabund_", parset$method_abund[i], ".csv", sep = "")
+   path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
    write_csv(out_biodiv_frag, path2outfile)
    
-   outfile_name <- i %+% "_betapart_frag_fcont_" %+% parset$fac_cont[i] %+%
-      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
-   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   outfile_name <- paste(i,"_betapart_frag_fcont_" , parset$fac_cont[i] ,
+                         "_mabund_", parset$method_abund[i] , ".csv", sep = "")
+   path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
    write_csv(out_betapart_frag, path2outfile)
 
-   outfile_name <- i %+% "_betapart_study_fcont_" %+% parset$fac_cont[i] %+%
-      "_mabund_"%+% parset$method_abund[i] %+% ".csv"
-   path2outfile <- path2Dropbox %+% "files_datapaper/Analysis/" %+% outfile_name
+   outfile_name <- paste(i, "_betapart_study_fcont_", parset$fac_cont[i],
+                         "_mabund_", parset$method_abund[i] , ".csv", sep = "")
+   path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
    write_csv(out_betapart_study, path2outfile)
 }
-   
-
-
-# Note Problem with:
-# Andresen 2003 --> mixed sampling design
-# Bernard 2007 --> mixed sampling design
-# Cadotte 2002 a --> check
