@@ -499,8 +499,6 @@ parset <- expand.grid(fac_cont = c(2,10,100),
                       stringsAsFactors = F)
 parset <- parset[c(1,2,3,8,11),]
 
-# Rerun with parset 11 --> i = 5
-
 for (i in 1:nrow(parset)){
    out1 <- dat_all %>%
       split(.$dataset_label) %>%
@@ -529,3 +527,5 @@ for (i in 1:nrow(parset)){
    path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
    write_csv(out_betapart_study, path2outfile)
 }
+
+# started 18:30 17.04.2020
