@@ -61,7 +61,7 @@ for (sigma_i in 1:length(sigma_values))   {
 
 ##### map of the community
 
-# svg(filename = paste0(path2wd, "/data/", "mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
+# svg(filename = paste0(path2wd, "intermediate_results/", "7_mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
 # par(mfrow=c(1,3))
 # lapply(1:length(sigma_values), function(sigma_i) {
    # plot(communities[,'x',sigma_i, 1], communities[,'y',sigma_i, 1], main = paste("sigma =", sigma_values[sigma_i]), cex = 0.8, las = 1, asp = 1, col = communities[,'species',sigma_i, 1], pch = 19)
@@ -174,7 +174,7 @@ for(i in 1:nrep)   {
    }
 }
 
-save(res, file = paste0(path2wd, "data/results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
+save(res, file = paste0(path2wd, "intermediate_results/7_raw_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
 
 # saving results in long format
 restable <- as.data.frame.table(res)
@@ -182,6 +182,6 @@ colnames(restable) <- c("rep","patch_area","sigma","metric","value")
 
 restable$patch_area <- as.numeric(gsub(restable$patch_area, pattern = "patch_area_", replacement = ""))
 restable$sigma <- as.numeric(gsub(restable$sigma, pattern = "sigma_", replacement = ""))
-write.table(restable, file = paste0(path2wd, "data/results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
+write.table(restable, file = paste0(path2wd, "intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
 
 
