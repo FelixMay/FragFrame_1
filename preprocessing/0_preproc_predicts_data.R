@@ -1,5 +1,14 @@
+########################################################################
+# NOTES:
+# The input data for this file is not part of the GitHub repository,
+# but stored elsewhere.
+# This file is just used for pre-processing and its final result - the 
+# data file fragSAD_predicts_ewers.csv - is provided via GitHub
+######################################################################## 
+
 # read long format data file
-infile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
+path2Dropbox <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/"
+infile <- paste(path2Dropbox, "files_datapaper/Long_format_database/fragSAD_long.csv", sep = "")
 dat_long <- read.csv(infile, stringsAsFactors = F)
 dim(dat_long)
 str(dat_long)
@@ -19,7 +28,7 @@ str(dat_long)
 # abundance          Measurement   
 
 # Caceres 2010 ------------------------------------------------------------
-predicts_path <- path2Dropbox %+% "From PREDICTS/Caceres_et_al_2010.csv" 
+predicts_path <- paste(path2Dropbox, "From PREDICTS/Caceres_et_al_2010.csv", sep = "") 
 
 caceres1 <- read.csv(predicts_path, stringsAsFactors = F)
 
@@ -152,7 +161,7 @@ rm(caceres2a)
 #    select(names(dat_long))
 
 # Fernandez 2013 ------------------------------------------------------------
-predicts_path <- path2Dropbox %+% "From PREDICTS/Fernandez_&_Simonetti_2013.csv" 
+predicts_path <- paste(path2Dropbox, "From PREDICTS/Fernandez_&_Simonetti_2013.csv", sep = "") 
 
 fernandez1 <- read.csv(predicts_path, stringsAsFactors = F)
 
@@ -220,8 +229,8 @@ fernandez4 <- fernandez3b %>%
    select(frag_id, frag_size_num, species, abundance) %>%
    spread(key = species , value = abundance, fill = 0)
 
-predicts_path <- path2Dropbox %+% "From PREDICTS/Fernandez_Simonetti_Table_3.csv" 
-write_csv(fernandez4, predicts_path)
+#predicts_path <- path2Dropbox %+% "From PREDICTS/Fernandez_Simonetti_Table_3.csv" 
+#write_csv(fernandez4, predicts_path)
 
 fernandez3b_rural <- filter(fernandez3b, Habitat_as_described == "fragments similar in area and habitat characteristics with those of urban area, but surrounded by a rural matrix")
 fernandez3b_urban <- filter(fernandez3b, Habitat_as_described == "remnant fragments within an urban matrix")
@@ -239,7 +248,7 @@ fernandez3c_urban <- fernandez3b_urban %>%
 rm(fernandez3b_rural, fernandez3b_urban)
 
 # Garmendia 2013 ------------------------------------------------------------
-predicts_path <- path2Dropbox %+% "From PREDICTS/Garmendia_et_al_2013.csv" 
+predicts_path <- paste(path2Dropbox, "From PREDICTS/Garmendia_et_al_2013.csv", sep = "") 
 
 garmendia1 <- read.csv(predicts_path, stringsAsFactors = F)
 
@@ -316,7 +325,7 @@ dim(garmendia3b)
 dim(distinct(garmendia3b))
 
 # Stouffer 2011 ------------------------------------------------------------
-predicts_path <- path2Dropbox %+% "From PREDICTS/Stouffer_et_al_2011.csv" 
+predicts_path <- paste(path2Dropbox, "From PREDICTS/Stouffer_et_al_2011.csv", sep = "") 
 stouffer1 <- read.csv(predicts_path, stringsAsFactors = F)
 dim(stouffer1)
 dim(distinct(stouffer1))
@@ -383,5 +392,5 @@ fragsad_predicts <- bind_rows(dat_long, predicts_dat)
 sum(duplicated(fragsad_predicts))
 
 # read long format data file
-outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_and_predicts.csv"
+outfile <- paste(path2Dropbox, "files_datapaper/Long_format_database/fragSAD_and_predicts.csv", sep = "")
 write_csv(fragsad_predicts, outfile)
