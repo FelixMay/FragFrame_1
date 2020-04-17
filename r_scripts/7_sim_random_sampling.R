@@ -174,7 +174,8 @@ for(i in 1:nrep)   {
    }
 }
 
-save(res, file = paste0(path2wd, "intermediate_results/7_raw_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
+# It seems this is not necessary right?
+# save(res, file = paste0(path2wd, "intermediate_results/7_raw_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
 
 # saving results in long format
 restable <- as.data.frame.table(res)
@@ -182,6 +183,8 @@ colnames(restable) <- c("rep","patch_area","sigma","metric","value")
 
 restable$patch_area <- as.numeric(gsub(restable$patch_area, pattern = "patch_area_", replacement = ""))
 restable$sigma <- as.numeric(gsub(restable$sigma, pattern = "sigma_", replacement = ""))
-write.table(restable, file = paste0(path2wd, "intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
+
+# I think the only bug here was a missing slash ;o)
+write.table(restable, file = paste0(path2wd, "/intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
 
 
