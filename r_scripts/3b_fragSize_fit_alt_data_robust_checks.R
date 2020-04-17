@@ -4,14 +4,15 @@
 # in the calculation (standardisation) of the metrics
 
 # list of files
-files = list.files(path = path2data,
+files = list.files(path = paste0(path2wd, 'intermediate_results/'),
                    pattern = 'biodiv_frag_fcont')
-# I have already fit models to 2_biodiv_frag_fcont_10_mabund_as_is.csv
+
+# reference case are models already fit to 2_biodiv_frag_fcont_10_mabund_as_is.csv
 files = files[-which(files=='2_biodiv_frag_fcont_10_mabund_as_is.csv')]
 
 for(i in 1:length(files)){
   # get the data
-  file_2_get = paste0(path2data,
+  file_2_get = paste0(path2wd, 'intermediate_results/',
                      files[i])
   frag <- read_csv(file_2_get)  
   
@@ -58,8 +59,8 @@ for(i in 1:length(files)){
                                # prior = rp,
                                family = 'lognormal',
                                cores = 4, chains = 4)
-  name_2_save = paste0('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_', 
-                       strsplit(files[i], split = '.csv')[[1]], '_revision.Rdata')
+  name_2_save = paste0(path2wd, 'intermediate_results/', 
+                       strsplit(files[i], split = '.csv')[[1]], '_modelFits.Rdata')
   
   save(#Sstd1_lognorm_fragSize, 
     Sstd2_lognorm_fragSize,

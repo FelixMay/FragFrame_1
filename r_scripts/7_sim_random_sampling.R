@@ -49,11 +49,16 @@ nrep = 2000
 #### Aggregation parametres
 sigma_values <- c(1, 0.1, 0.02)
 #### Computing and storing community tables
-communities <- array(NA, dim = c(n_sim, 3, length(sigma_values), nrep), dimnames = list(c(), c('x','y','species'), paste0("sigma_", sigma_values), c()))
+communities <- array(NA, dim = c(n_sim, 3, length(sigma_values), nrep), 
+                     dimnames = list(c(), c('x','y','species'), paste0("sigma_", sigma_values), c())
+                     )
 for (sigma_i in 1:length(sigma_values))   {
    for(i in 1:nrep)   {
       communities[,, sigma_i, i] <- unlist(
-			mobsim::sim_thomas_community(s_pool = s_pool, n_sim = n_sim, sad_type="lnorm", fix_s_sim = TRUE, sad_coef = list("cv_abund" = 1),  sigma = sigma_values[sigma_i], mother_points = n_mother_points, xrange = c(0, max_range), yrange = c(0, max_range))$census
+			mobsim::sim_thomas_community(s_pool = s_pool, n_sim = n_sim, sad_type="lnorm", 
+			                             fix_s_sim = TRUE, sad_coef = list("cv_abund" = 1),  
+			                             sigma = sigma_values[sigma_i], mother_points = n_mother_points, 
+			                             xrange = c(0, max_range), yrange = c(0, max_range))$census
 		)
    }
 }
@@ -64,7 +69,9 @@ for (sigma_i in 1:length(sigma_values))   {
 # svg(filename = paste0(path2wd, "intermediate_results/", "7_mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
 # par(mfrow=c(1,3))
 # lapply(1:length(sigma_values), function(sigma_i) {
-   # plot(communities[,'x',sigma_i, 1], communities[,'y',sigma_i, 1], main = paste("sigma =", sigma_values[sigma_i]), cex = 0.8, las = 1, asp = 1, col = communities[,'species',sigma_i, 1], pch = 19)
+# plot(communities[,'x',sigma_i, 1], communities[,'y',sigma_i, 1], 
+#      main = paste("sigma =", sigma_values[sigma_i]), 
+#      cex = 0.8, las = 1, asp = 1, col = communities[,'species',sigma_i, 1], pch = 19)
 # })
 # dev.off()
 
@@ -182,6 +189,8 @@ colnames(restable) <- c("rep","patch_area","sigma","metric","value")
 
 restable$patch_area <- as.numeric(gsub(restable$patch_area, pattern = "patch_area_", replacement = ""))
 restable$sigma <- as.numeric(gsub(restable$sigma, pattern = "sigma_", replacement = ""))
-write.table(restable, file = paste0(path2wd, "intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
+write.table(restable, 
+            file = paste0(path2wd, "intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), 
+            row.names = F, sep = ',', dec='.')
 
 

@@ -6,7 +6,7 @@
 # they are weakly regularising
 
 # load the data
-frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
@@ -65,9 +65,9 @@ pp_check(z_Sstd_studT_fragSize) +
   scale_x_continuous(limits = c(-20, 20))
 
 
-z_Sstd_norm_fragSize <- add_criterion(z_Sstd_norm_fragSize, criterion = 'loo')
-z_Sstd_asymL_fragSize <- add_criterion(z_Sstd_asymL_fragSize, criterion = 'loo')
-z_Sstd_studT_fragSize <- add_criterion(z_Sstd_studT_fragSize, criterion = 'loo')
+z_Sstd_norm_fragSize <- add_criterion(z_Sstd_norm_fragSize, criterion = 'loo', reloo = TRUE)
+z_Sstd_asymL_fragSize <- add_criterion(z_Sstd_asymL_fragSize, criterion = 'loo', reloo = TRUE)
+z_Sstd_studT_fragSize <- add_criterion(z_Sstd_studT_fragSize, criterion = 'loo', reloo = TRUE)
 
 
 loo::loo_compare(z_Sstd_studT_fragSize,
@@ -114,8 +114,8 @@ pp_check(z_Sn_studT_fragSize) +
   scale_x_continuous(limits = c(-20, 20))
 
 
-z_Sn_asymL_fragSize <- add_criterion(z_Sn_asymL_fragSize, criterion = 'loo')
-z_Sn_studT_fragSize <- add_criterion(z_Sn_studT_fragSize, criterion = 'loo')
+z_Sn_asymL_fragSize <- add_criterion(z_Sn_asymL_fragSize, criterion = 'loo', reloo = TRUE)
+z_Sn_studT_fragSize <- add_criterion(z_Sn_studT_fragSize, criterion = 'loo', reloo = TRUE)
 
 loo::loo_compare(z_Sn_asymL_fragSize,
                  z_Sn_studT_fragSize,
@@ -160,8 +160,8 @@ pp_check(z_Scov_studT_fragSize) +
   scale_x_continuous(limits = c(-20, 20))
 
 
-z_Scov_asymL_fragSize <- add_criterion(z_Scov_asymL_fragSize, criterion = 'loo')
-z_Scov_studT_fragSize <- add_criterion(z_Scov_studT_fragSize, criterion = 'loo')
+z_Scov_asymL_fragSize <- add_criterion(z_Scov_asymL_fragSize, criterion = 'loo', reloo = TRUE)
+z_Scov_studT_fragSize <- add_criterion(z_Scov_studT_fragSize, criterion = 'loo', reloo = TRUE)
 
 loo::loo_compare(z_Scov_asymL_fragSize,
                  z_Scov_studT_fragSize,
@@ -206,8 +206,8 @@ pp_check(z_S_PIE_studT_fragSize) +
   scale_x_continuous(limits = c(-20, 20))
 
 
-z_S_PIE_asymL_fragSize <- add_criterion(z_S_PIE_asymL_fragSize, criterion = 'loo')
-z_S_PIE_studT_fragSize <- add_criterion(z_S_PIE_studT_fragSize, criterion = 'loo')
+z_S_PIE_asymL_fragSize <- add_criterion(z_S_PIE_asymL_fragSize, criterion = 'loo', reloo = TRUE)
+z_S_PIE_studT_fragSize <- add_criterion(z_S_PIE_studT_fragSize, criterion = 'loo', reloo = TRUE)
 
 
 loo::loo_compare(z_S_PIE_asymL_fragSize,
@@ -252,8 +252,8 @@ pp_check(z_S_chao_studT_fragSize) +
   scale_x_continuous(limits = c(-20, 20))
 
 
-z_S_chao_asymL_fragSize <- add_criterion(z_S_chao_asymL_fragSize, criterion = 'loo')
-z_S_chao_studT_fragSize <- add_criterion(z_S_chao_studT_fragSize, criterion = 'loo')
+z_S_chao_asymL_fragSize <- add_criterion(z_S_chao_asymL_fragSize, criterion = 'loo', reloo = TRUE)
+z_S_chao_studT_fragSize <- add_criterion(z_S_chao_studT_fragSize, criterion = 'loo', reloo = TRUE)
 
 loo::loo_compare(z_S_chao_asymL_fragSize,
                  z_S_chao_studT_fragSize,
@@ -269,4 +269,4 @@ save(z_Sstd_studT_fragSize,
      z_Scov_studT_fragSize,
      z_S_PIE_studT_fragSize,
      z_S_chao_studT_fragSize,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/fragSize_z_score_ref.Rdata')
+     file = paste0(path2wd, '/intermediate_results/fragSize_z_score_ref.Rdata'))

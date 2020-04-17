@@ -33,13 +33,11 @@ needed_libs <- c("adespatial" , # for beta-diversity partitioning
                  "brms",
                  "cowplot",
                  "devtools",
-                 "iNEXT" # for coverage standardized richness
-                 "lme4", # for lmer 
+                 "iNEXT", # for coverage standardized richness
                  "mobr", # calculation of biodiversity indices
-					  "mobsim", # for random community simulation
-                 "lme4", # for lmer
+					       "mobsim", # for random community simulation
                  "tidyverse",
-                 "stringr",
+                 "stringr"
                  #"vegan", # for diversity indices
                  
 )
