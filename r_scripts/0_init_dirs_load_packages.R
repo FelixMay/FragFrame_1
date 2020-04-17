@@ -4,12 +4,7 @@
 
 # Set user dependent working directories
 
-# This is the ONE AND ONLY PLACE where an absolute path should be used!!!
-
-# Shane and Alban, add your working directories here accordingly
-
 user <- Sys.info()["user"]
-
 path2wd <- switch(user,
                   "May" = "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1",
                   "sb25gaqy" = "~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/",
@@ -33,15 +28,13 @@ needed_libs <- c("adespatial" , # for beta-diversity partitioning
                  "brms",
                  "cowplot",
                  "devtools",
-                 "iNEXT" # for coverage standardized richness
+                 "iNEXT", # for coverage standardized richness
                  "lme4", # for lmer 
                  "mobr", # calculation of biodiversity indices
 					  "mobsim", # for random community simulation
                  "lme4", # for lmer
                  "tidyverse",
-                 "stringr",
-                 #"vegan", # for diversity indices
-                 
+                 "stringr"
 )
 
 usePackage <- function(p) {

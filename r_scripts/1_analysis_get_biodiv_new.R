@@ -49,13 +49,13 @@ biodiv_abund <- function(abund_vec, N_std, n_base, cov_base){
                       extrapolate = T,
                       return_NA = F)
    
-   S_std2 <- rarefaction(as.numeric(abund_vec),
+   S_std <- rarefaction(as.numeric(abund_vec),
                          method = "indiv",
                          effort = N_std,
                          extrapolate = T,
                          quiet_mode = T)
    
-   out <- c(S_std2    = as.numeric(S_std2),
+   out <- c(S_std     = as.numeric(S_std),
             S_n       = mob$value[mob$index  == "S_n"],
             S_PIE     = mob$value[mob$index == "S_PIE"],
             S_cov     = NA,
@@ -93,29 +93,27 @@ biodiv_subplot <- function(abund_dat, N_std, n_base, cov_base, n_samples = 10){
       # biodiv <- biodiv_abund(spec_abund$abundance, n_base = n_base, cov_base = cov_base)
    #} else {
    
-   # Calculate S_std by resample using N_std
-   S_std1 <- replicate(n_samples, {
-      sample1 <- sample(spec_abund$species,
-                        size = N_std,
-                        prob = spec_abund$abundance,
-                        replace = T)
-      abund_sample <- table(sample1)
-      sum(abund_sample > 0)
-      })
+   # # Calculate S_std by resample using N_std
+   # S_std1 <- replicate(n_samples, {
+   #    sample1 <- sample(spec_abund$species,
+   #                      size = N_std,
+   #                      prob = spec_abund$abundance,
+   #                      replace = T)
+   #    abund_sample <- table(sample1)
+   #    sum(abund_sample > 0)
+   #    })
    
    samples <- replicate(n_samples, biodiv_resample(spec_abund,
-                                                      N_std = N_std,
-                                                      n_base = n_base,
-                                                      cov_base = cov_base))
-   samples <- rbind(S_std1, samples)
+                                                   N_std = N_std,
+                                                   n_base = n_base,
+                                                   cov_base = cov_base))
+   #samples <- rbind(S_std1, samples)
    
    biodiv_mean <- rowMeans(samples)
    biodiv_sd   <- apply(samples, 1, sd)
       
    names(biodiv_mean) <- paste(names(biodiv_mean), "mean", sep = "_")
    names(biodiv_sd)   <- paste(names(biodiv_sd), "sd", sep = "_")
-   
-   #}
       
    biodiv <- c(biodiv_mean, biodiv_sd)
    return(biodiv)
@@ -361,14 +359,14 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
    # add mean and sd of largest fragment to all rows
    largest_frag <- dat_biodiv_avg %>% 
       filter(frag_size_num == max(frag_size_num)) %>%
-      select(S_std1_mean:S_chao_sd) %>%
+      select(S_std_mean:S_chao_sd) %>%
       summarise_all(mean)
    names(largest_frag) <- paste("exp", names(largest_frag), sep = "_")
    
    dat_out <- cbind(dat_biodiv_avg, largest_frag)
    
    dat_out <- dat_out %>%
-      mutate(z_S_std  = (S_std1_mean - exp_S_std1_mean)/exp_S_std1_sd,
+      mutate(z_S_std  = (S_std_mean - exp_S_std_mean)/exp_S_std_sd,
              z_S_n    = (S_n_mean - exp_S_n_mean)/exp_S_n_sd,
              z_S_PIE  = (S_PIE_mean - exp_S_PIE_mean)/exp_S_PIE_sd,
              z_S_cov  = (S_cov_mean - exp_S_cov_mean)/exp_S_cov_sd,
@@ -500,6 +498,8 @@ parset <- expand.grid(fac_cont = c(2,10,100),
                       method_abund = c("as_is","round","ceiling","multiply"),
                       stringsAsFactors = F)
 parset <- parset[c(1,2,3,8,11),]
+
+# Rerun with parset 11 --> i = 5
 
 for (i in 1:nrow(parset)){
    out1 <- dat_all %>%
