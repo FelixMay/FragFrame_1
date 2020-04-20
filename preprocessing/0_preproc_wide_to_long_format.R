@@ -1,10 +1,18 @@
+########################################################################
+# NOTES:
+# The input data for this file is not part of the GitHub repository,
+# but stored elsewhere.
+# This file is just used for pre-processing and its final result - the 
+# data file fragSAD_predicts_ewers.csv - is provided via GitHub
+######################################################################## 
+
 # Read files, transpose and switch to long format
 
 read_data_files <- function(filename){
    
    print(filename)
 
-   path2infile <- path2Dropbox %+% "files_datapaper/" %+% filename
+   path2infile <- paste(path2Dropbox, filename, sep = "")
    
    # 1. Abundance data
    dat_abund <- read.table(path2infile, sep = ",", row.names = NULL,
@@ -100,7 +108,7 @@ read_data_files <- function(filename){
    
    # prepare output date
    outfile <- str_split(filename, pattern = "_\\(")[[1]][1]
-   path2outfile <- path2Dropbox %+% "files_datapaper/Sites_by_species_format/" %+% outfile %+% ".csv"
+   path2outfile <- paste(path2Dropbox, "Sites_by_species_format/", outfile, ".csv", sep = "")
    write_csv(dat1, path2outfile)
    
    # convert to long format: one column with species name and one with species abundance
@@ -126,17 +134,11 @@ read_data_files <- function(filename){
 
 ################################################################################
 # execution of script
+path2Dropbox <- "C:/Users/May/Dropbox (Privat)/Frag Database (new)/files_datapaper/"
 
-filenames <- list.files(path =  path2Dropbox %+% "files_datapaper/",
-                        pattern="*.csv", full.names = F)
+filenames <- list.files(path =  path2Dropbox, pattern="*.csv", full.names = F)
 
-# Files with errors
-problem_files <- c()
-
-good_files <- filenames[!filenames %in% problem_files]
-
-length(good_files)
-dat_list <- lapply(good_files, read_data_files)
+dat_list <- lapply(filenames, read_data_files)
 
 dat_long <- bind_rows(dat_list)
 
@@ -146,14 +148,8 @@ summary(dat_long)
 dat_long %>% filter(frag_size_char == "Continuous")
 
 # prepare output date
-path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/fragSAD_long.csv"
+path2outfile <- paste(path2Dropbox, "Long_format_database/fragSAD_long.csv", sep = "")
 write_csv(dat_long, path2outfile)
 
-# # save file labels
-# labels <- dat_long %>%
-#    select(dataset_label) %>%
-#    distinct()
-# 
-# path2outfile <- path2Dropbox %+% "files_datapaper/Long_format_database/file_labels.csv"
-# write_csv(labels, path2outfile)
+
 
