@@ -3,7 +3,7 @@
 # code to plot regressions for all metrics (no interaction models)
 
 # get the coefficients for all the results
-source(paste0(path2wd, '5az_fragSize_z_score_coef_wrangle.R'))
+source(paste0(path2wd, 'r_scripts/5az_fragSize_z_score_coef_wrangle.R'))
 
 #---- regression plots showing study-level slopes-----
 # setwd(paste0(path2Dropbox, '/analysis_apr19/figures/'))
@@ -23,14 +23,14 @@ taxa_legend <- ggplot() +
         text = element_text(size = 7)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1)))
 
-source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 taxa_colour = gg_legend(taxa_legend)
 
 # S_std (Felix recommends this one for the main result)
 z_S_std_regPlot <-
 ggplot() +
   # data
-  geom_point(data = frag %>% filter(S_std1_mean>0 & 
+  geom_point(data = frag %>% filter(S_std_mean>0 & 
                                       !is.na(z_S_std) & 
                                       !is.infinite(z_S_std)),
              aes(x = frag_size_num, y = z_S_std, colour = taxa),
@@ -297,12 +297,11 @@ bottom <- cowplot::plot_grid(
                    z_Schao_regPlot,
                    nrow = 2, align = 'hv')
 
-cowplot::plot_grid(bottom 
-                   # nrow = 2,
-                   # rel_heights = c(0.1,1)
-                   ) +
+cowplot::plot_grid(bottom) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.025, size = 7)
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig3.png', 
-       width = 183, height = 120, units = 'mm')
-
+# set local directory to save
+# plot sized for 2 columns
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig3.png', 
+#        width = 183, height = 120, units = 'mm')
+# 

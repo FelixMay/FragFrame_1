@@ -5,7 +5,9 @@
 # load packages and paths: 0_init_dirs_load_packages.R
 
 # code to wrangle the coefs ready to inspect
-source(paste0(path2wd, '5b_fragSize_coef_wrangle_4_robust_results.R'))
+## NB: this code does not run without user having model fits locally (i.e.,
+# they are not in the intermediate_results folder)
+source(paste0(path2wd, 'r_scripts/5b_fragSize_coef_wrangle_4_robust_results.R'))
 
 fixed_effects <- bind_cols(
   # reference estimates
@@ -230,10 +232,6 @@ study_coefs <- left_join(
         select(dataset_label, S_PIE_sens5, S_PIE_sens5_lower, S_PIE_sens5_upper),
       by = 'dataset_label')
 
-# %>% 
-#   mutate(rho_estimate = cor.test(jtu_norm, jtu_beta, method = 'spearman')$estimate %>% signif(digits = 2),
-#          p_value = cor.test(jtu_norm, jtu_beta, method = 'spearman')$p.value %>% signif(digits = 2))
-
 
 Sstd2_robust <- ggplot() +
   # reference versus case 1
@@ -454,7 +452,8 @@ cowplot::plot_grid(Nstd_robust,
                       x = 0.01, angle = 90, size = 7)
 
 # 2 column
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig4.png',
-       width = 183,
-       height = 60,
-       units = 'mm')
+# set local directory
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig4.png',
+#        width = 183,
+#        height = 60,
+#        units = 'mm')

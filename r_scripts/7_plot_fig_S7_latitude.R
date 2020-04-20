@@ -6,7 +6,20 @@
 ## finally, we'll plot results of best-fitting model
 
 # get the coefficients for all the results
-source(paste0(path2wd, '5a_fragSize_coef_wrangle.R'))
+source(paste0(path2wd, 'r_scripts/5a_fragSize_coef_wrangle.R'))
+
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
+  as_tibble() %>% 
+  dplyr::rename(dataset_label = dataset_id) %>% 
+  separate(coordinates, into = c('y', 'x'), sep = ', ', remove = F) %>% 
+  mutate(x = as.numeric(x),
+         y = as.numeric(y),
+         abs_lat = abs(y),
+         latitude = climate,
+         abs_lat_bin = cut(abs_lat,
+                           breaks = seq(0,70, by = 10),
+                           labels = c('0-10', '10-20','20-30','30-40',
+                                      '40-50','50-60','60-70')))
 
 S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>% 
   mutate(S_std_slope = Slope,
@@ -17,10 +30,8 @@ S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>%
   left_join(meta,
             by = 'dataset_label')
 
-# include uncertainty in the study-level estimate of the 
-S_std_study_slope <- S_std_study_slope %>% 
-  mutate(abs_lat = abs(y))
 
+# include uncertainty of the study-level estimate in the model 
 slope_lat <- brms::brm(bf(S_std_slope | se(error) ~ abs_lat + (1|dataset_label)),
                        data = S_std_study_slope,
                        cores = 4, chains = 4)
@@ -65,19 +76,6 @@ ggplot() +
   theme(text = element_text(size = 7))
 
 # 1.5 column figure size
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig7.png',
-       width = 120, height = 120, units = 'mm')
-
-
-ggplot() +
-  geom_point(data = S_std_study_slope,
-             aes(x = abs(y), y = S_std_slope),
-             size = 1.5) +
-  geom_linerange(data = S_std_study_slope,
-                 aes(x = abs(y), ymin = S_std_lower, ymax = S_std_upper),
-                 size = 0.5, alpha = 0.5) +
-  stat_smooth(data = S_std_study_slope,
-              aes(x = abs(y), y = S_std_slope),
-              method = 'lm')
-
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision1/figures/decay_latitude.png', width = 120, height = 120, units = 'mm')
+# set local directory
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig7.png',
+#        width = 120, height = 120, units = 'mm')
