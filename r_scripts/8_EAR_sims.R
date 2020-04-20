@@ -1,12 +1,4 @@
-# new 27/11/2019
-
-# update to produce plot similar to Felix's new conceptual expectation
-
 # code to simulate species loss from EAR with random sampling and ecosystem decay
-library(mobsim)
-library(tidyverse)
-
-
 
 # the total area (before fragmentation)
 A = 1e4
@@ -16,6 +8,7 @@ S = 1e3
 a = seq(from = 1, to = A, length.out = 200)
 #  even SAD
 cv_abund=1
+# total community size (total number of individuals of all species combined)
 totalN = 1e4
 
 # generate regional community; log-normal SAD, possion 
@@ -35,7 +28,8 @@ df <- tibble(species = names(temp),
 S_ear <- matrix(data = NA,
                 nrow = length(a),
                 ncol = 3)
-# define beta for decay
+
+# define beta (here, equal to our empirical slope estimate) for decay
 beta = 0.06
 
 for(i in 1:length(a)){
@@ -82,6 +76,6 @@ ggplot() +
         text = element_text(size = 7))
 
 # 1.5 column width
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig9.png', 
-       width = 120, height = 120, units = 'mm')
-# 
+# set local directory
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig9.png', 
+#        width = 120, height = 120, units = 'mm')

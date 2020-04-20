@@ -1,7 +1,7 @@
 # code to plot beta-diversity regression
 # need to execute 0_init_dirs_load_packages.R first
 
-source(paste0(path2wd, '5d_beta_frag_coef_wrangle.R'))
+source(paste0(path2wd, 'r_scripts/5d_beta_frag_coef_wrangle.R'))
 
 ##-------- plot the regressions----------------
 turnover_regression <- ggplot() +
@@ -181,7 +181,7 @@ taxa_legend <- ggplot() +
         text = element_text(size = 7)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1)))
 
-source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 taxa_colour = gg_legend(taxa_legend)
 
 top <- cowplot::plot_grid(taxa_colour)
@@ -198,7 +198,8 @@ cowplot::plot_grid(top, bottom,
                       y = 0.02, size = 7)
 
 # plot for 2 column width
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig8.png',
-       width = 183,
-       height = 170,
-       units = 'mm')
+# set local directory
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig8.png',
+#        width = 183,
+#        height = 170,
+#        units = 'mm')

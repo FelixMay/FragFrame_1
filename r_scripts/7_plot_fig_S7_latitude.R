@@ -49,6 +49,7 @@ slope_lat_taxa <- add_criterion(slope_lat_taxa,
                                 criterion = c('loo', 'waic'),
                                 reloo = TRUE)
 
+# not much support for including taxa (though the fits do not differ dramatically)
 model_weights(slope_lat, slope_lat_taxa)
 
 # model with taxa x latitude interaction wins: more than twice as likely
