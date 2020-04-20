@@ -5,16 +5,17 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
+# these will need to be run and saved locally
 load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref-5360307.Rdata')
 load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_ref-5360306.Rdata')
 
 load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_ref.Rdata')
 load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
 
-frag_beta <- read_csv('~/Dropbox/Frag Database (new)/files_datapaper/Analysis/2_betapart_frag_fcont_10_mabund_as_is.csv')
+frag_beta <- read_csv(paste0(path2wd, 'intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
 
 # get the metadata
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 

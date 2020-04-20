@@ -1,16 +1,15 @@
 # need to execute 0_init_dirs_load_packages.R first
 
 # code to wrangle the coefficients for z-score regressions
+load(paste0(path2wd, 'intermediate_results/fragSize_z_score_ref.Rdata'))
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_z_score_ref.Rdata')
-
-frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
 # load the meta data
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 

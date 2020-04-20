@@ -3,17 +3,15 @@
 # code to plot regressions for all metrics (no interaction models)
 
 # get the coefficients for all the results
-source(paste0(path2wd, '5a_fragSize_coef_wrangle.R'))
+source(paste0(path2wd, 'r_scripts/5a_fragSize_coef_wrangle.R'))
 
-#---- regression plots showing study-level slopes-----
-setwd(paste0(path2Dropbox, '/Manuscript for Nature/revision3/figures/'))
-# setwd(paste(path2temp,"figs/", sep = ""))
+#---- regression plots showing study-level slopes----
 
 # plot to generate legend 
 taxa_legend <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std2_mean, colour = taxa),
+             aes(x = frag_size_num, y = S_std_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -33,14 +31,15 @@ taxa_legend <- ggplot() +
         text = element_text(size = 7)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1, size = 1)))
 
-source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+# function to plot legend only
+source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 taxa_colour = gg_legend(taxa_legend)
 
 # S_std: standardised species richness
 S_std_regPlot <- ggplot() +
   # data
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std2_mean, colour = taxa),
+             aes(x = frag_size_num, y = S_std_mean, colour = taxa),
              size = 1, alpha = 0.25) +
   geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
@@ -339,18 +338,16 @@ bottom <- cowplot::plot_grid(Nstd_regPlot,
                    nrow = 1, align = 'hv') +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05, size = 7)
 
-# bottom_panel <- cowplot::plot_grid(top, bottom, 
-#                    nrow = 2,
-#                    rel_heights = c(0.1,1)) 
-
-# new figure two has map on it
-source(paste0(path2wd, '6_plot_map.R'))
+# run script to plot map
+source(paste0(path2wd, 'r_scripts/6_plot_fig2_map.R'))
 
 cowplot::plot_grid(map_taxa,
                    bottom,
                    nrow = 2)
-# plots wrangled for two column print 
-ggsave('fig2_2column.pdf', width = 183, height = 120, units = 'mm')
+
+# plots sized for two column print
+# set local_directory
+# ggsave('/local_directory/fig2_2column.pdf', width = 183, height = 120, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
                                   Scov_regPlot,
@@ -361,6 +358,7 @@ cowplot::plot_grid(top, bottom_supp,
                    rel_heights = c(0.1,1)) +
   cowplot::draw_label('Fragment size (hectares)', y = 0.05, size = 7)
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig2.png', 
-       width = 183, height = 60, units = 'mm')
-
+# set local directory and save
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig2.png', 
+#        width = 183, height = 60, units = 'mm')
+# 

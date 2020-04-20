@@ -3,7 +3,7 @@
 # need to run 0_init_dirs_load_packages.R to load packages and setwd etc
 
 # load the meta data
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
@@ -62,23 +62,10 @@ map_taxa <- ggplot() +
         # it inherits from title, so...
         title = element_text(face = 'bold', size = 8),
         legend.text = element_text(size = 6, face = 'plain'),
-        legend.title = element_text(size = 7, face = 'plain'),
+        legend.title = element_text(size = 7, face = 'plain')
         ) +
   guides(shape = guide_legend(nrow = 2, label.hjust = 0),
          colour = guide_legend(nrow = 2, label.hjust = 0)
          )
 
-
-# figure 1
-# we want the conceptual figure on the top panel
-# top <- cowplot::ggdraw() + cowplot::draw_image('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig1_top.png',
-#                                                clip = 'on')
-# cowplot::plot_grid(top, map_taxa,
-#                    nrow = 2, align = 'hv',
-#                    labels = 'auto',
-#                    rel_heights = c(0.5,1),
-#                    rel_widths = c(0.5,1))
-
-# ggsave('~/Dropbox/Frag Database (new)/analysis_apr19/figures/fig1_solidPoints.pdf',
-#        width = 150, height = 150, units = 'mm')
 

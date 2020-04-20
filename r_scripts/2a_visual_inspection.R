@@ -27,7 +27,7 @@ ggplot() +
              aes(x = frag_size_num, y = S_cov_mean, colour = 'S_cov'),
              alpha = 0.5) +
   geom_point(data = frag,
-             aes(x = frag_size_num, y = S_std1_mean, colour = 'S_std_2'),
+             aes(x = frag_size_num, y = S_std_mean, colour = 'S_std_2'),
              alpha = 0.5) +
   stat_smooth(data = frag,
               method = 'lm', 
@@ -41,7 +41,7 @@ ggplot() +
               aes(x = frag_size_num, y = S_cov_mean, colour = 'S_cov')) +
   stat_smooth(data = frag,
               method = 'lm',
-              aes(x = frag_size_num, y = S_std1_mean, colour = 'S_std_2')) +
+              aes(x = frag_size_num, y = S_std_mean, colour = 'S_std_2')) +
   scale_x_continuous(trans = 'log10') +
   scale_y_continuous(trans = 'log2', breaks = c(2,32,64,128, 256)) +
   scale_colour_manual(name = 'metric',

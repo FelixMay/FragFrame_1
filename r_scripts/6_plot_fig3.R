@@ -6,9 +6,7 @@
 # code to plot each of the groups we are interested in together on one figure: 
 # taxa, continent, time, matrix
 
-library(ggridges)
-
-source(paste0(path2wd, '5aa_alpha_frag_posterior_wrangle.R'))
+source(paste0(path2wd, 'r_scripts/5aa_alpha_frag_posterior_wrangle.R'))
 
 ## dummy plot for creating separate legend
 three_grey_legend <- ggplot() +
@@ -43,7 +41,7 @@ three_grey_legend <- ggplot() +
         legend.margin = margin(),
         legend.box.spacing = unit(c(0,0,0,0), units = 'mm')) #+
 
-source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 legend <- gg_legend(three_grey_legend)
 
 Sstd2_study_posterior_time <- ggplot() +
@@ -160,58 +158,6 @@ Sstd2_study_posterior_matrix <- ggplot() +
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
-Sstd2_study_posterior_biome <- ggplot() +
-  geom_density_ridges_gradient(data = Sstd2_posterior,
-                               aes(x = S_std + Sstd2_global,
-                                   y = biome,
-                                   fill = stat(quantile)
-                               ),
-                               quantiles = c(0.025, 0.25, 0.75, 0.975),
-                               calc_ecdf = T,
-                               scale = 0.9, alpha = 0.5,
-                               linetype = 0) +
-  geom_rect(data = frag_global %>% 
-              summarise(lower = quantile(Sstd2_global, probs = 0.025),
-                        upper = quantile(Sstd2_global, probs = 0.975)),
-            aes(xmin = lower, xmax = upper, ymin = -Inf, ymax = Inf),
-            alpha = 0.6) +
-  geom_point(data = Sstd2_posterior,
-             aes(x = S_std + Sstd2_global, 
-                 y = biome),
-             stat = ggstance:::StatSummaryh,
-             fun.x = median,
-             size = 2.5, shape = 18) +
-  geom_vline(data = frag_global,
-             aes(xintercept = median(Sstd2_global))) +
-  geom_vline(xintercept = 0, lty = 2) +
-  geom_text(data = Sstd2_posterior %>%
-              group_by(biome) %>% 
-              mutate(n_study = n_distinct(dataset_label)) %>% 
-              ungroup() %>% 
-              distinct(biome, n_study, .keep_all = T),
-            aes(x=0.3, y=biome, 
-                label=paste('n[study] == ', n_study)),
-            size=2,
-            nudge_y = 0.1, parse = T) +
-  theme_bw() +
-  labs(y = 'Biome',
-       x = '',#,#expression(paste('Study-level slope')),
-       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'b'
-  ) +
-  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
-  # scale_fill_viridis_c(name = 'Posterior probability') +
-  scale_fill_manual(name = 'Posterior probability',
-                    values = c('#fdbe85', '#fd8d3c', '#e6550d',
-                               '#fd8d3c', '#fdbe85')) +
-  theme(panel.grid = element_blank(),
-        legend.key = element_blank(),
-        legend.position = 'none', 
-        legend.justification = c(1, 1),
-        legend.background = element_blank(),
-        text = element_text(size = 7),
-        plot.tag = element_text(size = 8, face = 'bold')) #+
-
 Sstd2_study_posterior_taxa <- ggplot() +
   geom_density_ridges_gradient(data = Sstd2_posterior,
                                aes(x = S_std + Sstd2_global,
@@ -317,115 +263,11 @@ Sstd2_study_posterior_continent <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-Sstd2_study_posterior_climate <- ggplot() +
-  geom_density_ridges_gradient(data = Sstd2_posterior,
-                               aes(x = S_std + Sstd2_global,
-                                   y = climate,
-                                   fill = stat(quantile)
-                               ),
-                               quantiles = c(0.025, 0.25, 0.75, 0.975),
-                               calc_ecdf = T,
-                               scale = 0.9, alpha = 0.5,
-                               linetype = 0) +
-  geom_rect(data = frag_global %>% 
-              summarise(lower = quantile(Sstd2_global, probs = 0.025),
-                        upper = quantile(Sstd2_global, probs = 0.975)),
-            aes(xmin = lower, xmax = upper, ymin = -Inf, ymax = Inf),
-            alpha = 0.6) +
-  geom_point(data = Sstd2_posterior,
-             aes(x = S_std + Sstd2_global, 
-                 y = climate),
-             stat = ggstance:::StatSummaryh,
-             fun.x = median,
-             size = 2.5, shape = 18) +
-  geom_vline(data = frag_global,
-             aes(xintercept = median(Sstd2_global))) +
-  geom_vline(xintercept = 0, lty = 2) +
-  geom_text(data = Sstd2_posterior %>%
-              group_by(climate) %>% 
-              mutate(n_study = n_distinct(dataset_label)) %>% 
-              ungroup() %>% 
-              distinct(climate, n_study, .keep_all = T),
-            aes(x=0.3, y=climate, 
-                label=paste('n[study] == ', n_study)),
-            size=2,
-            nudge_y = 0.1, parse = T) +
-  theme_bw() +
-  labs(y = 'Climate',
-       x = ''#,#expression(paste('Study-level slope')),
-       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-  ) +
-  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
-  scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cccccc', '#969696', '#636363',
-                               '#969696', '#cccccc')) +
-  theme(panel.grid = element_blank(),
-        legend.key = element_blank(),
-        legend.position = 'none',
-        legend.justification = c(1, 1),
-        legend.background = element_blank(),
-        text = element_text(size = 7),
-        plot.tag = element_text(size = 8, face = 'bold')) #+
-
-Sstd2_study_posterior_sphere.frag <- ggplot() +
-  geom_density_ridges_gradient(data = Sstd2_posterior,
-                               aes(x = S_std + Sstd2_global,
-                                   y = frag_matrix,
-                                   fill = stat(quantile)
-                               ),
-                               quantiles = c(0.025, 0.25, 0.75, 0.975),
-                               calc_ecdf = T,
-                               scale = 0.9, alpha = 0.5,
-                               linetype = 0) +
-  geom_rect(data = frag_global %>% 
-              summarise(lower = quantile(Sstd2_global, probs = 0.025),
-                        upper = quantile(Sstd2_global, probs = 0.975)),
-            aes(xmin = lower, xmax = upper, ymin = -Inf, ymax = Inf),
-            alpha = 0.6) +
-  geom_point(data = Sstd2_posterior,
-             aes(x = S_std + Sstd2_global, 
-                 y = frag_matrix),
-             stat = ggstance:::StatSummaryh,
-             fun.x = median,
-             size = 2.5, shape = 18) +
-  geom_vline(data = frag_global,
-             aes(xintercept = median(Sstd2_global))) +
-  geom_vline(xintercept = 0, lty = 2) +
-  geom_text(data = Sstd2_posterior %>%
-              group_by(frag_matrix) %>% 
-              mutate(n_study = n_distinct(dataset_label)) %>% 
-              ungroup() %>% 
-              distinct(climate, n_study, .keep_all = T),
-            aes(x=0.3, y=frag_matrix, 
-                label=paste('n[study] == ', n_study)),
-            size=2,
-            nudge_y = 0.1, parse = T) +
-  theme_bw() +
-  labs(y = 'Fragment and matrix sphere',
-       x = '',#,#expression(paste('Study-level slope')),
-       # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'c'
-  ) +
-  scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
-  # scale_fill_viridis_c(name = 'Posterior probability') +
-  scale_fill_manual(name = 'Posterior probability',
-                    values = c('#ecd1e8', '#dba7cd', '#cc7db0',
-                               '#dba7cd', '#ecd1e8')) +
-  theme(panel.grid = element_blank(),
-        legend.key = element_blank(),
-        legend.position = 'none',
-        legend.justification = c(1, 1),
-        legend.background = element_blank(),
-        text = element_text(size = 7),
-        plot.tag = element_text(size = 8, face = 'bold')) #+
-
 
 top = cowplot::plot_grid(NULL, legend, NULL,
                          nrow = 1, rel_widths = c(0.2,0.6,0.2))
-bottom = cowplot::plot_grid(
-                            #Sstd2_study_posterior_biome,
-                            #Sstd2_study_posterior_sphere.frag,
-                            Sstd2_study_posterior_taxa,
+
+bottom = cowplot::plot_grid(Sstd2_study_posterior_taxa,
                             Sstd2_study_posterior_continent,
                             Sstd2_study_posterior_time, 
                             Sstd2_study_posterior_matrix, 
@@ -433,11 +275,12 @@ bottom = cowplot::plot_grid(
 cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
   cowplot::draw_label(expression(paste('Standardised species richness ~ fragment size slope estimate')), y = 0.01, size = 7)
 
-# plot for 2 column width 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig3_2column.pdf',
-       width = 183,
-       height = 170,
-       units = 'mm')
+# set local directory
+# plot sized for for 2 column width 
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig3_2column.pdf',
+#        width = 183,
+#        height = 170,
+#        units = 'mm')
 # 
 ##repeat for Nstd and Nstd for supplement
 continent <- ggplot() +
@@ -651,10 +494,7 @@ matrix <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-bottom = cowplot::plot_grid(
-                            #Sstd2_study_posterior_biome,
-                            #Sstd2_study_posterior_sphere.frag,
-                            taxa,
+bottom = cowplot::plot_grid(taxa,
                             continent,
                             time,  
                             matrix,
@@ -896,7 +736,8 @@ cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
                       y = 0.01, size = 7)
 
 # plot for 2 column width
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig6_2column.png',
-       width = 183,
-       height = 170,
-       units = 'mm')
+# set local directory to save
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig6_2column.png',
+#        width = 183,
+#        height = 170,
+#        units = 'mm')

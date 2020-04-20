@@ -1,7 +1,7 @@
 ## code to plot simulation results for extended data
 
 # load results of simulations
-simDat <- read.csv('~/Dropbox/1current/fragmentation_synthesis/results/method2resultsS2000_N40000_mp1_nrep2000.csv') %>% 
+simDat <- read.csv(paste0(path2wd, 'intermediate_results/method2resultsS2000_N40000_mp1_nrep2000.csv')) %>% 
   as_tibble()
 
 
@@ -30,7 +30,6 @@ slope_coefs$aggregation <- factor(slope_coefs$aggregation,
 
 slope_coefs$metric2 <- factor(slope_coefs$metric2,
                               levels = c('Number of individuals', 'Species richness', 'Evenness'))
-library(ggridges)
 
 ## dummy plot for creating separate legend
 three_grey_legend <- ggplot() +
@@ -62,7 +61,7 @@ three_grey_legend <- ggplot() +
         legend.title = element_text(size = 7, face = 'plain'),
         legend.background = element_blank()) #+
 
-source('~/Dropbox/1current/R_random/functions/gg_legend.R')
+source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 legend <- gg_legend(three_grey_legend)
 
 
@@ -97,8 +96,10 @@ sim_slopes <- ggplot() +
         text = element_text(size = 7),
         legend.background = element_blank()) 
 
+
+# this is a version of the plot produced by 7_sim_random_sampling.R
 top1 <- cowplot::ggdraw() + 
-  cowplot::draw_image('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/samplingS2000_N40000_mp1.png',
+  cowplot::draw_image(paste0(path2wd, 'intermediate_results/samplingS2000_N40000_mp1.png'),
                                                 clip = 'on')
 
 legend_row <- cowplot::plot_grid(legend)
@@ -115,11 +116,14 @@ cowplot::plot_grid(top1,
                    label_size = 8,
                    label_fontface = 'bold')
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex_Dat_Fig1.pdf',
-       height = 183, width = 183, units = 'mm')
 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig1.png',
-       height = 183, width = 183, units = 'mm')
+# set local directory
+# figure sized for 2 columns 
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex_Dat_Fig1.pdf',
+#        height = 183, width = 183, units = 'mm')
+# 
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig1.png',
+#        height = 183, width = 183, units = 'mm')
 
 
 ## calculate the summary stats to report

@@ -3,15 +3,19 @@
 # code to wrangle the coefficients for the fragemnt area regressions (with no interactions)
 # for models fit to data standardised in slightly different ways
 
+## NOTE: only the reference model fits are on Github 
+# (other models need to be fit and saved locally to reproduce Ex Dat Fig 4)
 # code to get coefs for reference fits------
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_brms_ref_revision.Rdata')
+# load model fits and the data
+load(paste0(path2wd, 'intermediate_results/fragSize_ref.Rdata'))
 
-frag <- read_csv(paste0(path2data, '2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+# load the meta data
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
@@ -299,13 +303,14 @@ S_PIE_ref_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 1------
+# local directory 
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_1_biodiv_frag_fcont_2_mabund_as_is_revision.Rdata')
 
-frag <- read_csv(paste0(path2data, '1_biodiv_frag_fcont_2_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/1_biodiv_frag_fcont_2_mabund_as_is.csv'))
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
@@ -592,14 +597,15 @@ S_PIE_sens1_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 3------
+# local directory 
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_3_biodiv_frag_fcont_100_mabund_as_is_revision.Rdata')
 
-frag <- read_csv(paste0(path2data, '3_biodiv_frag_fcont_100_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/3_biodiv_frag_fcont_100_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
@@ -885,14 +891,15 @@ S_PIE_sens3_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
 # code to get coefs for sensitivity case 8------
+# local directory 
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_4_biodiv_frag_fcont_10_mabund_ceiling_revision.Rdata')
 
-frag <- read_csv(paste0(path2data, '4_biodiv_frag_fcont_10_mabund_ceiling.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/4_biodiv_frag_fcont_10_mabund_ceiling.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
@@ -1177,15 +1184,16 @@ S_PIE_sens4_fixef <- S_PIE_lognorm_fragSize_fixef
 S_PIE_sens4_grp_coefs <- S_PIE_fragSize_group_coefs
 
 
-# code to get coefs for sensitivity case 11------
+# code to get coefs for sensitivity case 5------
+# local directory 
 load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_5_biodiv_frag_fcont_10_mabund_multiply_revision.Rdata')
 
-frag <- read_csv(paste0(path2data, '5_biodiv_frag_fcont_10_mabund_multiply.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/5_biodiv_frag_fcont_10_mabund_multiply.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 

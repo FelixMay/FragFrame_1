@@ -1,18 +1,21 @@
 # need to execute 0_init_dirs_load_packages.R first
 
 # code to plot visual inspection of models: trace plots, posterior predictive checks, residuals
+load(paste0(path2wd, '/intermediate_results/fragSize_z_score_ref.Rdata'))
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_z_score_ref.Rdata')
-
-meta <- read.csv(paste0(path2meta, 'new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read.csv(paste0(path2wd, '/data/new_meta_2_merge.csv'), sep=';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
+
+frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 frag <- left_join(frag, 
                   meta,
                   by = 'dataset_label')
 
-setwd(paste0(path2Dropbox, '/analysis_apr19/figures/model_checks'))
+
+# change to an appropriate directory to save plots to:
+plot_dir <- '~/Dropbox/1current/fragmentation_synthesis/temp/figs/visual_inspection/'
 # create vector of response variable to loop through
 response <- c('z_Sstd', 'z_S_PIE', 'z_Sn', 'z_S_chao', 'z_Scov')
 
@@ -38,7 +41,7 @@ for(i in 5:length(response)){
   resid$fitted <- fitted[,'Estimate']
   resid$predict <- predict[,'Estimate']
   
-  png(paste0(response[i], '_Pearson_residuals.png'), width = 240, height = 200, res = 75, units = 'mm')
+  png(paste0(plot_dir, '_', response[i], '_Pearson_residuals.png'), width = 240, height = 200, res = 75, units = 'mm')
   par(mfrow=c(3,3), mai = c(0.5, 0.5, 0.1, 0.1))
   # can we do a better job with the ones and twos? Probably not. Error distribution? Model?
   with(resid,# %>% filter(Estimate<5), 
@@ -79,39 +82,34 @@ for(i in 5:length(response)){
 
 
 # chain inspection
-plot(SstdstudT_fragSize)
-plot(NstdstudT_fragSize)
-plot(S_PIEstudT_fragSize)
-plot(SnstudT_fragSize)
-plot(ScovstudT_fragSize)
-plot(S_chaostudT_fragSize)
+plot(z_Sstd_studT_fragSize)
+plot(z_S_PIE_studT_fragSize)
+plot(z_Sn_studT_fragSize)
+plot(z_Scov_studT_fragSize)
+plot(z_S_chao_studT_fragSize)
 
 # posterior predictive checks
-Sstd_pp <- pp_check(SstdstudT_fragSize) +
-  scale_x_continuous(trans = 'log2') +
-  labs(subtitle = expression(S[std]))
-Nstd_pp <- pp_check(NstdstudT_fragSize) +
-  scale_x_continuous(trans = 'log10') +
-  labs(subtitle = expression(N[std]))
-S_PIE_pp <- pp_check(S_PIEstudT_fragSize) +
-  scale_x_continuous(trans = 'log2') +
-  labs(subtitle = expression(S[PIE]))
-Sn_pp <- pp_check(SnstudT_fragSize) +
-  scale_x_continuous(trans = 'log2') +
-  labs(subtitle = expression(S[n]))
-Scov_pp <- pp_check(ScovstudT_fragSize) +
-  scale_x_continuous(trans = 'log2') +
-  labs(subtitle = expression(S[cov]))
-Schao_pp <- pp_check(S_chaostudT_fragSize) +
-  scale_x_continuous(trans = 'log2') +
-  labs(subtitle = expression(S[chao]))
+Sstd_pp <- pp_check(z_Sstd_studT_fragSize) +
+  labs(subtitle = expression(S[std])) +
+  coord_cartesian(xlim = c(-20, 20))
+S_PIE_pp <- pp_check(z_S_PIE_studT_fragSize) +
+  labs(subtitle = expression(S[PIE])) +
+  coord_cartesian(xlim = c(-20, 20))
+Sn_pp <- pp_check(z_Sn_studT_fragSize) +
+  labs(subtitle = expression(S[n])) +
+  coord_cartesian(xlim = c(-20, 20))
+Scov_pp <- pp_check(z_Scov_studT_fragSize) +
+  labs(subtitle = expression(S[cov])) +
+  coord_cartesian(xlim = c(-20, 20))
+Schao_pp <- pp_check(z_S_chao_studT_fragSize) +
+  labs(subtitle = expression(S[chao])) +
+  coord_cartesian(xlim = c(-20, 20))
 
 cowplot::plot_grid(Sstd_pp,
-                   Nstd_pp,
                    S_PIE_pp,
                    Sn_pp,
                    Scov_pp,
                    Schao_pp,
                    nrow = 3, align = 'hv')
 
-# ggsave('Posterior_predictive_checks.png', width = 290, height = 200, units = 'mm')
+# ggsave(paste0(plot_dir, 'Posterior_predictive_z_scores.png'), width = 290, height = 200, units = 'mm')
