@@ -33,10 +33,12 @@ Jne_zi_fragSize <- brm(bf(rich ~ cl10ra +
                         # fit to data with variation in frag_size_num
                         data = frag_beta %>% filter(method=='Baselga family, Jaccard'),
                         prior = rp,
-                        cores = 4, chains = 4, iter = 2000)
+                        cores = 4, chains = 4, 
+                       iter = 4000,
+                       thin = 2)
 
-# save(Jne_zi_fragSize, 
-#      file = '/some_directory/Jne_zi_fragSize.Rdata')
+# save(Jne_zi_fragSize,
+#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize.Rdata')
 
 # nestedness component of Ruzicka
 Rne_zi_fragSize <- brm(bf(rich ~ cl10ra + 
@@ -47,7 +49,7 @@ Rne_zi_fragSize <- brm(bf(rich ~ cl10ra +
                        # fit to data with variation in frag_size_num
                        data = frag_beta %>% filter(method=='Baselga family, Ruzicka'),
                        prior = rp,
-                       cores = 4, chains = 4, iter = 2000)
+                       cores = 4, chains = 4, iter = 4000, thin = 2)
 
-# save(Rne_zi_fragSize, 
-#      file = '/some_directory/Rne_zi_fragSize.Rdata')
+# save(Rne_zi_fragSize,
+#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize.Rdata')

@@ -26,11 +26,11 @@ Jtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
                         data = frag_beta %>% filter(method=='Baselga family, Jaccard'),
                         prior = rp,
                         cores = 4, chains = 4,
-                        warmup = 500)
+                        iter = 4000, thin = 2)
 
-# save somewhere
-# save(Jtu_z1i_fragSize, 
-#      file = '/some_directory/Jtu_z1i_fragSize.Rdata')
+# save locally
+save(Jtu_z1i_fragSize,
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i_fragSize.Rdata')
 
 # turnover component of Ruzicka
 Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra + 
@@ -46,5 +46,5 @@ Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
                         cores = 4, chains = 4,
                         warmup = 500)
 
-# save(Rtu_z1i_fragSize, 
-#      file = '/some_directory/Rtu_z1i_fragSize.Rdata')
+save(Rtu_z1i_fragSize,
+     file = '~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i_fragSize.Rdata')
