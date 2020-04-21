@@ -9,11 +9,6 @@ frag_beta <- frag_beta %>%
   mutate(cl10ra = log10_ratio_area - mean(log10_ratio_area))
 
 
-# set some weakly regularising priors
-rp <- c(prior(normal(0,2), class = Intercept),
-        prior(normal(0,1), class = b),
-        prior(exponential(1), class = sd))
-
 # turnover component of jaccard 
 Jtu_z1i_fragSize <- brm(bf(repl ~ cl10ra + 
                           (cl10ra | dataset_label), 
@@ -24,13 +19,12 @@ Jtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
                         family = zero_one_inflated_beta()),
                         # fit to data with variation in frag_size_num
                         data = frag_beta %>% filter(method=='Baselga family, Jaccard'),
-                        prior = rp,
                         cores = 4, chains = 4,
                         iter = 4000, thin = 2)
 
 # save locally
-save(Jtu_z1i_fragSize,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i_fragSize.Rdata')
+# save(Jtu_z1i_fragSize,
+#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i_fragSize.Rdata')
 
 # turnover component of Ruzicka
 Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra + 
@@ -42,9 +36,9 @@ Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
                            family = zero_one_inflated_beta()),
                         # fit to data with variation in frag_size_num
                         data = frag_beta %>% filter(method=='Baselga family, Ruzicka'),
-                        prior = rp,
                         cores = 4, chains = 4,
-                        warmup = 500)
+                        iter = 4000, thin = 2)
 
-save(Rtu_z1i_fragSize,
-     file = '~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i_fragSize.Rdata')
+# save locally
+# save(Rtu_z1i_fragSize,
+#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i_fragSize.Rdata')

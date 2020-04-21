@@ -5,12 +5,12 @@ library(tidyverse)
 library(brms)
 library(ggridges)
 
-# these will need to be run and saved locally
-load('~/Dropbox/1current/fragmentation_synthesis/results/jtu_z1i_fS_ref-5360307.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/rtu_z1i_fS_ref-5360306.Rdata')
+# load model fits
+load(paste0(path2wd, 'intermediate_results/Jtu_z1i_fragSize.Rdata'))
+load(paste0(path2wd, 'intermediate_results/Rtu_z1i_fragSize.Rdata'))
 
-load('~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize_ref.Rdata')
-load('~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize_ref.Rdata')
+load(paste0(path2wd, 'intermediate_results/Jne_zi_fragSize.Rdata'))
+load(paste0(path2wd, 'intermediate_results/Rne_zi_fragSize.Rdata'))
 
 frag_beta <- read_csv(paste0(path2wd, 'intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
 
