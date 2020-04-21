@@ -13,7 +13,7 @@ taxa_legend <- ggplot() +
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_std_mean, colour = taxa),
              size = 1, alpha = 0.25) +
-  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
+  geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = taxa,
                    x = xmin,
@@ -41,7 +41,7 @@ S_std_regPlot <- ggplot() +
   geom_point(data = frag,
              aes(x = frag_size_num, y = S_std_mean, colour = taxa),
              size = 1, alpha = 0.25) +
-  geom_segment(data = Sstd2_lognorm_fragSize_group_coefs,
+  geom_segment(data = Sstd_lognorm_fragSize_group_coefs,
                aes(group = dataset_label,
                    colour = taxa,
                    x = xmin,
@@ -50,12 +50,12 @@ S_std_regPlot <- ggplot() +
                    yend = exp(Intercept + Slope * cxmax)),
                size = 0.5) +
   # fixed effect
-  geom_line(data = Sstd2_fS_fitted, 
+  geom_line(data = Sstd_fS_fitted, 
             aes(x = frag_size_num,
                 y = Estimate),
             size = 1) +
   # fixed effect uncertainty
-  geom_ribbon(data = Sstd2_fS_fitted,
+  geom_ribbon(data = Sstd_fS_fitted,
               aes(x = frag_size_num,
                   ymin = Q2.5,
                   ymax = Q97.5),
@@ -63,11 +63,11 @@ S_std_regPlot <- ggplot() +
   # add regression coefficient and uncertainty interval
   annotate('text', x = 0.01, y = Inf, hjust = 0.1, vjust = 1.4,
            label = paste("beta == ", #[Frag.~size]
-                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
+                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Estimate'],2),
                          " (",
-                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Q2.5'],2),
+                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Q2.5'],2),
                          " - ",
-                         round(Sstd2_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
+                         round(Sstd_lognorm_fragSize_fixef['c.lfs','Q97.5'],2),
                          ")"),  
            parse = T, size = 2) +
   scale_x_log10(breaks = scales::trans_breaks("log10", function(x) 10^x),
@@ -347,7 +347,7 @@ cowplot::plot_grid(map_taxa,
 
 # plots sized for two column print
 # set local_directory
-# ggsave('/local_directory/fig2_2column.pdf', width = 183, height = 120, units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig2_2column.pdf', width = 183, height = 120, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
                                   Scov_regPlot,

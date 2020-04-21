@@ -18,96 +18,93 @@ frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 # that are informed by the data (see brms documentation)
 
 # sample effort standardised species richness 
-Sstd1_lognorm_fragSize <- brm(S_std1_mean ~ c.lfs + (c.lfs | dataset_label), 
+Sstd_lognorm_fragSize <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
                               # two observations have zero for the response, remove for lognormal distribution
-                              data = frag %>% filter(S_std1_mean>0),
+                              data = frag %>% filter(S_std_mean>0),
                               family = lognormal(), # our standardised richness are not integer values
-                              cores = 4, chains = 4)
+                              cores = 4, chains = 4,
+                             iter = 4000, thin = 2)
 
 # refit without the studies with pooled sampling designs
-Sstd1_lognorm_fragSize_pool <- brm(S_std1_mean ~ c.lfs + (c.lfs | dataset_label), 
+Sstd_lognorm_fragSize_pool <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
                               # remove pooled designs
                               data = frag %>% filter(sample_design!='pooled'),
                               family = lognormal(), # our standardised richness are not integer values
                               cores = 4, chains = 4,
+                              iter = 4000, thin = 2,
                               control = list(adapt_delta = 0.95))
-
-# sample effort standardised species richness 
-Sstd2_lognorm_fragSize <- brm(S_std2_mean ~ c.lfs + (c.lfs | dataset_label), 
-                              # fit to same data as S_std1
-                              data = frag %>% filter(S_std1_mean>0),
-                              family = lognormal(), # our standardised richness are not integer values
-                              cores = 4, chains = 4)
-
-# refit without the studies with pooled sampling designs
-Sstd2_lognorm_fragSize_pool <- brm(S_std2_mean ~ c.lfs + (c.lfs | dataset_label), 
-                                  data = frag %>% filter(sample_design!='pooled'),
-                                  family = lognormal(), # our standardised richness are not integer values
-                                  cores = 4, chains = 4,
-                                  control = list(adapt_delta = 0.95))
 
 # richness standardised by number of individuals
 Sn_lognorm_fragSize <- brm(S_n_mean ~ c.lfs + (c.lfs | dataset_label), 
                            data = frag %>% filter(S_n_mean > 0), # for lognormal distribution
                            family = lognormal(),
-                           cores = 4, chains = 4)
+                           cores = 4, chains = 4,
+                           iter = 4000, thin = 2)
 
 # refit without the studies with pooled sampling designs
 Sn_lognorm_fragSize_pool <- brm(S_n_mean ~ c.lfs + (c.lfs | dataset_label), 
                            data = frag %>% filter(S_n_mean > 0 & sample_design!='pooled'),
                            family = lognormal(),
-                           cores = 4, chains = 4)
+                           cores = 4, chains = 4,
+                           iter = 4000, thin = 2)
 
 # coverage standardised richness
 Scov_lognorm_fragSize <- brm(S_cov_mean ~ c.lfs + (c.lfs | dataset_label), 
                              data = frag %>% filter(S_cov_mean > 0),
                              family = lognormal(),
-                             cores = 4, chains = 4)
+                             cores = 4, chains = 4,
+                             iter = 4000, thin = 2)
 
 # refit without studies with pooled sampling designs
 Scov_lognorm_fragSize_pool <- brm(S_cov_mean ~ c.lfs + (c.lfs | dataset_label), 
                              data = frag %>% filter(S_cov_mean > 0 & sample_design!='pooled'),
                              family = lognormal(),
-                             cores = 4, chains = 4)
+                             cores = 4, chains = 4,
+                             iter = 4000, thin = 2)
 
 # effective number of species conversion of the probability of interspecific encounter
 S_PIE_lognorm_fragSize <- brm(S_PIE_mean ~ c.lfs + (c.lfs | dataset_label), 
                               data = frag %>% filter(!is.na(S_PIE_mean)),
                               family = lognormal(),
-                              cores = 4, chains = 4)
+                              cores = 4, chains = 4,
+                              iter = 4000, thin = 2)
 
 # refit without studies with pooled sampling designs
 S_PIE_lognorm_fragSize_pool <- brm(S_PIE_mean ~ c.lfs + (c.lfs | dataset_label), 
                               data = frag %>% filter(!is.na(S_PIE_mean) & sample_design!='pooled'),
                               family = lognormal(),
-                              cores = 4, chains = 4)
+                              cores = 4, chains = 4,
+                              iter = 4000, thin = 2)
 
 S_chao_lognorm_fragSize <- brm(S_chao_mean ~ c.lfs + (c.lfs | dataset_label), 
                                data = frag %>% filter(S_chao_mean > 0),
                                family = lognormal(),
-                               cores = 4, chains = 4)
+                               cores = 4, chains = 4,
+                               iter = 4000, thin = 2)
 
 # refit without the studies with pooled sampling designs
 S_chao_lognorm_fragSize_pool <- brm(S_chao_mean ~ c.lfs + (c.lfs | dataset_label), 
                                data = frag %>% filter(S_chao_mean > 0 & sample_design!='pooled'),
                                family = lognormal(),
-                               cores = 4, chains = 4)
+                               cores = 4, chains = 4,
+                               iter = 4000, thin = 2)
 
 
 Nstd_lognorm_fragSize <- brm(N_std ~ c.lfs + (c.lfs | dataset_label), 
                              data = frag,
                              family = lognormal(),
-                             cores = 4, chains = 4)
+                             cores = 4, chains = 4,
+                             iter = 4000, thin = 2)
 
 
 Nstd_lognorm_fragSize_pool <- brm(N_std ~ c.lfs + (c.lfs | dataset_label), 
                              data = frag %>% filter(sample_design!='pooled'),
                              family = lognormal(),
-                             cores = 4, chains = 4)
+                             cores = 4, chains = 4,
+                             iter = 4000, thin = 2)
 
 
-save(#Sstd1_lognorm_fragSize,
-     Sstd2_lognorm_fragSize,
+save(Sstd_lognorm_fragSize,
      Sn_lognorm_fragSize,
      S_PIE_lognorm_fragSize,
      Scov_lognorm_fragSize,
@@ -115,8 +112,7 @@ save(#Sstd1_lognorm_fragSize,
      Nstd_lognorm_fragSize,
      file = paste0(path2wd, '/intermediate_results/fragSize_ref.Rdata'))
 
-save(#Sstd1_lognorm_fragSize_pool,
-     Sstd2_lognorm_fragSize_pool,
+save(Sstd_lognorm_fragSize_pool,
      Sn_lognorm_fragSize_pool,
      S_PIE_lognorm_fragSize_pool,
      Scov_lognorm_fragSize_pool,

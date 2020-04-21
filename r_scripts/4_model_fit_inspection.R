@@ -17,7 +17,7 @@ frag <- left_join(frag,
 # change to an appropriate directory to save plots to:
 plot_dir <- '~/Dropbox/1current/fragmentation_synthesis/temp/figs/visual_inspection/'
 # create vector of response variable to loop through
-response <- c('Sstd2', 'Nstd', 'S_PIE', 'Sn', 'S_chao', 'Scov')
+response <- c('Sstd', 'Nstd', 'S_PIE', 'Sn', 'S_chao', 'Scov')
 
 for(i in 5:length(response)){
   print(paste('model', i, 'in', length(response)))
@@ -68,7 +68,7 @@ for(i in 5:length(response)){
 }
 
 # chain inspection
-plot(Sstd2_lognorm_fragSize)
+plot(Sstd_lognorm_fragSize)
 plot(Nstd_lognorm_fragSize)
 plot(S_PIE_lognorm_fragSize)
 plot(Sn_lognorm_fragSize)
@@ -76,7 +76,7 @@ plot(Scov_lognorm_fragSize)
 plot(S_chao_lognorm_fragSize)
 
 # posterior predictive checks
-Sstd_pp <- pp_check(Sstd2_lognorm_fragSize) +
+Sstd_pp <- pp_check(Sstd_lognorm_fragSize) +
   scale_x_continuous(trans = 'log2') +
   labs(subtitle = expression(S[std]))
 Nstd_pp <- pp_check(Nstd_lognorm_fragSize) +

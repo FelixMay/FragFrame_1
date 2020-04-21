@@ -24,9 +24,9 @@ for(i in 1:length(files)){
   #         prior(normal(0,1), class = b),
   #         prior(exponential(1), class = sd))  
   
-  Sstd2_lognorm_fragSize <- brm(S_std2_mean ~ c.lfs + (c.lfs | dataset_label), 
+  Sstd_lognorm_fragSize <- brm(S_std_mean ~ c.lfs + (c.lfs | dataset_label), 
                                 # fit to data with variation in frag_size_num
-                                data = frag %>% filter(S_std1_mean > 0),
+                                data = frag %>% filter(S_std_mean > 0),
                                 # prior = rp,
                                 family = 'lognormal', # our standardised richness are not integer values
                                 cores = 4, chains = 4)
@@ -62,8 +62,7 @@ for(i in 1:length(files)){
   name_2_save = paste0(path2wd, 'intermediate_results/', 
                        strsplit(files[i], split = '.csv')[[1]], '_modelFits.Rdata')
   
-  save(#Sstd1_lognorm_fragSize, 
-    Sstd2_lognorm_fragSize,
+  save(Sstd_lognorm_fragSize,
     Sn_lognorm_fragSize,
     S_PIE_lognorm_fragSize,
     Scov_lognorm_fragSize,

@@ -44,7 +44,7 @@ study_slope_coefs <- Jtu_z1i_group_coefs %>%
     by = 'dataset_label'
   ) %>% 
   left_join(
-    Sstd2_lognorm_fragSize_group_coefs %>% 
+    Sstd_lognorm_fragSize_group_coefs %>% 
       mutate(Sstd = Slope,
              Sstd_upper = Slope_upper,
              Sstd_lower = Slope_lower) %>% 
@@ -93,14 +93,13 @@ study_slope_coefs <- study_slope_coefs %>%
         remove = F, sep = ', ')
 
 
-# contribution of turnover and nestedness to dissimilarity: most studies have turnover > nestedness (116/123)
+# contribution of turnover and nestedness to dissimilarity: most studies have turnover > nestedness 
 study_slope_coefs %>% 
   filter(jtu_intercept > jne_intercept)
-study_slope_coefs %>% # 109/123
+study_slope_coefs %>% # 
   filter(rtu_intercept > rne_intercept)
 
-# change in component with fragment size difference: 34/123 have delta_turnover > delta_nestedness, 
-# increases to 43/123 for abundance based distance
+# change in component with fragment size difference: mostly delta_turnover > delta_nestedness,
 study_slope_coefs %>% 
   filter(jtu_slope > jne_slope)
 study_slope_coefs %>% 

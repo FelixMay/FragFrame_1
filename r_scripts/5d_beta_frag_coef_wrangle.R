@@ -1,10 +1,5 @@
 # execute 0_init_dirs_load_packages.R for packages and directory
 
-# plot results of fragment level beta-diversity
-library(tidyverse)
-library(brms)
-library(ggridges)
-
 # load model fits
 load(paste0(path2wd, 'intermediate_results/Jtu_z1i_fragSize.Rdata'))
 load(paste0(path2wd, 'intermediate_results/Rtu_z1i_fragSize.Rdata'))
@@ -53,15 +48,15 @@ frag_beta <- frag_beta %>%
 
 #------wrangle for plotting
 # for plotting fixed effects----------------
-Jtu_z1i_fitted <- cbind(Jtu_z1i_fS$data,
-                         fitted(Jtu_z1i_fS, re_formula = NA, scale = 'linear')) %>%
+Jtu_z1i_fitted <- cbind(Jtu_z1i_fragSize$data,
+                         fitted(Jtu_z1i_fragSize, re_formula = NA, scale = 'linear')) %>%
   as_tibble() %>% 
   left_join(frag_beta %>% 
                distinct(dataset_label, cl10ra, frag_size_num.x, frag_size_num.y, log10_ratio_area),
              by = c('dataset_label', 'cl10ra'))# %>% 
   # want the 'fitted' values of the coi component too
   # bind_cols(
-  #   fitted(Jtu_z1i_fS, re_formula = NA, dpar = 'coi', scale = 'linear') %>% 
+  #   fitted(Jtu_z1i_fragSize, re_formula = NA, dpar = 'coi', scale = 'linear') %>% 
   #     as_tibble() %>% 
   #     mutate(coi_Estimate = Estimate,
   #            coi_Q2.5 = Q2.5,
@@ -69,9 +64,9 @@ Jtu_z1i_fitted <- cbind(Jtu_z1i_fS$data,
   #     select(coi_Estimate, coi_Q2.5, coi_Q97.5))
 
 
-Jtu_z1i_fixef <- fixef(Jtu_z1i_fS)
+Jtu_z1i_fixef <- fixef(Jtu_z1i_fragSize)
 # random effects
-Jtu_z1i_coef <- coef(Jtu_z1i_fS)
+Jtu_z1i_coef <- coef(Jtu_z1i_fragSize)
 
 Jtu_z1i_group_coefs <- bind_cols(Jtu_z1i_coef[[1]][,,'Intercept'] %>% 
                                                   as_tibble() %>% 
@@ -130,15 +125,15 @@ Jtu_z1i_group_coefs <- Jtu_z1i_group_coefs %>%
 
 
 # repeat for Ruzicka
-Rtu_z1i_fitted <- cbind(Rtu_z1i_fS$data,
-                        fitted(Rtu_z1i_fS, re_formula = NA, scale = 'linear')) %>%
+Rtu_z1i_fitted <- cbind(Rtu_z1i_fragSize$data,
+                        fitted(Rtu_z1i_fragSize, re_formula = NA, scale = 'linear')) %>%
   as_tibble() %>% 
   left_join(frag_beta %>% 
               distinct(dataset_label, cl10ra, frag_size_num.x, frag_size_num.y, log10_ratio_area),
             by = c('dataset_label', 'cl10ra')) #%>% 
   # want the 'fitted' values of the coi component too
   # bind_cols(
-  #   fitted(Rtu_z1i_fS, re_formula = NA, dpar = 'coi', scale = 'linear') %>% 
+  #   fitted(Rtu_z1i_fragSize, re_formula = NA, dpar = 'coi', scale = 'linear') %>% 
   #     as_tibble() %>% 
   #     mutate(coi_Estimate = Estimate,
   #            coi_Q2.5 = Q2.5,
@@ -146,9 +141,9 @@ Rtu_z1i_fitted <- cbind(Rtu_z1i_fS$data,
   #     select(coi_Estimate, coi_Q2.5, coi_Q97.5))
 
 
-Rtu_z1i_fixef <- fixef(Rtu_z1i_fS)
+Rtu_z1i_fixef <- fixef(Rtu_z1i_fragSize)
 
-Rtu_z1i_coef <- coef(Rtu_z1i_fS)
+Rtu_z1i_coef <- coef(Rtu_z1i_fragSize)
 
 Rtu_z1i_group_coefs <- bind_cols(Rtu_z1i_coef[[1]][,,'Intercept'] %>% 
                                    as_tibble() %>% 
