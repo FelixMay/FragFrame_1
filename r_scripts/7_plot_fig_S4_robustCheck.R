@@ -441,19 +441,27 @@ S_PIE_robust <- ggplot() +
   theme_bw() +
   theme(text = element_text(size = 7))
 
-cowplot::plot_grid(Nstd_robust,
+# include table showing lack of sensitivity to studies with pooled sampling designs
+top1 <- cowplot::ggdraw() + 
+  cowplot::draw_image(paste0(path2wd, 'intermediate_results/table_inset.png'),
+                      clip = 'on',
+                      scale = 0.75) +
+  draw_figure_label(label = 'a',
+                    size = 8, fontface = 'bold')
+
+bottom <- cowplot::plot_grid(Nstd_robust,
                    Sstd_robust,
                    S_PIE_robust,
                    nrow = 1, align = 'hv',
-                   labels = 'auto', label_size = 8, label_fontface = 'bold') +
+                   labels = c('b', 'c', 'd'), label_size = 8, label_fontface = 'bold') +
   cowplot::draw_label('Reference imputation',
                       y = 0.03, size = 7) +
   cowplot::draw_label('Alternate imputation',
                       x = 0.01, angle = 90, size = 7)
-
+cowplot::plot_grid(top1, bottom, nrow = 2)
 # 2 column
 # set local directory
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig4.png',
-#        width = 183,
-#        height = 60,
-#        units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig4.png',
+       width = 183,
+       height = 120,
+       units = 'mm')

@@ -283,7 +283,7 @@ cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
 #        units = 'mm')
 # 
 ##repeat for Nstd and Nstd for supplement
-continent <- ggplot() +
+N_continent <- ggplot() +
   geom_density_ridges_gradient(data = Nstd_posterior,
                                aes(x = Nstd + Nstd_global_slope,
                                    y = continent8,
@@ -303,7 +303,7 @@ continent <- ggplot() +
                  y = continent8),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Nstd_global))) +
   geom_text(data = Nstd_posterior %>%
@@ -311,10 +311,10 @@ continent <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(continent8, n_study, .keep_all = T),
-            aes(x=-0.2, y=continent8, 
+            aes(x=-0.375, y=continent8, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
   labs(y = 'Continent',
@@ -336,7 +336,7 @@ continent <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-taxa <- ggplot() +
+N_taxa <- ggplot() +
   geom_density_ridges_gradient(data = Nstd_posterior,
                                aes(x = Nstd + Nstd_global_slope,
                                    y = taxa,
@@ -356,7 +356,7 @@ taxa <- ggplot() +
                  y = taxa),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Nstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -365,10 +365,10 @@ taxa <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(taxa, n_study, .keep_all = T),
-            aes(x=-0.2, y=taxa, 
+            aes(x=-0.375, y=taxa, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   theme_bw() +
   labs(y = 'Taxon group',
        x = '',#,#expression(paste('Study-level slope')),
@@ -388,7 +388,7 @@ taxa <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-time <- ggplot() +
+N_time <- ggplot() +
   # facet_grid(continent ~ ., scale = 'free') +
   geom_density_ridges_gradient(data = Nstd_posterior,
                                aes(x = Nstd + Nstd_global_slope,
@@ -409,7 +409,7 @@ time <- ggplot() +
                  y = time.since.fragmentation),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Nstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -418,10 +418,10 @@ time <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(time.since.fragmentation, n_study, .keep_all = T),
-            aes(x=-0.2, y=time.since.fragmentation, 
+            aes(x=-0.375, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   theme_bw() +
   labs(y = 'Time since fragmentation',
        x = '',#,#expression(paste('Study-level slope')),
@@ -442,7 +442,7 @@ time <- ggplot() +
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
 
-matrix <- ggplot() +
+N_matrix <- ggplot() +
   geom_density_ridges_gradient(data = Nstd_posterior,
                                aes(x = Nstd + Nstd_global_slope,
                                    y = Matrix.category,
@@ -462,7 +462,7 @@ matrix <- ggplot() +
                  y = Matrix.category),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Nstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -471,10 +471,10 @@ matrix <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(Matrix.category, n_study, .keep_all = T),
-            aes(x=-0.2, y=Matrix.category, 
+            aes(x=-0.375, y=Matrix.category, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   theme_bw() +
   labs(y = 'Matrix filter',
        x = '',#,#expression(paste('Study-level slope')),
@@ -494,15 +494,17 @@ matrix <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-bottom = cowplot::plot_grid(taxa,
-                            continent,
-                            time,  
-                            matrix,
-                            nrow = 2)
-
-cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
+bottom1 = cowplot::plot_grid(N_taxa,
+                            N_continent,
+                            N_time,  
+                            N_matrix,
+                            nrow = 2) +
   cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), 
                       y = 0.01, size = 7)
+
+# cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
+#   cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), 
+#                       y = 0.01, size = 7)
 
 # # plot for 2 column width 
 # ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig5_2column.png',
@@ -531,7 +533,7 @@ continent <- ggplot() +
                  y = continent8),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(S_PIE_global))) +
   geom_text(data = Spie_posterior %>%
@@ -539,16 +541,16 @@ continent <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(continent8, n_study, .keep_all = T),
-            aes(x=-0.2, y=continent8, 
+            aes(x=-0.175, y=continent8, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
   labs(y = 'Continent',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'b'
+       tag = 'f'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -584,7 +586,7 @@ taxa <- ggplot() +
                  y = taxa),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(S_PIE_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -593,15 +595,15 @@ taxa <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(taxa, n_study, .keep_all = T),
-            aes(x=-0.2, y=taxa, 
+            aes(x=-0.175, y=taxa, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   theme_bw() +
   labs(y = 'Taxon group',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'),
-       tag = 'a'
+       tag = 'e'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -637,7 +639,7 @@ time <- ggplot() +
                  y = time.since.fragmentation),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(S_PIE_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -646,15 +648,15 @@ time <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(time.since.fragmentation, n_study, .keep_all = T),
-            aes(x=-0.2, y=time.since.fragmentation, 
+            aes(x=-0.175, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   theme_bw() +
   labs(y = 'Time since fragmentation',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'c'
+       tag = 'g'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -690,7 +692,7 @@ matrix <- ggplot() +
                  y = Matrix.category),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 1.5, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(S_PIE_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -699,15 +701,15 @@ matrix <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(Matrix.category, n_study, .keep_all = T),
-            aes(x=-0.2, y=Matrix.category, 
+            aes(x=-0.175, y=Matrix.category, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   theme_bw() +
   labs(y = 'Matrix filter',
        x = '',#,#expression(paste('Study-level slope')),
        # subtitle = expression(paste('Posterior samples of study-level ', S[std], ' fragment area slopes'))#,
-       tag = 'd'
+       tag = 'h'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
@@ -722,22 +724,24 @@ matrix <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-bottom = cowplot::plot_grid(
+bottom2 = cowplot::plot_grid(
   #Sstd_study_posterior_biome,
   #Sstd_study_posterior_sphere.frag,
   taxa,
   continent,
   time,  
   matrix,
-  nrow = 2)
-
-cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
+  nrow = 2) +
   cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), 
                       y = 0.01, size = 7)
 
+cowplot::plot_grid(top, bottom1, bottom2, rel_heights = c(0.025,1, 1), nrow = 3) #+
+  # cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), 
+                      # y = 0.01, size = 7)
+
 # plot for 2 column width
 # set local directory to save
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig6_2column.png',
-#        width = 183,
-#        height = 170,
-#        units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test.png',
+       width = 183,
+       height = 200,
+       units = 'mm')
