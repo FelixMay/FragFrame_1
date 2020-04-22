@@ -347,7 +347,8 @@ cowplot::plot_grid(map_taxa,
 
 # plots sized for two column print
 # set local_directory
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig2_2column.pdf', width = 183, height = 120, units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test2.pdf', 
+       width = 183, height = 110, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
                                   Scov_regPlot,

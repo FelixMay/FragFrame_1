@@ -72,7 +72,7 @@ Sstd_study_posterior_time <- ggplot() +
                  y = time.since.fragmentation),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 2, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Sstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -125,7 +125,7 @@ Sstd_study_posterior_matrix <- ggplot() +
                  y = Matrix.category),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 2, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Sstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -178,7 +178,7 @@ Sstd_study_posterior_taxa <- ggplot() +
                  y = taxa),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 2, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Sstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
@@ -230,7 +230,7 @@ Sstd_study_posterior_continent <- ggplot() +
                  y = continent8),
              stat = ggstance:::StatSummaryh,
              fun.x = median,
-             size = 2.5, shape = 18) +
+             size = 2, shape = 18) +
   geom_vline(data = frag_global,
              aes(xintercept = median(Sstd_global))) +
   geom_text(data = Sstd_posterior %>%
@@ -241,7 +241,7 @@ Sstd_study_posterior_continent <- ggplot() +
             aes(x=0.3, y=continent8, 
                 label=paste('n[study] == ', n_study)),
             size=2,
-            nudge_y = 0.1, parse = T) +
+            nudge_y = 0.15, parse = T) +
   geom_vline(xintercept = 0, lty = 2) +
   theme_bw() +
   labs(y = 'Continent',
@@ -277,10 +277,10 @@ cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
 
 # set local directory
 # plot sized for for 2 column width 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/fig3_2column.pdf',
-#        width = 183,
-#        height = 170,
-#        units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test3.pdf',
+       width = 183,
+       height = 110,
+       units = 'mm')
 # 
 ##repeat for Nstd and Nstd for supplement
 N_continent <- ggplot() +
