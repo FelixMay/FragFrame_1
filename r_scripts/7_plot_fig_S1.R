@@ -1,7 +1,7 @@
 ## code to plot simulation results for extended data
 
 # load results of simulations
-simDat <- read.csv(paste0(path2wd, 'intermediate_results/method2resultsS2000_N40000_mp1_nrep2000.csv')) %>% 
+simDat <- read.csv(paste0(path2wd, 'intermediate_results/7_resultsS2000_N40000_mp1_nrep2000.csv')) %>% 
   as_tibble()
 
 
