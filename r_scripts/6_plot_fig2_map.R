@@ -52,8 +52,8 @@ map_taxa <- ggplot() +
         panel.border = element_blank(),
         axis.ticks = element_blank(), 
         axis.text = element_blank(),
-        legend.position = 'top',
-        legend.direction = 'horizontal',
+        legend.position = 'right',
+        # legend.direction = 'horizontal',
         plot.tag = element_text(size = 8, face = "bold"),
         plot.margin = unit(c(0,0,0,0), units = 'mm'),
         legend.margin = margin(),
@@ -64,8 +64,8 @@ map_taxa <- ggplot() +
         legend.text = element_text(size = 6, face = 'plain'),
         legend.title = element_text(size = 7, face = 'plain')
         ) +
-  guides(shape = guide_legend(nrow = 2, label.hjust = 0),
-         colour = guide_legend(nrow = 2, label.hjust = 0)
+  guides(shape = guide_legend(ncol = 1, label.hjust = 0),
+         colour = guide_legend(ncol = 1, label.hjust = 0)
          )
 
 
