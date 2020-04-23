@@ -277,10 +277,10 @@ cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
 
 # set local directory
 # plot sized for for 2 column width 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test3.pdf',
-       width = 183,
-       height = 110,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test3.pdf',
+#        width = 183,
+#        height = 110,
+#        units = 'mm')
 # 
 ##repeat for Nstd and Nstd for supplement
 N_continent <- ggplot() +
@@ -311,7 +311,7 @@ N_continent <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(continent8, n_study, .keep_all = T),
-            aes(x=-0.375, y=continent8, 
+            aes(x=-0.3, y=continent8, 
                 label=paste('n[study] == ', n_study)),
             size=2,
             nudge_y = 0.15, parse = T) +
@@ -365,7 +365,7 @@ N_taxa <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(taxa, n_study, .keep_all = T),
-            aes(x=-0.375, y=taxa, 
+            aes(x=-0.3, y=taxa, 
                 label=paste('n[study] == ', n_study)),
             size=2,
             nudge_y = 0.15, parse = T) +
@@ -418,7 +418,7 @@ N_time <- ggplot() +
               mutate(n_study = n_distinct(dataset_label)) %>% 
               ungroup() %>% 
               distinct(time.since.fragmentation, n_study, .keep_all = T),
-            aes(x=-0.375, y=time.since.fragmentation, 
+            aes(x=-0.3, y=time.since.fragmentation, 
                 label=paste('n[study] == ', n_study)),
             size=2,
             nudge_y = 0.15, parse = T) +
@@ -467,11 +467,11 @@ N_matrix <- ggplot() +
              aes(xintercept = median(Nstd_global))) +
   geom_vline(xintercept = 0, lty = 2) +
   geom_text(data = Nstd_posterior %>%
-              group_by(Matrix.category) %>% 
-              mutate(n_study = n_distinct(dataset_label)) %>% 
-              ungroup() %>% 
+              group_by(Matrix.category) %>%
+              mutate(n_study = n_distinct(dataset_label)) %>%
+              ungroup() %>%
               distinct(Matrix.category, n_study, .keep_all = T),
-            aes(x=-0.375, y=Matrix.category, 
+            aes(x=-0.3, y=Matrix.category,
                 label=paste('n[study] == ', n_study)),
             size=2,
             nudge_y = 0.15, parse = T) +
@@ -498,9 +498,10 @@ bottom1 = cowplot::plot_grid(N_taxa,
                             N_continent,
                             N_time,  
                             N_matrix,
-                            nrow = 2) +
+                            nrow = 2
+                            ) +
   cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), 
-                      y = 0.01, size = 7)
+                      y = 0.015, size = 7)
 
 # cowplot::plot_grid(top, bottom, rel_heights = c(0.05,1), nrow = 2) +
 #   cowplot::draw_label(expression(paste('Standardised number of individuals ~ fragment size slope estimate')), 
@@ -724,24 +725,21 @@ matrix <- ggplot() +
         text = element_text(size = 7),
         plot.tag = element_text(size = 8, face = 'bold')) #+
 
-bottom2 = cowplot::plot_grid(
-  #Sstd_study_posterior_biome,
-  #Sstd_study_posterior_sphere.frag,
-  taxa,
-  continent,
-  time,  
-  matrix,
-  nrow = 2) +
+bottom2 = cowplot::plot_grid(taxa,
+                             continent,
+                             time,
+                             matrix,
+                             nrow = 2) +
   cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), 
-                      y = 0.01, size = 7)
+                      y = 0.015, size = 7)
 
-cowplot::plot_grid(top, bottom1, bottom2, rel_heights = c(0.025,1, 1), nrow = 3) #+
+cowplot::plot_grid(top, bottom1, bottom2, rel_heights = c(0.03,1, 1), nrow = 3) #+
   # cowplot::draw_label(expression(paste('Standardised evenness ~ fragment size slope estimate')), 
                       # y = 0.01, size = 7)
 
 # plot for 2 column width
 # set local directory to save
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test.png',
-       width = 183,
-       height = 200,
-       units = 'mm')
+# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig5.png',
+#        width = 183,
+#        height = 230,
+#        units = 'mm')
