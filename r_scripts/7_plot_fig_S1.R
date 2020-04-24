@@ -82,6 +82,13 @@ sim_slopes <- ggplot() +
              stat = ggstance:::StatSummaryh,
              fun.x = median,
              size = 3, shape = 18) +
+  geom_text(data = slope_coefs %>% 
+              group_by(metric2, aggregation) %>% 
+              summarise(median = median(slope)),
+             aes(x = 0.2, 
+                 y = 5.75,
+                 label=paste('median =', round(median, 3))),
+             size = 2) +
   geom_vline(xintercept = 0, lty = 2) +
   scale_fill_manual(name = 'Quantiles',
                     values = c('#e5f5e0', '#a1d99b', '#31a354',

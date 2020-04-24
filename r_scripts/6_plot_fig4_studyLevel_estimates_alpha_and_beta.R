@@ -24,7 +24,7 @@ study_slope_coefs <- Jtu_z1i_group_coefs %>%
                      rtu_lower = Slope_lower) %>% 
               select(dataset_label, rtu_intercept, rtu_slope, rtu_upper, rtu_lower),
             by = 'dataset_label'
-            ) %>% 
+  ) %>% 
   left_join(
     Jne_zi_group_coefs %>% 
       mutate(jne_intercept = Intercept, 
@@ -70,23 +70,23 @@ study_slope_coefs <- Jtu_z1i_group_coefs %>%
   left_join(meta, by = 'dataset_label')
 
 study_slope_coefs$time.since.fragmentation <- factor(study_slope_coefs$time.since.fragmentation,
-                                                 levels = c('Recent (less than 20 years)',
-                                                            'Intermediate (20-100 years)',
-                                                            'long (100+ years)'),
-                                                 labels = c('< 20 years',
-                                                            '20-100 years',
-                                                            '> 100 years'))
+                                                     levels = c('Recent (less than 20 years)',
+                                                                'Intermediate (20-100 years)',
+                                                                'long (100+ years)'),
+                                                     labels = c('< 20 years',
+                                                                '20-100 years',
+                                                                '> 100 years'))
 
 study_slope_coefs$Matrix.category <- factor(study_slope_coefs$Matrix.category,
-                                        levels = c('light filter', 'intermediate', 'harsh filter'),
-                                        labels = c('Light', 'Intermediate', 'Harsh'))
+                                            levels = c('light filter', 'intermediate', 'harsh filter'),
+                                            labels = c('Light', 'Intermediate', 'Harsh'))
 
 study_slope_coefs$biome <- factor(study_slope_coefs$biome,
-                              levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
-                              labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
+                                  levels = c('forest', 'grassland', 'shrubland/steppe', 'wetland'),
+                                  labels = c('Forest', 'Grassland', 'Shrubland or steppe', 'Wetland'))
 study_slope_coefs$taxa <- factor(study_slope_coefs$taxa,
-                             levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
-                             labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
+                                 levels = c('amphibians & reptiles', 'birds', 'invertebrates', 'mammals', 'plants'),
+                                 labels = c('Amphibians & reptiles', 'Birds', 'Invertebrates', 'Mammals', 'Plants'))
 
 study_slope_coefs <- study_slope_coefs %>% 
   unite(col = 'frag_matrix', c(sphere.fragment, sphere.matrix),
@@ -124,12 +124,14 @@ timeLegend <-
         legend.direction = 'vertical',
         # legend.justification = c(0,0),
         legend.background = element_blank(),
-        legend.text = element_text(size = 6, face = 'plain'),
-        legend.title = element_text(size = 7, face = 'plain'),
+        legend.text = element_text(size = 5, face = 'plain', hjust = 0),
+        legend.title = element_text(size = 6, face = 'plain'),
         legend.margin = margin(),
-        legend.box.spacing = unit(c(0,0,0,0), units = 'mm')
-        ) +
-  guides(colour = guide_legend(title = 'Time since\nfragmentation'))
+        legend.box.spacing = unit(c(0,0,0,0), units = 'mm'),
+        legend.key.size = unit(2, units = 'mm'),
+        plot.margin = unit(c(0,0,0,0), units = 'mm')
+  ) +
+  guides(colour = guide_legend(title = 'Time since\nfragmentation', label.hjust = 0))
 
 source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 time_colour_legend <- gg_legend(timeLegend)
@@ -139,14 +141,14 @@ beta_turnover_sstd_slope <-
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
              aes(x = jtu_slope, y = Sstd, 
-                  colour = time.since.fragmentation
-                 )) +
+                 colour = time.since.fragmentation
+             )) +
   stat_smooth(data = study_slope_coefs,
-            aes(x = jtu_slope, y = Sstd,
-                # colour = time.since.fragmentation
-                ),
-            method = 'lm', se = F, colour = 'black'
-            ) +
+              aes(x = jtu_slope, y = Sstd,
+                  # colour = time.since.fragmentation
+              ),
+              method = 'lm', se = F, colour = 'black'
+  ) +
   # annotate('text', x = Inf, y = -0.02, hjust = 1.025, vjust = 0,
   #          label = paste("paste(italic(rho) == " , 
   #                        round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
@@ -163,13 +165,15 @@ beta_turnover_sstd_slope <-
   labs(x = 'Standardised turnover ~ fragment size slope',
        y = ''
        # y = expression(paste('Study-level ', S[std], 'slope'))
-       ) +
+  ) +
   theme_bw() +
+  coord_fixed(ratio = 0.95/0.2) +
   theme(legend.position = 'none',# #
         legend.justification = c(0,0),
         legend.box.spacing = unit(0, units = 'mm'),
         legend.background = element_blank(),
-        text = element_text(size = 7),
+        axis.title = element_text(size = 6),
+        axis.text = element_text(size = 5),
         plot.margin = unit(c(0,4,0,0), units = 'mm'))
 
 
@@ -177,14 +181,14 @@ beta_nestedness_sstd_study <-
   ggplot() +
   # facet_grid(.~climate) +
   geom_point(data = study_slope_coefs,
-           aes(x = jne_slope, y = Sstd, 
-               colour = time.since.fragmentation)) +
+             aes(x = jne_slope, y = Sstd, 
+                 colour = time.since.fragmentation)) +
   stat_smooth(data = study_slope_coefs,
               aes(x = jne_slope, y = Sstd,
                   # colour = time.since.fragmentation
-                  ),
+              ),
               method = 'lm', se = F, colour = 'black'
-              ) +
+  ) +
   # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
   #          label = paste("paste(italic(rho) == " , 
   #                        round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
@@ -200,20 +204,23 @@ beta_nestedness_sstd_study <-
   labs(x = 'Standardised nestedness ~ fragment size slope',
        y = ''
        # y = expression(paste('Study-level biodiversity measure slope'))
-       ) +
+  ) +
   theme_bw() +
+  coord_fixed(ratio = 1.5/0.2) +
   theme(legend.position = 'none',
         legend.justification = c(1,1),
         # legend.direction = 'horizontal',
         legend.background = element_blank(), 
-        text = element_text(size = 7))
+        axis.title = element_text(size = 6),
+        axis.text = element_text(size = 5),
+        plot.margin = unit(c(0,4,0,0), units = 'mm'))
 
 right = time_colour_legend
 left = cowplot::plot_grid(beta_turnover_sstd_slope, 
-                   beta_nestedness_sstd_study,
-                   align = 'hv',
-                   nrow = 1,
-                   labels = 'auto',label_size = 8, label_fontface = 'bold') +
+                          beta_nestedness_sstd_study,
+                          align = 'hv',
+                          nrow = 1,
+                          labels = 'auto',label_size = 8, label_fontface = 'bold') +
   cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
                       angle = 90,
                       x = 0.015, y = 0.5, size = 7)
@@ -222,5 +229,5 @@ cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
 
 # two column size for print version
 # setwd for saving locally
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test4.pdf',
-       width = 183, height = 70, units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test4_120wide.pdf',
+       width = 120, height = 60, units = 'mm')
