@@ -291,7 +291,7 @@ Sstd_study_posterior_continent <- ggplot() +
              aes(xintercept = median(Sstd_global)),
              size = 0.5,
              alpha= 0.8) +
-  geom_vline(xintercept = 0, lty = 2, size = 0.75) +
+  geom_vline(xintercept = 0, lty = 2, size = 0.5) +
   geom_point(data = Sstd_posterior,
              aes(x = S_std + Sstd_global, 
                  y = continent8),
