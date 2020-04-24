@@ -105,7 +105,7 @@ study_slope_coefs %>%
 study_slope_coefs %>% 
   filter(rtu_slope > rne_slope)
 
-s_jtu_corr <- cor.test(study_slope_coefs$Sstd, study_slope_coefs$jtu_slope)
+s_jtu_corr <- cor.test(study_slope_coefs$jtu_slope, study_slope_coefs$Sstd)
 s_jne_corr <- cor.test(study_slope_coefs$Sstd, study_slope_coefs$jne_slope)
 
 timeLegend <-
@@ -114,7 +114,7 @@ timeLegend <-
   geom_point(data = study_slope_coefs,
              aes(y = jtu_slope, x = Sstd, 
                  colour = time.since.fragmentation
-             )) +
+             ), alpha = 0.8) +
   scale_color_manual(name = 'Time since fragmentation', 
                      values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
@@ -138,16 +138,18 @@ time_colour_legend <- gg_legend(timeLegend)
 
 beta_turnover_sstd_slope <-
   ggplot() +
-  # facet_grid(.~climate) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
   geom_point(data = study_slope_coefs,
              aes(x = jtu_slope, y = Sstd, 
                  colour = time.since.fragmentation
-             )) +
+             ),
+             alpha = 0.8) +
   stat_smooth(data = study_slope_coefs,
               aes(x = jtu_slope, y = Sstd,
                   # colour = time.since.fragmentation
               ),
-              method = 'lm', se = F, colour = 'black'
+              method = 'lm', se = F, colour = 'black', size = 0.75
   ) +
   # annotate('text', x = Inf, y = -0.02, hjust = 1.025, vjust = 0,
   #          label = paste("paste(italic(rho) == " , 
@@ -156,8 +158,6 @@ beta_turnover_sstd_slope <-
   #                        " ~`???` ",
   #                        round(s_jtu_corr$conf.int[2], 2),"))"),
   #          parse = T, size = 2.5) +
-  geom_hline(yintercept = 0, lty = 2) +
-  geom_vline(xintercept = 0, lty = 2) +
   scale_color_manual(name = 'Time since\nfragmentation', 
                      values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
@@ -172,6 +172,7 @@ beta_turnover_sstd_slope <-
         legend.justification = c(0,0),
         legend.box.spacing = unit(0, units = 'mm'),
         legend.background = element_blank(),
+        # panel.grid.minor = element_blank(),
         axis.title = element_text(size = 6),
         axis.text = element_text(size = 5),
         plot.margin = unit(c(0,4,0,0), units = 'mm'))
@@ -179,15 +180,17 @@ beta_turnover_sstd_slope <-
 
 beta_nestedness_sstd_study <-
   ggplot() +
-  # facet_grid(.~climate) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
   geom_point(data = study_slope_coefs,
              aes(x = jne_slope, y = Sstd, 
-                 colour = time.since.fragmentation)) +
+                 colour = time.since.fragmentation),
+             alpha = 0.8) +
   stat_smooth(data = study_slope_coefs,
               aes(x = jne_slope, y = Sstd,
                   # colour = time.since.fragmentation
               ),
-              method = 'lm', se = F, colour = 'black'
+              method = 'lm', se = F, colour = 'black', size = 0.75
   ) +
   # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
   #          label = paste("paste(italic(rho) == " , 
@@ -196,8 +199,6 @@ beta_nestedness_sstd_study <-
   #                        " ~`???`~",
   #                        round(s_jne_corr$conf.int[2], 2),"))"),
   #          parse = T, size = 2.5) +
-  geom_hline(yintercept = 0, lty = 2) +
-  geom_vline(xintercept = 0, lty = 2) +
   scale_color_manual(values = c('20-100 years' = '#6996b3',
                                 '< 20 years' = '#c1e7ff',
                                 '> 100 years' = '#004c6d')) +
@@ -209,6 +210,7 @@ beta_nestedness_sstd_study <-
   coord_fixed(ratio = 1.5/0.2) +
   theme(legend.position = 'none',
         legend.justification = c(1,1),
+        # panel.grid.minor = element_blank(),
         # legend.direction = 'horizontal',
         legend.background = element_blank(), 
         axis.title = element_text(size = 6),
@@ -223,11 +225,11 @@ left = cowplot::plot_grid(beta_turnover_sstd_slope,
                           labels = 'auto',label_size = 8, label_fontface = 'bold') +
   cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
                       angle = 90,
-                      x = 0.015, y = 0.5, size = 7)
+                      x = 0.015, y = 0.5, size = 6)
 
 cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
 
 # two column size for print version
 # setwd for saving locally
 ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test4_120wide.pdf',
-       width = 120, height = 60, units = 'mm')
+       width = 120, height = 55, units = 'mm')
