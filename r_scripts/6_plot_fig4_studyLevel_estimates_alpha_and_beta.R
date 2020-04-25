@@ -188,7 +188,8 @@ beta_nestedness_sstd_study <-
   geom_point(data = study_slope_coefs,
              aes(x = jne_slope, y = Sstd, 
                  colour = time.since.fragmentation),
-             alpha = 0.8) +
+             # alpha = 0.8
+             ) +
   stat_smooth(data = study_slope_coefs,
               aes(x = jne_slope, y = Sstd,
                   # colour = time.since.fragmentation
@@ -234,5 +235,5 @@ cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
 
 # two column size for print version
 # setwd for saving locally
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test4_120wide_GREY.pdf',
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Fig4.pdf',
        width = 120, height = 55, units = 'mm')
