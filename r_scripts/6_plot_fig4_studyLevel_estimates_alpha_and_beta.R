@@ -114,11 +114,13 @@ timeLegend <-
   geom_point(data = study_slope_coefs,
              aes(y = jtu_slope, x = Sstd, 
                  colour = time.since.fragmentation
-             ), alpha = 0.8) +
-  scale_color_manual(name = 'Time since fragmentation', 
-                     values = c('20-100 years' = '#6996b3',
-                                '< 20 years' = '#c1e7ff',
-                                '> 100 years' = '#004c6d')) +
+             ), 
+             # alpha = 0.8
+             ) +
+  scale_color_manual(name = 'Time since fragmentation',
+                     values = c('20-100 years' = '#969696',
+                                '< 20 years' = '#cccccc',
+                                '> 100 years' = '#636363')) +
   theme_bw() +
   theme(legend.position = 'right',
         legend.direction = 'vertical',
@@ -144,24 +146,25 @@ beta_turnover_sstd_slope <-
              aes(x = jtu_slope, y = Sstd, 
                  colour = time.since.fragmentation
              ),
-             alpha = 0.8) +
+             # alpha = 0.8
+             ) +
   stat_smooth(data = study_slope_coefs,
               aes(x = jtu_slope, y = Sstd,
                   # colour = time.since.fragmentation
               ),
               method = 'lm', se = F, colour = 'black', size = 0.75
   ) +
-  # annotate('text', x = Inf, y = -0.02, hjust = 1.025, vjust = 0,
-  #          label = paste("paste(italic(rho) == " , 
+  # annotate('text', x = -Inf, y = -0.02, hjust = -0.5, vjust = 0,
+  #          label = paste("paste(italic(rho) == " ,
   #                        round(s_jtu_corr$estimate, 2), " (95*'%'~CI: ",
   #                        round(s_jtu_corr$conf.int[1], 2),
-  #                        " ~`???` ",
+  #                        "~\u2013",
   #                        round(s_jtu_corr$conf.int[2], 2),"))"),
-  #          parse = T, size = 2.5) +
-  scale_color_manual(name = 'Time since\nfragmentation', 
-                     values = c('20-100 years' = '#6996b3',
-                                '< 20 years' = '#c1e7ff',
-                                '> 100 years' = '#004c6d')) +
+  #          parse = T, size = 1.5) +
+  scale_color_manual(name = 'Time since fragmentation',
+                     values = c('20-100 years' = '#969696',
+                                '< 20 years' = '#cccccc',
+                                '> 100 years' = '#636363')) +
   labs(x = 'Standardised turnover ~ fragment size slope',
        y = ''
        # y = expression(paste('Study-level ', S[std], 'slope'))
@@ -193,15 +196,16 @@ beta_nestedness_sstd_study <-
               method = 'lm', se = F, colour = 'black', size = 0.75
   ) +
   # annotate('text', x = Inf, y = -0.02, hjust = 1.2, vjust = 0,
-  #          label = paste("paste(italic(rho) == " , 
+  #          label = paste("paste(italic(rho) == " ,
   #                        round(s_jne_corr$estimate, 2), " (95*'%'~CI: ",
   #                        round(s_jne_corr$conf.int[1], 2),
-  #                        " ~`???`~",
+  #                        " - ",
   #                        round(s_jne_corr$conf.int[2], 2),"))"),
-  #          parse = T, size = 2.5) +
-  scale_color_manual(values = c('20-100 years' = '#6996b3',
-                                '< 20 years' = '#c1e7ff',
-                                '> 100 years' = '#004c6d')) +
+  #          parse = T, size = 1.5) +
+  scale_color_manual(name = 'Time since fragmentation',
+                     values = c('20-100 years' = '#969696',
+                                '< 20 years' = '#cccccc',
+                                '> 100 years' = '#636363')) +
   labs(x = 'Standardised nestedness ~ fragment size slope',
        y = ''
        # y = expression(paste('Study-level biodiversity measure slope'))
@@ -226,10 +230,9 @@ left = cowplot::plot_grid(beta_turnover_sstd_slope,
   cowplot::draw_label(expression(paste('Standardised richness ~ fragement size slope')),
                       angle = 90,
                       x = 0.015, y = 0.5, size = 6)
-
 cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
 
 # two column size for print version
 # setwd for saving locally
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test4_120wide.pdf',
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test4_120wide_GREY.pdf',
        width = 120, height = 55, units = 'mm')

@@ -102,8 +102,8 @@ Sstd_study_posterior_time <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#bdd7e7', '#6baed6', '#3182bd',
-                               '#6baed6', '#bdd7e7')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                                          '#969696', '#cccccc')) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -176,10 +176,9 @@ Sstd_study_posterior_matrix <- ggplot() +
        subtitle = 'Matrix filter'
   ) +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
-  # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#bae4b3', '#74c476', '#31a354',
-                               '#74c476', '#bae4b3')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -253,8 +252,8 @@ Sstd_study_posterior_taxa <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#fcae91', '#fb6a4a', '#de2d26',
-                               '#fb6a4a', '#fcae91')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -321,8 +320,8 @@ Sstd_study_posterior_continent <- ggplot() +
   ) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cbc9e2', '#9e9ac8', '#756bb1',
-                               '#9e9ac8', '#cbc9e2')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -362,7 +361,7 @@ cowplot::plot_grid(top,
 
 # set local directory
 # plot sized for for 2 column width 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test3_120wide.pdf',
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test3_120wide_grey.pdf',
        width = 120,
        height = 110,
        units = 'mm')
@@ -411,8 +410,8 @@ N_continent <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cbc9e2', '#9e9ac8', '#756bb1',
-                               '#9e9ac8', '#cbc9e2')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.8/7) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -474,8 +473,8 @@ N_taxa <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#fcae91', '#fb6a4a', '#de2d26',
-                               '#fb6a4a', '#fcae91')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.8/5) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -538,8 +537,8 @@ N_time <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#bdd7e7', '#6baed6', '#3182bd',
-                               '#6baed6', '#bdd7e7')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.8/3) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -602,8 +601,8 @@ N_matrix <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#bae4b3', '#74c476', '#31a354',
-                               '#74c476', '#bae4b3')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.8/3) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -675,8 +674,8 @@ continent <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#cbc9e2', '#9e9ac8', '#756bb1',
-                               '#9e9ac8', '#cbc9e2')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.5/7) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -738,8 +737,8 @@ taxa <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#fcae91', '#fb6a4a', '#de2d26',
-                               '#fb6a4a', '#fcae91')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.5/5) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -802,8 +801,8 @@ time <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#bdd7e7', '#6baed6', '#3182bd',
-                               '#6baed6', '#bdd7e7')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_equal(ratio = 0.5/3) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -866,8 +865,8 @@ matrix <- ggplot() +
   scale_y_discrete(labels = scales::wrap_format(12), expand = c(0.05,0,0.1,0)) +
   # scale_fill_viridis_c(name = 'Posterior probability') +
   scale_fill_manual(name = 'Posterior probability',
-                    values = c('#bae4b3', '#74c476', '#31a354',
-                               '#74c476', '#bae4b3')) +
+                    values = c('#cccccc', '#969696', '#636363',
+                               '#969696', '#cccccc')) +
   coord_fixed(0.5/3) +
   theme(panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -898,7 +897,7 @@ cowplot::plot_grid(top, bottom1, bottom2, rel_heights = c(0.025,1, 1), nrow = 3)
 
 # plot for 2 column width
 # set local directory to save
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig5.pdf',
-#        width = 120,
-#        height = 210,
-#        units = 'mm')
+ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig5.pdf',
+       width = 120,
+       height = 210,
+       units = 'mm')
