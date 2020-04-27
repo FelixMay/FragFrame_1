@@ -522,10 +522,10 @@ for (i in 1:nrow(parset)){
    path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
    write_csv(out_betapart_frag, path2outfile)
 
-   outfile_name <- paste(i, "_betapart_study_fcont_", parset$fac_cont[i],
-                         "_mabund_", parset$method_abund[i] , ".csv", sep = "")
-   path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
-   write_csv(out_betapart_study, path2outfile)
+   # outfile_name <- paste(i, "_betapart_study_fcont_", parset$fac_cont[i],
+   #                       "_mabund_", parset$method_abund[i] , ".csv", sep = "")
+   # path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
+   # write_csv(out_betapart_study, path2outfile)
 }
 
 # started 18:30 17.04.2020
