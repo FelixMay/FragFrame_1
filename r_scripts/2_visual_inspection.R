@@ -5,7 +5,7 @@
 frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # load the meta data
-meta <- read.csv(paste0(path2wd, '/data/new_meta_2_merge.csv'), sep=';') %>% 
+meta <- read_delim(paste0(path2wd, '/data/new_meta_2_merge.csv'), delim = ';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
@@ -110,3 +110,4 @@ ggplot() +
   scale_colour_viridis_d(name = 'Taxa') +
   theme_bw() +
   theme(legend.position = c(0.1, 0.9))
+
