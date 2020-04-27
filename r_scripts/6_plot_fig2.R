@@ -348,7 +348,7 @@ cowplot::plot_grid(map_taxa,
 
 # plots sized for two column print
 # set local_directory
-ggsave('~/Desktop/test2a.pdf', 
+ggsave(paste0(path2wd, 'main_results/Fig2.pdf'), 
        width = 183, height = 100, units = 'mm')
 
 bottom_supp <- cowplot::plot_grid(Sn_regPlot,
@@ -361,6 +361,5 @@ cowplot::plot_grid(top, bottom_supp,
   cowplot::draw_label('Fragment size (hectares)', y = 0.05, size = 7)
 
 # set local directory and save
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig2.png', 
-#        width = 183, height = 60, units = 'mm')
-# 
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig2.png'),
+       width = 183, height = 60, units = 'mm')

@@ -106,7 +106,7 @@ sim_slopes <- ggplot() +
 
 # this is a version of the plot produced by 7_sim_random_sampling.R
 top1 <- cowplot::ggdraw() + 
-  cowplot::draw_image(paste0(path2wd, 'intermediate_results/samplingS2000_N40000_mp1.png'),
+  cowplot::draw_image(paste0(path2wd, 'extended_data_figs_tabs/samplingS2000_N40000_mp1.png'),
                                                 clip = 'on')
 
 legend_row <- cowplot::plot_grid(legend)
@@ -124,23 +124,13 @@ cowplot::plot_grid(top1,
                    label_fontface = 'bold')
 
 
-# set local directory
 # figure sized for 2 columns 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision2/figures/Ex_Dat_Fig1.pdf',
-#        height = 183, width = 183, units = 'mm')
-# 
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig1.png',
-#        height = 183, width = 183, units = 'mm')
+ggsave(paste0(path2wd, 'extended_data_gis_tabs//Ex_Dat_Fig1.png'),
+       height = 183, width = 183, units = 'mm')
 
-
-## calculate the summary stats to report
-# slope_coefs %>% 
-#   group_by(sigma, metric) %>% 
-#   summarise(mean_slope = mean(slope),
-#             median_slope = median(slope)) %>% 
-#   write.table(file = '~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/sim_slopes.csv', sep = ',')
 
 # test whether distribution of slopes differ between random and aggregated simulations
+# not reported
 dist_test <- slope_coefs %>% 
   select(metric, aggregation, slope) %>% 
   group_by(metric) %>% 

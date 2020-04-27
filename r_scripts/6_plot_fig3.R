@@ -897,7 +897,7 @@ cowplot::plot_grid(top, bottom1, bottom2, rel_heights = c(0.025,1, 1), nrow = 3)
 
 # plot for 2 column width
 # set local directory to save
-ggsave(paste0(path2wd, 'main_results/Extended_Data_Fig5.pdf'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig5.png'),
        width = 120,
        height = 210,
        units = 'mm')

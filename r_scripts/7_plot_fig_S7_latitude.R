@@ -77,6 +77,5 @@ ggplot() +
   theme(text = element_text(size = 7))
 
 # 1.5 column figure size
-# set local directory
-# ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig7.png',
-#        width = 120, height = 120, units = 'mm')
+ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig7.png'),
+       width = 120, height = 120, units = 'mm')
