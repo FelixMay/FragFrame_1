@@ -1,11 +1,11 @@
 # execute 0_init_dirs_load_packages.R for packages and directory
 
 # load model fits
-load(paste0(path2wd, 'intermediate_results/Jtu_z1i_fragSize.Rdata'))
-load(paste0(path2wd, 'intermediate_results/Rtu_z1i_fragSize.Rdata'))
+load(paste0(path2wd, 'main_results/Jtu_z1i_fragSize.Rdata'))
+load(paste0(path2wd, 'main_results/Rtu_z1i_fragSize.Rdata'))
 
-load(paste0(path2wd, 'intermediate_results/Jne_zi_fragSize.Rdata'))
-load(paste0(path2wd, 'intermediate_results/Rne_zi_fragSize.Rdata'))
+load(paste0(path2wd, 'main_results/Jne_zi_fragSize.Rdata'))
+load(paste0(path2wd, 'main_results/Rne_zi_fragSize.Rdata'))
 
 frag_beta <- read_csv(paste0(path2wd, 'intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
 

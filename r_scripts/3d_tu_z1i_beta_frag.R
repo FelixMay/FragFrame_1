@@ -24,7 +24,7 @@ Jtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
 
 # save locally
 # save(Jtu_z1i_fragSize,
-#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Jtu_z1i_fragSize.Rdata')
+#      file = paste0(path2wd, 'main_results/Jtu_z1i_fragSize.Rdata')
 
 # turnover component of Ruzicka
 Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra + 
@@ -41,4 +41,4 @@ Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
 
 # save locally
 # save(Rtu_z1i_fragSize,
-#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Rtu_z1i_fragSize.Rdata')
+#      file = paste0(path2wd, 'main_results/Rtu_z1i_fragSize.Rdata')

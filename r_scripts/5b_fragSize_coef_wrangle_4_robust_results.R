@@ -7,7 +7,7 @@
 # (other models need to be fit and saved locally to reproduce Ex Dat Fig 4)
 # code to get coefs for reference fits------
 # load model fits and the data
-load(paste0(path2wd, 'intermediate_results/fragSize_ref.Rdata'))
+load(paste0(path2wd, 'main_results/fragSize_ref.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 

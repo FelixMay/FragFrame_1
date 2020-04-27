@@ -1,7 +1,7 @@
 # need to execute 0_init_dirs_load_packages.R first
 
 # code to wrangle the coefficients for z-score regressions
-load(paste0(path2wd, 'intermediate_results/fragSize_z_score_ref.Rdata'))
+load(paste0(path2wd, 'main_results/fragSize_z_score_ref.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
