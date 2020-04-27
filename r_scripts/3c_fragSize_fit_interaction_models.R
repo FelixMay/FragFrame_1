@@ -27,7 +27,7 @@ frag$time.since.fragmentation <- factor(frag$time.since.fragmentation,
 frag %>% distinct(continent8)
 
 # load fragSize only models
-load(paste0(path2wd, 'intermediate_results/fragSize_ref.Rdata'))
+load(paste0(path2wd, 'main_results/fragSize_ref.Rdata'))
 
 
 # two-way interactions: matrix permeability first

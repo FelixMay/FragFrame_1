@@ -59,7 +59,7 @@ for(i in 1:length(files)){
                                # prior = rp,
                                family = 'lognormal',
                                cores = 4, chains = 4)
-  name_2_save = paste0(path2wd, 'intermediate_results/', 
+  name_2_save = paste0(path2wd, 'main_results/', 
                        strsplit(files[i], split = '.csv')[[1]], '_modelFits.Rdata')
   
   save(Sstd_lognorm_fragSize,

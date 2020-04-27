@@ -269,4 +269,4 @@ save(z_Sstd_studT_fragSize,
      z_Scov_studT_fragSize,
      z_S_PIE_studT_fragSize,
      z_S_chao_studT_fragSize,
-     file = paste0(path2wd, '/intermediate_results/fragSize_z_score_ref.Rdata'))
+     file = paste0(path2wd, '/main_results/fragSize_z_score_ref.Rdata'))

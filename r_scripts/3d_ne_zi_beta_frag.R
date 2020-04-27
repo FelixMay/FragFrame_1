@@ -38,7 +38,7 @@ Jne_zi_fragSize <- brm(bf(rich ~ cl10ra +
                        thin = 2)
 
 # save(Jne_zi_fragSize,
-#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Jne_zi_fragSize.Rdata')
+#      file = paste0(path2wd, 'main_results/Jne_zi_fragSize.Rdata'))
 
 # nestedness component of Ruzicka
 Rne_zi_fragSize <- brm(bf(rich ~ cl10ra + 
@@ -52,4 +52,4 @@ Rne_zi_fragSize <- brm(bf(rich ~ cl10ra +
                        cores = 4, chains = 4, iter = 4000, thin = 2)
 
 # save(Rne_zi_fragSize,
-#      file = '~/Dropbox/1current/fragmentation_synthesis/results/Rne_zi_fragSize.Rdata')
+#      file = paste0(path2wd, 'main_results/Rne_zi_fragSize.Rdata'))

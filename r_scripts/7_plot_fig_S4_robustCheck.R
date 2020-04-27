@@ -443,7 +443,7 @@ S_PIE_robust <- ggplot() +
 
 # include table showing lack of sensitivity to studies with pooled sampling designs
 top1 <- cowplot::ggdraw() + 
-  cowplot::draw_image(paste0(path2wd, 'intermediate_results/table_inset.png'),
+  cowplot::draw_image(paste0(path2wd, 'main_results/table_inset.png'),
                       clip = 'on',
                       scale = 0.75) +
   draw_figure_label(label = 'a',

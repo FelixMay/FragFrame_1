@@ -361,7 +361,7 @@ cowplot::plot_grid(top,
 
 # set local directory
 # plot sized for for 2 column width 
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/test3_120wide_grey.pdf',
+ggsave(paste0(path2wd, 'main_results/Fig3.pdf'),
        width = 120,
        height = 110,
        units = 'mm')
@@ -897,7 +897,7 @@ cowplot::plot_grid(top, bottom1, bottom2, rel_heights = c(0.025,1, 1), nrow = 3)
 
 # plot for 2 column width
 # set local directory to save
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Ex_Dat_Fig5.pdf',
+ggsave(paste0(path2wd, 'main_results/Extended_Data_Fig5.pdf'),
        width = 120,
        height = 210,
        units = 'mm')

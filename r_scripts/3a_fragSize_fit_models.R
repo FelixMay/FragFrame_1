@@ -110,7 +110,7 @@ save(Sstd_lognorm_fragSize,
      Scov_lognorm_fragSize,
      S_chao_lognorm_fragSize,
      Nstd_lognorm_fragSize,
-     file = paste0(path2wd, '/intermediate_results/fragSize_ref.Rdata'))
+     file = paste0(path2wd, '/main_results/fragSize_ref.Rdata'))
 
 save(Sstd_lognorm_fragSize_pool,
      Sn_lognorm_fragSize_pool,
@@ -118,4 +118,4 @@ save(Sstd_lognorm_fragSize_pool,
      Scov_lognorm_fragSize_pool,
      S_chao_lognorm_fragSize_pool,
      Nstd_lognorm_fragSize_pool,
-     file = paste0(path2wd, '/intermediate_results/fragSize_ref_pool.Rdata'))
+     file = paste0(path2wd, '/main_results/fragSize_ref_pool.Rdata'))

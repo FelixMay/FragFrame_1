@@ -235,5 +235,5 @@ cowplot::plot_grid(left, right, nrow = 1, rel_widths = c(1, 0.14))
 
 # two column size for print version
 # setwd for saving locally
-ggsave('~/Dropbox/Frag Database (new)/Manuscript for Nature/revision3/figures/Fig4.pdf',
+ggsave(paste0(path2wd, 'main_results/Fig4.pdf'),
        width = 120, height = 55, units = 'mm')
