@@ -7,8 +7,7 @@ frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_m
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read.csv(paste0(path2wd, '/data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
+meta <- read_delim(paste0(path2wd, '/data/new_meta_2_merge.csv'),  delim =';') %>% 
   dplyr::rename(dataset_label = dataset_id) 
 
 frag <- left_join(frag, 
@@ -27,7 +26,7 @@ frag$time.since.fragmentation <- factor(frag$time.since.fragmentation,
 frag %>% distinct(continent8)
 
 # load fragSize only models
-load(paste0(path2wd, 'main_results/fragSize_ref.Rdata'))
+load(paste0(path2wd, '/main_results/fragSize_ref.Rdata'))
 
 
 # two-way interactions: matrix permeability first
