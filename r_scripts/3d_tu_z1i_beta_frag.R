@@ -22,9 +22,9 @@ Jtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
                         cores = 4, chains = 4,
                         iter = 4000, thin = 2)
 
-# save locally
-# save(Jtu_z1i_fragSize,
-#      file = paste0(path2wd, 'main_results/Jtu_z1i_fragSize.Rdata')
+# save 
+save(Jtu_z1i_fragSize,
+     file = paste0(path2wd, 'main_results/Jtu_z1i_fragSize.Rdata'))
 
 # turnover component of Ruzicka
 Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra + 
@@ -39,6 +39,6 @@ Rtu_z1i_fragSize <- brm(bf(repl ~ cl10ra +
                         cores = 4, chains = 4,
                         iter = 4000, thin = 2)
 
-# save locally
-# save(Rtu_z1i_fragSize,
-#      file = paste0(path2wd, 'main_results/Rtu_z1i_fragSize.Rdata')
+# save 
+save(Rtu_z1i_fragSize,
+     file = paste0(path2wd, 'main_results/Rtu_z1i_fragSize.Rdata'))

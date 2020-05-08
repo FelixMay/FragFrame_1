@@ -122,36 +122,6 @@ N_std_ln_fS_tsf <- update(Nstd_lognorm_fragSize,
                           newdata = frag, 
                           cores = 4)  
 
-# repeat for biome
-Sstd_ln_fS_biome <- update(Sstd_lognorm_fragSize, 
-                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_std_mean > 0),
-                          cores = 4)
-
-Sn_ln_fS_biome <- update(Sn_lognorm_fragSize, 
-                       formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                       newdata = frag %>% filter(S_n_mean > 0),
-                       cores = 4)
-
-Scov_ln_fS_biome <- update(Scov_lognorm_fragSize, 
-                         formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                         newdata = frag %>% filter(S_cov_mean > 0),
-                         cores = 4)
-
-Schao_ln_fS_biome <- update(S_chao_lognorm_fragSize, 
-                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_chao_mean > 0),
-                          cores = 4)
-
-S_PIE_ln_fS_biome <- update(S_PIE_lognorm_fragSize, 
-                          formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                          newdata = frag %>% filter(S_PIE_mean > 0),
-                          cores = 4)
-
-N_std_ln_fS_biome <- update(Nstd_lognorm_fragSize, 
-                            formula. = ~ c.lfs * biome + (c.lfs | dataset_label),
-                            newdata = frag,
-                            cores = 4)
 # region
 Sstd_ln_fS_region <- update(Sstd_lognorm_fragSize,
                             formula. = ~ c.lfs * continent8 + (c.lfs | dataset_label),
@@ -184,33 +154,21 @@ N_std_ln_fS_region <- update(Nstd_lognorm_fragSize,
                              cores = 4)  
 
 # compare the model fits (with versus without interactions
-Sstd_lognorm_fragSize <- add_criterion(Sstd_lognorm_fragSize, criterion =  'loo') 
-Sstd_lognorm_fragSize_latitude <- add_criterion(Sstd_lognorm_fragSize_latitude, criterion =  'loo') 
-loo_compare(Sstd_lognorm_fragSize,
-            Sstd_lognorm_fragSize_latitude,
-            Sstd_lognorm_fragSize_latitude2)
-model_weights(Sstd_lognorm_fragSize,
-            Sstd_lognorm_fragSize_latitude,
-            criterion = 'loo') # support for the simpler of the two models that includes latitude
-
 Sstd_ln_fS_matrix <- add_criterion(Sstd_ln_fS_matrix, criterion = 'loo')
 Sstd_ln_fS_taxa <- add_criterion(Sstd_ln_fS_taxa, criterion = 'loo')
 Sstd_ln_fS_tsf <- add_criterion(Sstd_ln_fS_tsf, criterion = 'loo')
-Sstd_ln_fS_biome <- add_criterion(Sstd_ln_fS_biome, criterion = 'loo')
 Sstd_ln_fS_region <- add_criterion(Sstd_ln_fS_region, criterion = 'loo')
 
 loo_compare(Sstd_lognorm_fragSize,
             Sstd_ln_fS_matrix,
             Sstd_ln_fS_taxa,
             Sstd_ln_fS_tsf,
-            Sstd_ln_fS_biome,
             Sstd_ln_fS_region)
 
 S_PIE_lognorm_fragSize <- add_criterion(S_PIE_lognorm_fragSize, criterion =  'loo') 
 S_PIE_ln_fS_matrix <- add_criterion(S_PIE_ln_fS_matrix, criterion = 'loo')
 S_PIE_ln_fS_taxa <- add_criterion(S_PIE_ln_fS_taxa, criterion = 'loo')
 S_PIE_ln_fS_tsf <- add_criterion(S_PIE_ln_fS_tsf, criterion = 'loo')
-S_PIE_ln_fS_biome <- add_criterion(S_PIE_ln_fS_biome, criterion = 'loo')
 S_PIE_ln_fS_region <- add_criterion(S_PIE_ln_fS_region, criterion = 'loo')
 
 loo_compare(S_PIE_lognorm_fragSize,
@@ -224,7 +182,6 @@ Nstd_lognorm_fragSize <- add_criterion(Nstd_lognorm_fragSize, criterion =  'loo'
 N_std_ln_fS_matrix <- add_criterion(N_std_ln_fS_matrix, criterion = 'loo')
 N_std_ln_fS_taxa <- add_criterion(N_std_ln_fS_taxa, criterion = 'loo')
 N_std_ln_fS_tsf <- add_criterion(N_std_ln_fS_tsf, criterion = 'loo')
-N_std_ln_fS_biome <- add_criterion(N_std_ln_fS_biome, criterion = 'loo')
 N_std_ln_fS_region <- add_criterion(N_std_ln_fS_region, criterion = 'loo')
 
 loo_compare(Nstd_lognorm_fragSize,
