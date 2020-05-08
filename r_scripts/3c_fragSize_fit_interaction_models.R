@@ -153,51 +153,13 @@ N_std_ln_fS_region <- update(Nstd_lognorm_fragSize,
                              newdata = frag,
                              cores = 4)  
 
-# compare the model fits (with versus without interactions
-Sstd_ln_fS_matrix <- add_criterion(Sstd_ln_fS_matrix, criterion = 'loo')
-Sstd_ln_fS_taxa <- add_criterion(Sstd_ln_fS_taxa, criterion = 'loo')
-Sstd_ln_fS_tsf <- add_criterion(Sstd_ln_fS_tsf, criterion = 'loo')
-Sstd_ln_fS_region <- add_criterion(Sstd_ln_fS_region, criterion = 'loo')
 
-loo_compare(Sstd_lognorm_fragSize,
-            Sstd_ln_fS_matrix,
-            Sstd_ln_fS_taxa,
-            Sstd_ln_fS_tsf,
-            Sstd_ln_fS_region)
+# save
+save(Sstd_ln_fS_matrix, Sstd_ln_fS_taxa, Sstd_ln_fS_tsf, Sstd_ln_fS_region,
+     file = paste0(path2wd, 'extended_data_figs_tabs/Sstd_interactionModels.Rdata'))
 
-S_PIE_lognorm_fragSize <- add_criterion(S_PIE_lognorm_fragSize, criterion =  'loo') 
-S_PIE_ln_fS_matrix <- add_criterion(S_PIE_ln_fS_matrix, criterion = 'loo')
-S_PIE_ln_fS_taxa <- add_criterion(S_PIE_ln_fS_taxa, criterion = 'loo')
-S_PIE_ln_fS_tsf <- add_criterion(S_PIE_ln_fS_tsf, criterion = 'loo')
-S_PIE_ln_fS_region <- add_criterion(S_PIE_ln_fS_region, criterion = 'loo')
+save(N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_region,
+     file = paste0(path2wd, 'extended_data_figs_tabs/Nstd_interactionModels.Rdata'))
 
-loo_compare(S_PIE_lognorm_fragSize,
-            S_PIE_ln_fS_matrix,
-            S_PIE_ln_fS_taxa,
-            S_PIE_ln_fS_tsf,
-            S_PIE_ln_fS_biome,
-            S_PIE_ln_fS_region)
-
-Nstd_lognorm_fragSize <- add_criterion(Nstd_lognorm_fragSize, criterion =  'loo') 
-N_std_ln_fS_matrix <- add_criterion(N_std_ln_fS_matrix, criterion = 'loo')
-N_std_ln_fS_taxa <- add_criterion(N_std_ln_fS_taxa, criterion = 'loo')
-N_std_ln_fS_tsf <- add_criterion(N_std_ln_fS_tsf, criterion = 'loo')
-N_std_ln_fS_region <- add_criterion(N_std_ln_fS_region, criterion = 'loo')
-
-loo_compare(Nstd_lognorm_fragSize,
-            N_std_ln_fS_matrix,
-            N_std_ln_fS_taxa,
-            N_std_ln_fS_tsf,
-            N_std_ln_fS_biome,
-            N_std_ln_fS_region)
-
-
-# save(Sstd_ln_fS_matrix, Sstd_ln_fS_taxa, Sstd_ln_fS_tsf, Sstd_ln_fS_biome, Sstd_ln_fS_region,
-#      Sn_ln_fS_matrix, Sn_ln_fS_taxa, Sn_ln_fS_tsf, Sn_ln_fS_biome,
-#      Scov_ln_fS_matrix, Scov_ln_fS_taxa, Scov_ln_fS_tsf, Scov_ln_fS_biome,
-#      Schao_ln_fS_matrix, Schao_ln_fS_taxa, Schao_ln_fS_tsf, Schao_ln_fS_biome,
-#      S_PIE_ln_fS_matrix, S_PIE_ln_fS_taxa, S_PIE_ln_fS_tsf, S_PIE_ln_fS_biome, S_PIE_ln_fS_region,
-#      N_std_ln_fS_matrix, N_std_ln_fS_taxa, N_std_ln_fS_tsf, N_std_ln_fS_biome, N_std_ln_fS_region,
-#      Sstd_lognorm_fragSize, S_PIE_lognorm_fragSize, Nstd_lognorm_fragSize,
-#      file = '~/some_local_place/fragSize_interactions_ref.Rdata')
-
+save(S_PIE_ln_fS_matrix, S_PIE_ln_fS_region, S_PIE_ln_fS_tsf, S_PIE_ln_fS_taxa,
+     file = paste0(path2wd, 'extended_data_figs_tabs/S_PIE_interactionModels.Rdata'))
