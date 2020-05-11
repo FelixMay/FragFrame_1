@@ -303,8 +303,7 @@ rm(Sstd_fS_fitted, Sstd_lognorm_fragSize_fixef, Sstd_lognorm_fragSize_group_coef
    S_PIE_fS_fitted, S_PIE_lognorm_fragSize_fixef, S_PIE_fragSize_group_coefs)
 
 # code to get coefs for sensitivity case 1------
-# local directory 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_1_biodiv_frag_fcont_2_mabund_as_is_revision.Rdata')
+load(paste0(path2wd, 'extended_data_figs_tabs/1_biodiv_frag_fcont_2_mabund_as_is_modelFits.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/1_biodiv_frag_fcont_2_mabund_as_is.csv'))
 # add mean centred (log) fragsize
@@ -599,7 +598,7 @@ rm(Sstd_fS_fitted, Sstd_lognorm_fragSize_fixef, Sstd_lognorm_fragSize_group_coef
 
 # code to get coefs for sensitivity case 3------
 # local directory 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_3_biodiv_frag_fcont_100_mabund_as_is_revision.Rdata')
+load(paste0(path2wd, 'extended_data_figs_tabs/3_biodiv_frag_fcont_100_mabund_as_is_modelFit.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/3_biodiv_frag_fcont_100_mabund_as_is.csv'))
 
@@ -895,7 +894,7 @@ rm(Sstd_fS_fitted, Sstd_lognorm_fragSize_fixef, Sstd_lognorm_fragSize_group_coef
 
 # code to get coefs for sensitivity case 8------
 # local directory 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_4_biodiv_frag_fcont_10_mabund_ceiling_revision.Rdata')
+load(paste0(path2wd, 'extended_data_figs_tabs/4_biodiv_frag_fcont_10_mabund_ceiling_modelFit.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/4_biodiv_frag_fcont_10_mabund_ceiling.csv'))
 
@@ -1191,7 +1190,7 @@ rm(Sstd_fS_fitted, Sstd_lognorm_fragSize_fixef, Sstd_lognorm_fragSize_group_coef
 
 # code to get coefs for sensitivity case 5------
 # local directory 
-load('~/Dropbox/1current/fragmentation_synthesis/results/fragSize_5_biodiv_frag_fcont_10_mabund_multiply_revision.Rdata')
+load(paste0(path2wd, 'extended_data_figs_tabs/5_biodiv_frag_fcont_10_mabund_multiply_modelFit.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/5_biodiv_frag_fcont_10_mabund_multiply.csv'))
 
