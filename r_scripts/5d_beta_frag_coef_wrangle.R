@@ -10,9 +10,8 @@ load(paste0(path2wd, 'main_results/Rne_zi_fragSize.Rdata'))
 frag_beta <- read_csv(paste0(path2wd, 'intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
 
 # get the metadata
-meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
-  dplyr::rename(dataset_label = dataset_id)
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
+   dplyr::rename(dataset_label = dataset_id) 
 
 frag_beta <- frag_beta %>% 
   # centre covariate before fitting

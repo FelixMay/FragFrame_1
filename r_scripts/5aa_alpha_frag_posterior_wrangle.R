@@ -11,9 +11,8 @@ frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_ma
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
 # load the meta data
-meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
-  dplyr::rename(dataset_label = dataset_id)
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
+   dplyr::rename(dataset_label = dataset_id) 
 
 frag <- left_join(frag, 
                   meta,
