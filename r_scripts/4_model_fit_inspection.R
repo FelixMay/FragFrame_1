@@ -1,25 +1,24 @@
 # need to execute 0_init_dirs_load_packages.R first
 
 # code to plot visual inspection of models: trace plots, posterior predictive checks, residuals
-load(paste0(path2wd, '/intermediate_results/fragSize_ref.Rdata'))
+load(paste0(path2wd, 'main_results/fragSize_ref.Rdata'))
 
-meta <- read.csv(paste0(path2wd, '/data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
-  dplyr::rename(dataset_label = dataset_id)
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
+   dplyr::rename(dataset_label = dataset_id) 
 
-frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 frag <- left_join(frag, 
                   meta,
                   by = 'dataset_label')
 
-
 # change to an appropriate directory to save plots to:
 plot_dir <- '~/Dropbox/1current/fragmentation_synthesis/temp/figs/visual_inspection/'
+
 # create vector of response variable to loop through
 response <- c('Sstd', 'Nstd', 'S_PIE', 'Sn', 'S_chao', 'Scov')
 
-for(i in 5:length(response)){
+for(i in 1:length(response)){
   print(paste('model', i, 'in', length(response)))
   model = paste0(response[i], '_lognorm_fragSize') %>% as.name()
   resid <- residuals(eval(model), 
