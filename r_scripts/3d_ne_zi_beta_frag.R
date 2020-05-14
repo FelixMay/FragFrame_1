@@ -1,7 +1,7 @@
 # code to fit models to beta-diversity for fragmentation synthesis (fragment scale)
 # alt, if running locally execute 0_init_dirs_load_packages.R
 # to fit locally: EVE (having older version of brms package does not start sampling for the zi models of nestedness component)
-frag_beta <- read_csv(paste0(path2wd, '/intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
+frag_beta <- read_csv(paste0(path2wd, 'intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
 
 # # load the data: cluster version
 # frag_beta <- read_csv('/gpfs1/data/idiv_chase/sablowes/fragmentation/data/2_betapart_frag_fcont_10_mabund_as_is.csv')

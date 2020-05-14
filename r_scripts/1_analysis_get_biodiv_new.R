@@ -462,7 +462,7 @@ get_biodiv <- function(data_set, n_thres = 5, fac_cont = 10,
 # Execution of script -----------------------------------------------------
 
 # read long format data file
-infile <- paste(path2wd, "/data/fragSAD_predicts_ewers.csv", sep = "")
+infile <- paste(path2wd, "data/fragSAD_predicts_ewers.csv", sep = "")
 dat_all <- read_csv(infile,
                     col_types = cols(
                        dataset_label = col_character(),
@@ -514,12 +514,12 @@ for (i in 1:nrow(parset)){
    # prepare output
    outfile_name <- paste(i, "_biodiv_frag_fcont_", parset$fac_cont[i],
                          "_mabund_", parset$method_abund[i], ".csv", sep = "")
-   path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
+   path2outfile <- paste(path2wd, "intermediate_results/", outfile_name, sep = "")
    write_csv(out_biodiv_frag, path2outfile)
    
    outfile_name <- paste(i,"_betapart_frag_fcont_" , parset$fac_cont[i] ,
                          "_mabund_", parset$method_abund[i] , ".csv", sep = "")
-   path2outfile <- paste(path2wd, "/intermediate_results/", outfile_name, sep = "")
+   path2outfile <- paste(path2wd, "intermediate_results/", outfile_name, sep = "")
    write_csv(out_betapart_frag, path2outfile)
 
    # outfile_name <- paste(i, "_betapart_study_fcont_", parset$fac_cont[i],

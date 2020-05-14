@@ -5,7 +5,7 @@
 # they are weakly regularising
 
 # load the data
-frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))

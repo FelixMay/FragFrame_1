@@ -2,12 +2,12 @@
 
 # code to fit models with 2-way interaction for fragmentation synthesis
 
-frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # add mean centred (log) fragsize
 frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 
-meta <- read_delim(paste0(path2wd, '/data/new_meta_2_merge.csv'),  delim =';') %>% 
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
   dplyr::rename(dataset_label = dataset_id) 
 
 frag <- left_join(frag, 
@@ -26,7 +26,7 @@ frag$time.since.fragmentation <- factor(frag$time.since.fragmentation,
 frag %>% distinct(continent8)
 
 # load fragSize only models
-load(paste0(path2wd, '/main_results/fragSize_ref.Rdata'))
+load(paste0(path2wd, 'main_results/fragSize_ref.Rdata'))
 
 
 # two-way interactions: matrix permeability first

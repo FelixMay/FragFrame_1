@@ -6,7 +6,7 @@
 
 user <- Sys.info()["user"]
 path2wd <- switch(user,
-                  "May" = "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1",
+                  "May" = "C:/Users/May/Documents/FelixMay/Fragmentation_Extinction/FragFrame_1/",
                   "sb25gaqy" = "~/Dropbox/1current/fragmentation_synthesis/FragFrame_1/",
 						"as80fywe" = "C:/Users/as80fywe/idiv/mob/mobsim/FragFrame_1/"
 )

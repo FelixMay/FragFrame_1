@@ -1,10 +1,10 @@
 # set paths and load libraries using 0_init_dirs_load_packages.R
 
 # code to fit refit models for fragmentation synthesis to examine sensitivity to decisions made
-# in the calculation (standardisation) of the metrics
+# in the imputation of habitat area for "continuous habitat" and in the treatment of non-integer abundance values
 
 # list of files
-files = list.files(path = paste0(path2wd, '/intermediate_results/'),
+files = list.files(path = paste0(path2wd, 'intermediate_results/'),
                    pattern = 'biodiv_frag_fcont')
 
 # reference case are models already fit to 2_biodiv_frag_fcont_10_mabund_as_is.csv

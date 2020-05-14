@@ -2,7 +2,7 @@
 # execute 0_init_dirs_load_packages.R
 
 # load the data: cluster version, then local
-frag_beta <- read_csv(paste0(path2data, '2_betapart_frag_fcont_10_mabund_as_is.csv'))
+frag_beta <- read_csv(paste0(path2wd, 'intermediate_results/2_betapart_frag_fcont_10_mabund_as_is.csv'))
 
 # centre covariate before fitting
 frag_beta <- frag_beta %>% 

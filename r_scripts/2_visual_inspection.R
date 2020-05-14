@@ -2,10 +2,10 @@
 
 # need to run 0_init_dirs_load_packages.R for packages and directory paths
 
-frag <- read_csv(paste0(path2wd, '/intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
+frag <- read_csv(paste0(path2wd, 'intermediate_results/2_biodiv_frag_fcont_10_mabund_as_is.csv'))
 
 # load the meta data
-meta <- read_delim(paste0(path2wd, '/data/new_meta_2_merge.csv'), delim = ';') %>% 
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'), delim = ';') %>% 
   as_tibble() %>% 
   dplyr::rename(dataset_label = dataset_id)
 
