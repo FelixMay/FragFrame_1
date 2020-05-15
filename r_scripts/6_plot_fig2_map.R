@@ -3,9 +3,8 @@
 # need to run 0_init_dirs_load_packages.R to load packages and setwd etc
 
 # load the meta data
-meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
-  dplyr::rename(dataset_label = dataset_id)
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
+   dplyr::rename(dataset_label = dataset_id) 
 
 meta <- meta %>% 
   separate(coordinates, into = c('y', 'x'), sep = ', ', remove = F) %>% 
