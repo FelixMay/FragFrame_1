@@ -34,21 +34,20 @@ for(i in 1:length(response)){
   predict <- predict(eval(model))
   
   # join with the sample_design column
-  resid <- left_join(resid, frag %>% distinct(dataset_label, sample_design, z_Sstd),
+  resid <- left_join(resid, frag %>% distinct(dataset_label, sample_design),
                      by = 'dataset_label')
   
   resid$fitted <- fitted[,'Estimate']
   resid$predict <- predict[,'Estimate']
   
   png(paste0(plot_dir, '_', response[i], '_Pearson_residuals.png'), width = 240, height = 200, res = 75, units = 'mm')
-  par(mfrow=c(3,3), mai = c(0.5, 0.5, 0.1, 0.1))
+  par(mfrow=c(3,4), mai = c(0.5, 0.5, 0.1, 0.1))
   # can we do a better job with the ones and twos? Probably not. Error distribution? Model?
   with(resid,# %>% filter(Estimate<5), 
        plot(Estimate ~ fitted,
                    ylab = 'Pearson residual'));abline(h=0, lty=2)
-  with(resid,# %>% filter(Estimate<5), 
-       plot(z_S_std ~ predict,
-            ylab = 'z-score'));abline(c(0,1), lty=2)
+  plot(resid$fitted, as.numeric(unlist(resid[,5])),
+            ylab = 'z-score');abline(c(0,1), lty=2)
   with(resid %>% filter(Estimate<5), 
        plot(Estimate ~ c.lfs,
                    ylab = 'Pearson residual', xlab = 'Fragment size (centred, log-scale)'));abline(h=0, lty=2)
