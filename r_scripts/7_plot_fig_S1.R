@@ -1,10 +1,8 @@
 ## code to plot simulation results for extended data
 
 # load results of simulations
-simDat <- read.csv(paste0(path2wd, 'intermediate_results/7_resultsS2000_N40000_mp1_nrep2000.csv')) %>% 
-  as_tibble()
-
-
+simDat <- read_csv(paste0(path2wd, 'intermediate_results/7_resultsS2000_N40000_mp1_nrep2000.csv'))
+  
 # fit linear models to each metric (for each level of aggregation)
 lm_models <- simDat %>% 
   # want to fit models on a log-log scale
@@ -64,7 +62,6 @@ three_grey_legend <- ggplot() +
 source(paste0(path2wd, 'r_scripts/99_gg_legend.R'))
 legend <- gg_legend(three_grey_legend)
 
-
 sim_slopes <- ggplot() +
   facet_grid(metric2 ~ aggregation) +
   geom_density_ridges_gradient(data = slope_coefs,
@@ -111,7 +108,6 @@ top1 <- cowplot::ggdraw() +
 
 legend_row <- cowplot::plot_grid(legend)
 
-
 # 3 rows
 cowplot::plot_grid(top1, 
                    legend_row,
@@ -125,7 +121,7 @@ cowplot::plot_grid(top1,
 
 
 # figure sized for 2 columns 
-ggsave(paste0(path2wd, 'extended_data_gis_tabs//Ex_Dat_Fig1.png'),
+ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig1.png'),
        height = 183, width = 183, units = 'mm')
 
 

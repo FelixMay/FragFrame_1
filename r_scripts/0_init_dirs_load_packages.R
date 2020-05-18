@@ -31,12 +31,13 @@ needed_libs <- c("adespatial" , # for beta-diversity partitioning
                  "iNEXT", # for coverage standardized richness
                  "ggridges",
                  "ggstance",
+                 "gridGraphics",
+                 "magick",
                  "maps",
                  "mobr", # calculation of biodiversity indices
-					       "mobsim", # for random community simulation
+					  "mobsim", # for random community simulation
                  "tidyverse",
                  "stringr"
-                 #"vegan", # for diversity indices
 )
 
 usePackage <- function(p) {

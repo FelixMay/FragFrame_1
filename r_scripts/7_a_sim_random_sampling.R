@@ -29,7 +29,6 @@
 
 ####################################################################
 
-rm(list=ls())
 set.seed(33)
 
 ## Simulation parametres
@@ -42,7 +41,8 @@ max_range = 2
 sampling_range = c(0.5,1.5)
 
 metrics <- c("N", "S", "S_PIE")
-nrep = 2000
+#nrep = 2000
+nrep = 20
 
 
 ### Spatial distribution (Random, medium, high)
@@ -63,7 +63,6 @@ for (sigma_i in 1:length(sigma_values))   {
    }
 }
 
-
 ##### map of the community
 
 # svg(filename = paste0(path2wd, "intermediate_results/", "7_mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
@@ -82,13 +81,10 @@ patch_widths <- sqrt(patch_areas)
 quadrat_area <- 0.0001
 quadrat_width <- sqrt(quadrat_area)
 
-
 ## Running simulations
-
 res <- array(data = NA,
              dim = list(nrep, length(patch_areas), length(sigma_values), length(metrics)),
              dimnames = list(1:nrep, paste0("patch_area_", patch_areas), paste0("sigma_", sigma_values), metrics))
-
 
 for(i in 1:nrep)   {
    for (sigma_i in 1:length(sigma_values))   {
@@ -97,7 +93,6 @@ for(i in 1:nrep)   {
       
       count <- 0
       maxtry <- 4000
-      
       
       #### Simulating the patches and quadrats: 4 non-overlapping patches per landscape, one quadrat per patch
       ##### Patches
@@ -191,11 +186,7 @@ colnames(restable) <- c("rep","patch_area","sigma","metric","value")
 restable$patch_area <- as.numeric(gsub(restable$patch_area, pattern = "patch_area_", replacement = ""))
 restable$sigma <- as.numeric(gsub(restable$sigma, pattern = "sigma_", replacement = ""))
 
-write.table(restable, 
-            file = paste0(path2wd, "intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), 
-            row.names = F, sep = ',', dec='.')
-
-# I think the only bug here was a missing slash ;o)
-write.table(restable, file = paste0(path2wd, "/intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"), row.names = F, sep = ',', dec='.')
+write_csv(restable, 
+          path = paste0(path2wd, "intermediate_results/7_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep, ".csv"))
 
 
