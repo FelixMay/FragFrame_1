@@ -121,7 +121,7 @@ cowplot::plot_grid(top1,
 
 
 # figure sized for 2 columns 
-ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig1.png'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig1.png'),
        height = 183, width = 183, units = 'mm')
 
 
