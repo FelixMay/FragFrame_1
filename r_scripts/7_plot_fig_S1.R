@@ -4,14 +4,15 @@
 simDat <- read_csv(paste0(path2wd, 'intermediate_results/7_resultsS2000_N40000_mp1_nrep2000.csv'))
   
 # fit linear models to each metric (for each level of aggregation)
-lm_models <- simDat %>% 
+lm_models <- simDat %>%
   # want to fit models on a log-log scale
   mutate(logA = log(patch_area),
          logValue = log(value)) %>% 
   # throw infinite values (e.g., when value = 0)
   filter(is.finite(logValue)) %>% 
-  group_by(rep, sigma, metric) %>%
-  nest(logA, logValue) %>% 
+  select(-patch_area, -value) %>%
+  group_by(metric, sigma, rep) %>%
+  nest(data = c(logA, logValue)) %>% 
   mutate(lm = purrr::map(data, ~lm(.x$logValue ~ .x$logA))) %>% 
   ungroup()
 
