@@ -131,7 +131,7 @@ ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig1.png'),
 dist_test <- slope_coefs %>% 
   select(metric, aggregation, slope) %>% 
   group_by(metric) %>% 
-  nest(aggregation, slope) %>% 
+  nest(data = c(aggregation, slope)) %>% 
   mutate(random_aggr = purrr::map(data, ~t.test(.x %>% 
                                                   filter(aggregation=='Random') %>% 
                                                   select(slope) %>% .$slope,
