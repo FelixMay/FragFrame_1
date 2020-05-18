@@ -37,7 +37,8 @@ needed_libs <- c("adespatial" , # for beta-diversity partitioning
                  "mobr", # calculation of biodiversity indices
 					  "mobsim", # for random community simulation
                  "tidyverse",
-                 "stringr"
+                 "stringr",
+					  "viridisLite"
 )
 
 usePackage <- function(p) {

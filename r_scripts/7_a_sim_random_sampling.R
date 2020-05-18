@@ -42,7 +42,7 @@ sampling_range = c(0.5,1.5)
 
 metrics <- c("N", "S", "S_PIE")
 #nrep = 2000
-nrep = 20
+nrep = 2
 
 
 ### Spatial distribution (Random, medium, high)
@@ -51,7 +51,8 @@ sigma_values <- c(1, 0.1, 0.02)
 #### Computing and storing community tables
 communities <- array(NA, dim = c(n_sim, 3, length(sigma_values), nrep), 
                      dimnames = list(c(), c('x','y','species'), paste0("sigma_", sigma_values), c())
-                     )
+)
+
 for (sigma_i in 1:length(sigma_values))   {
    for(i in 1:nrep)   {
       communities[,, sigma_i, i] <- unlist(
@@ -82,9 +83,16 @@ quadrat_area <- 0.0001
 quadrat_width <- sqrt(quadrat_area)
 
 ## Running simulations
+### Saving a plot of the first simulation
+png(filename=paste0('extended_data_figs_tabs/samplingS', s_pool, '_N', n_sim, '_mp', n_mother_points, '.png'), width = 240, height = 80, units = 'mm', res = 1800)
+titles <- c('Random', 'Intermediate aggregation', 'High aggregation')
+par(mfrow = c(1,3), mex = 0.7, mar = c(5,4,2,2), ps = 13)
+
+### Result table
 res <- array(data = NA,
              dim = list(nrep, length(patch_areas), length(sigma_values), length(metrics)),
              dimnames = list(1:nrep, paste0("patch_area_", patch_areas), paste0("sigma_", sigma_values), metrics))
+
 
 for(i in 1:nrep)   {
    for (sigma_i in 1:length(sigma_values))   {
@@ -135,7 +143,7 @@ for(i in 1:nrep)   {
          
          count <- count + 1
       }
-      # print(count)
+
       if (count > maxtry) {warning(paste0("Cannot find a sampling layout with no overlap for repetition: ", i, "
                                             Use less patches or smaller patch area."))}
       
@@ -145,22 +153,6 @@ for(i in 1:nrep)   {
       quadrat_xrange$xmax <- quadrat_xrange$xmin + quadrat_width
       quadrat_yrange <- data.frame(ymin = runif(4, patch_ranges[, 3], patch_ranges[, 4] - quadrat_width))
       quadrat_yrange$ymax <- quadrat_yrange$ymin + quadrat_width
-      
-      ## Graphical check
-      if(FALSE) {
-         plot(comm[,'y'] ~ comm[,'x'], col = comm[,'species'], main = "Community distribution", las = 1, asp = T, pch=20)
-         graphics::rect(patch_ranges[, 1],
-                        patch_ranges[, 3],
-                        patch_ranges[, 2],
-                        patch_ranges[, 4],
-                        lwd = 2, col = grDevices::adjustcolor("white", alpha.f = 0.6))
-         
-         graphics::rect(quadrat_xrange[, 1],
-                        quadrat_yrange[, 1],
-                        quadrat_xrange[, 2],
-                        quadrat_yrange[, 2],
-                        lwd = 1.4, col = grDevices::adjustcolor("forestgreen", alpha.f = 0.4), border = "forestgreen")
-      }
       
       #### sampling inside the quadrat
       quadrat_comms <- lapply(1:length(patch_widths), function(patch_width_i){
@@ -173,10 +165,31 @@ for(i in 1:nrep)   {
            S = length(unique(quadrat_comm[,'species'])),
            S_PIE = mobr::calc_PIE(ENS = TRUE, table(quadrat_comm[,'species'])))
       })))
+      
+      ## Graphical check
+      if(i == 1)   {
+         plot(comm[,'y'] ~ comm[,'x'], col = viridisLite::viridis(s_pool), main = titles[sigma_i], las = 1, asp = T, pch=16, xaxt='n', yaxt='n', xlab='X', ylab='Y', xlim=c(0.5, 1.5), ylim=c(0.5, 1.5))
+         axis(1, at=seq(0.5, 1.5, by=0.2), labels = seq(0, 1, by=0.2), las=1)
+         axis(2, at=seq(0.5, 1.5, by=0.2), labels = seq(0, 1, by=0.2), las=1)
+         
+         graphics::rect(patch_ranges[, 1],
+                        patch_ranges[, 3],
+                        patch_ranges[, 2],
+                        patch_ranges[, 4],
+                        lwd = 2, col = grDevices::adjustcolor("white", alpha.f = 0.6))
+         
+         graphics::rect(quadrat_xrange[, 1],
+                        quadrat_yrange[, 1],
+                        quadrat_xrange[, 2],
+                        quadrat_yrange[, 2],
+                        lwd = 1.4, col = grDevices::adjustcolor("forestgreen", alpha.f = 0.4), border = "forestgreen")
+      }
    }
 }
 
-# It seems this is not necessary right?
+dev.off()
+
+
 # save(res, file = paste0(path2wd, "intermediate_results/7_raw_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
 
 # saving results in long format
