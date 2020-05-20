@@ -1,7 +1,5 @@
-# Review - Simulation
-
-
-## Roadmap
+# Simulation of random sampling effects for testing the expectation
+# that slopes of the regression: standardized biodiversity ~ fragmentarea - are really zero
 
 ### Simulation parametres
 #### S, N and SAD
@@ -41,9 +39,7 @@ max_range = 2
 sampling_range = c(0.5,1.5)
 
 metrics <- c("N", "S", "S_PIE")
-#nrep = 2000
-nrep = 2
-
+nrep = 2000
 
 ### Spatial distribution (Random, medium, high)
 #### Aggregation parametres
@@ -66,15 +62,6 @@ for (sigma_i in 1:length(sigma_values))   {
 
 ##### map of the community
 
-# svg(filename = paste0(path2wd, "intermediate_results/", "7_mapS", s_pool, "_N", n_sim, "_mp", n_mother_points,".svg"), width = 20, height = 8)
-# par(mfrow=c(1,3))
-# lapply(1:length(sigma_values), function(sigma_i) {
-# plot(communities[,'x',sigma_i, 1], communities[,'y',sigma_i, 1],
-#      main = paste("sigma =", sigma_values[sigma_i]),
-#      cex = 0.8, las = 1, asp = 1, col = communities[,'species',sigma_i, 1], pch = 19)
-# })
-# dev.off()
-
 ### Patch sizes (4 values (including very small))
 patch_areas <- c(0.0005, 0.005, 0.05, 0.5)
 patch_widths <- sqrt(patch_areas)
@@ -83,19 +70,19 @@ quadrat_area <- 0.0001
 quadrat_width <- sqrt(quadrat_area)
 
 ## Running simulations
-### Saving a plot of the first simulation
-png(filename=paste0('extended_data_figs_tabs/samplingS', s_pool, '_N', n_sim, '_mp', n_mother_points, '.png'), width = 240, height = 80, units = 'mm', res = 1800)
-titles <- c('Random', 'Intermediate aggregation', 'High aggregation')
-par(mfrow = c(1,3), mex = 0.7, mar = c(5,4,2,2), ps = 13)
 
 ### Result table
 res <- array(data = NA,
              dim = list(nrep, length(patch_areas), length(sigma_values), length(metrics)),
              dimnames = list(1:nrep, paste0("patch_area_", patch_areas), paste0("sigma_", sigma_values), metrics))
 
+### Saving a plot of the first simulation
+png(filename=paste0('extended_data_figs_tabs/test_samplingS', s_pool, '_N', n_sim, '_mp', n_mother_points, '.png'), width = 240, height = 80, units = 'mm', res = 1800)
+titles <- c('Random', 'Intermediate aggregation', 'High aggregation')
+par(mfrow = c(1,3), mex = 0.7, mar = c(5,4,2,2), ps = 13)
 
-for(i in 1:nrep)   {
-   for (sigma_i in 1:length(sigma_values))   {
+for(i in 1:nrep){
+   for (sigma_i in 1:length(sigma_values)){
  
       comm <- communities[,, sigma_i, i]
       
@@ -121,8 +108,6 @@ for(i in 1:nrep)   {
             patch_ranges[patch_area_i,"ymax"] > patch_ranges[-patch_area_i,"ymin"]
       }))
       
-      
-      
       while(overlap && count <= maxtry){
          
          patch_ranges <- t(sapply(patch_widths, function(patch_width) {
@@ -147,7 +132,6 @@ for(i in 1:nrep)   {
       if (count > maxtry) {warning(paste0("Cannot find a sampling layout with no overlap for repetition: ", i, "
                                             Use less patches or smaller patch area."))}
       
-      
       ##### Quadrat
       quadrat_xrange <- data.frame(xmin = runif(4, patch_ranges[, 1], patch_ranges[, 2] - quadrat_width))
       quadrat_xrange$xmax <- quadrat_xrange$xmin + quadrat_width
@@ -168,6 +152,7 @@ for(i in 1:nrep)   {
       
       ## Graphical check
       if(i == 1)   {
+         
          plot(comm[,'y'] ~ comm[,'x'], col = viridisLite::viridis(s_pool), main = titles[sigma_i], las = 1, asp = T, pch=16, xaxt='n', yaxt='n', xlab='X', ylab='Y', xlim=c(0.5, 1.5), ylim=c(0.5, 1.5))
          axis(1, at=seq(0.5, 1.5, by=0.2), labels = seq(0, 1, by=0.2), las=1)
          axis(2, at=seq(0.5, 1.5, by=0.2), labels = seq(0, 1, by=0.2), las=1)
@@ -183,14 +168,13 @@ for(i in 1:nrep)   {
                         quadrat_xrange[, 2],
                         quadrat_yrange[, 2],
                         lwd = 1.4, col = grDevices::adjustcolor("forestgreen", alpha.f = 0.4), border = "forestgreen")
+   
+        
       }
    }
 }
 
 dev.off()
-
-
-# save(res, file = paste0(path2wd, "intermediate_results/7_raw_results", "S", s_pool, "_N", n_sim, "_mp", n_mother_points, "_nrep", nrep))
 
 # saving results in long format
 restable <- as.data.frame.table(res)
