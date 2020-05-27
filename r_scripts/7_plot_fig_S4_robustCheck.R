@@ -5,8 +5,6 @@
 # load packages and paths: 0_init_dirs_load_packages.R
 
 # code to wrangle the coefs ready to inspect
-## NB: this code does not run without user having model fits locally (i.e.,
-# they are not in the intermediate_results folder)
 source(paste0(path2wd, 'r_scripts/5b_fragSize_coef_wrangle_4_robust_results.R'))
 
 fixed_effects <- bind_cols(
@@ -443,7 +441,7 @@ S_PIE_robust <- ggplot() +
 
 # include table showing lack of sensitivity to studies with pooled sampling designs
 top1 <- cowplot::ggdraw() + 
-  cowplot::draw_image(paste0(path2wd, 'main_results/table_inset.png'),
+  cowplot::draw_image(paste0(path2wd, 'extended_data_figs_tabs/table_inset.png'),
                       clip = 'on',
                       scale = 0.75) +
   draw_figure_label(label = 'a',
@@ -461,7 +459,7 @@ bottom <- cowplot::plot_grid(Nstd_robust,
 cowplot::plot_grid(top1, bottom, nrow = 2)
 # 2 column
 # set local directory
-ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig4.png'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig4.png'),
        width = 183,
        height = 120,
        units = 'mm')

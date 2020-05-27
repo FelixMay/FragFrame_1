@@ -3,8 +3,6 @@
 # code to wrangle the coefficients for the fragemnt area regressions (with no interactions)
 # for models fit to data standardised in slightly different ways
 
-## NOTE: only the reference model fits are on Github 
-# (other models need to be fit and saved locally to reproduce Ex Dat Fig 4)
 # code to get coefs for reference fits------
 # load model fits and the data
 load(paste0(path2wd, 'main_results/fragSize_ref.Rdata'))
