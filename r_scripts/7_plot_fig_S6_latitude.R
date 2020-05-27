@@ -76,9 +76,5 @@ ggplot() +
   theme(text = element_text(size = 7))
 
 # 1.5 column figure size
-<<<<<<< HEAD:r_scripts/7_plot_fig_S6_latitude.R
 ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig6.png'),
-=======
-ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig7_test.png'),
->>>>>>> 449f86ac71339935712a46005bd1cb66d94e8fb2:r_scripts/7_plot_fig_S7_latitude.R
        width = 120, height = 120, units = 'mm')
