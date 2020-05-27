@@ -5,8 +5,6 @@
 # load packages and paths: 0_init_dirs_load_packages.R
 
 # code to wrangle the coefs ready to inspect
-## NB: this code does not run without user having model fits locally (i.e.,
-# they are not in the intermediate_results folder)
 source(paste0(path2wd, 'r_scripts/5b_fragSize_coef_wrangle_4_robust_results.R'))
 
 fixed_effects <- bind_cols(
@@ -461,7 +459,11 @@ bottom <- cowplot::plot_grid(Nstd_robust,
 cowplot::plot_grid(top1, bottom, nrow = 2)
 # 2 column
 # set local directory
+<<<<<<< HEAD
 ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig4.tiff'),
+=======
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig4.png'),
+>>>>>>> 449f86ac71339935712a46005bd1cb66d94e8fb2
        width = 183,
        height = 120,
        units = 'mm')

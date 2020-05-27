@@ -8,8 +8,7 @@
 # get the coefficients for all the results
 source(paste0(path2wd, 'r_scripts/5a_fragSize_coef_wrangle.R'))
 
-meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
   dplyr::rename(dataset_label = dataset_id) %>% 
   separate(coordinates, into = c('y', 'x'), sep = ', ', remove = F) %>% 
   mutate(x = as.numeric(x),
@@ -77,5 +76,9 @@ ggplot() +
   theme(text = element_text(size = 7))
 
 # 1.5 column figure size
+<<<<<<< HEAD:r_scripts/7_plot_fig_S6_latitude.R
 ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig6.png'),
+=======
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig7_test.png'),
+>>>>>>> 449f86ac71339935712a46005bd1cb66d94e8fb2:r_scripts/7_plot_fig_S7_latitude.R
        width = 120, height = 120, units = 'mm')
