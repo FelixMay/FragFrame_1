@@ -76,5 +76,5 @@ ggplot() +
         text = element_text(size = 7))
 
 # 1.5 column width
-ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig9.png'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig8.tiff'),
        width = 120, height = 120, units = 'mm')

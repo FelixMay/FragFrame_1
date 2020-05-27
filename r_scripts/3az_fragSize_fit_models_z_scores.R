@@ -19,7 +19,7 @@ frag$c.lfs <- log(frag$frag_size_num) - mean(log(frag$frag_size_num))
 # new addition for revision: model z-scores: (observed(S_std) - expected(S_Std)/sd(expected(S_std)))
 z_Sstd_norm_fragSize <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label), 
                              # some z-scores are infinite due to sd(expected) = 0
-                             data = frag %>% filter(S_std1_mean>0 & 
+                             data = frag %>% filter(S_std_mean>0 & 
                                                       !is.na(z_S_std) & 
                                                       !is.infinite(z_S_std)),
                              # prior = rp,
@@ -30,7 +30,7 @@ z_Sstd_norm_fragSize <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label),
 
 z_Sstd_asymL_fragSize <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label), 
                              # some z-scores are infinite due to sd(expected) = 0
-                             data = frag %>% filter(S_std1_mean>0 & 
+                             data = frag %>% filter(S_std_mean>0 & 
                                                       !is.na(z_S_std) & 
                                                       !is.infinite(z_S_std)),
                              # prior = rp,
@@ -43,7 +43,7 @@ z_Sstd_asymL_fragSize <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label),
 
 z_Sstd_studT_fragSize <- brm(z_S_std ~ c.lfs + (c.lfs | dataset_label), 
                              # some z-scores are infinite due to sd(expected) = 0
-                             data = frag %>% filter(S_std1_mean>0 & 
+                             data = frag %>% filter(S_std_mean>0 & 
                                                       !is.na(z_S_std) & 
                                                       !is.infinite(z_S_std)),
                              # prior = rp,
