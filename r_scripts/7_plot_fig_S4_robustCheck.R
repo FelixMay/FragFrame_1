@@ -461,7 +461,7 @@ bottom <- cowplot::plot_grid(Nstd_robust,
 cowplot::plot_grid(top1, bottom, nrow = 2)
 # 2 column
 # set local directory
-ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig4.png'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig4.tiff'),
        width = 183,
-       width = 120,
+       height = 120,
        units = 'mm')

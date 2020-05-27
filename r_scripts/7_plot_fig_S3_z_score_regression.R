@@ -302,5 +302,5 @@ cowplot::plot_grid(bottom) +
 
 # set local directory to save
 # plot sized for 2 columns
-ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig3.png'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig3.tiff'),
        width = 183, height = 120, units = 'mm')

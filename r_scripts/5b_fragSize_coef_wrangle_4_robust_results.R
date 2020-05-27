@@ -302,7 +302,7 @@ rm(Sstd_fS_fitted, Sstd_lognorm_fragSize_fixef, Sstd_lognorm_fragSize_group_coef
    S_PIE_fS_fitted, S_PIE_lognorm_fragSize_fixef, S_PIE_fragSize_group_coefs)
 
 # code to get coefs for sensitivity case 1------
-load(paste0(path2wd, 'extended_data_figs_tabs/1_biodiv_frag_fcont_2_mabund_as_is_modelFits.Rdata'))
+load(paste0(path2wd, 'extended_data_figs_tabs/1_biodiv_frag_fcont_2_mabund_as_is_modelFit.Rdata'))
 
 frag <- read_csv(paste0(path2wd, 'intermediate_results/1_biodiv_frag_fcont_2_mabund_as_is.csv'))
 # add mean centred (log) fragsize
