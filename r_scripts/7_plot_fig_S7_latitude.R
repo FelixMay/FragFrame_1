@@ -8,8 +8,7 @@
 # get the coefficients for all the results
 source(paste0(path2wd, 'r_scripts/5a_fragSize_coef_wrangle.R'))
 
-meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>% 
-  as_tibble() %>% 
+meta <- read_delim(paste0(path2wd, 'data/new_meta_2_merge.csv'),  delim =';') %>% 
   dplyr::rename(dataset_label = dataset_id) %>% 
   separate(coordinates, into = c('y', 'x'), sep = ', ', remove = F) %>% 
   mutate(x = as.numeric(x),
@@ -21,7 +20,7 @@ meta <- read.csv(paste0(path2wd, 'data/new_meta_2_merge.csv'), sep=';') %>%
                            labels = c('0-10', '10-20','20-30','30-40',
                                       '40-50','50-60','60-70')))
 
-S_std_study_slope <- Sstd2_lognorm_fragSize_group_coefs %>% 
+S_std_study_slope <- Sstd_lognorm_fragSize_group_coefs %>% 
   mutate(S_std_slope = Slope,
          error = error,
          S_std_lower = Slope_lower,
@@ -77,5 +76,5 @@ ggplot() +
   theme(text = element_text(size = 7))
 
 # 1.5 column figure size
-ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig7.png'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig7_test.png'),
        width = 120, height = 120, units = 'mm')
