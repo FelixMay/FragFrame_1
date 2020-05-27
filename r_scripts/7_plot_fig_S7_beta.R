@@ -198,7 +198,7 @@ cowplot::plot_grid(top, bottom,
                       y = 0.02, size = 7)
 
 # plot for 2 column width
-ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig8.png'),
+ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig7.png'),
        width = 183,
        height = 170,
        units = 'mm')

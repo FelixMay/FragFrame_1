@@ -77,5 +77,5 @@ ggplot() +
   theme(text = element_text(size = 7))
 
 # 1.5 column figure size
-ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig7.png'),
+ggsave(paste0(path2wd, 'extended_data_gis_tabs/Ex_Dat_Fig6.png'),
        width = 120, height = 120, units = 'mm')
