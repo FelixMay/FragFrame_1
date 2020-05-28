@@ -240,7 +240,8 @@ Sstd_robust <- ggplot() +
              aes(x = Sstd_ref, y = Sstd_sens1, colour = 'sens1'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens1, colour = 'sens1')) +
+                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens1, colour = 'sens1'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Sstd_ref, ymin = Sstd_sens1_lower, ymax = Sstd_sens1_upper, colour = 'sens1')) +
   # reference versus case 3
@@ -251,7 +252,8 @@ Sstd_robust <- ggplot() +
              aes(x = Sstd_ref, y = Sstd_sens3, colour = 'sens3'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens3, colour = 'sens3')) +
+                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens3, colour = 'sens3'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Sstd_ref, ymin = Sstd_sens3_lower, ymax = Sstd_sens3_upper, colour = 'sens3')) +
   # reference versus case 8
@@ -262,7 +264,8 @@ Sstd_robust <- ggplot() +
              aes(x = Sstd_ref, y = Sstd_sens4, colour = 'sens8'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens4, colour = 'sens8')) +
+                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens4, colour = 'sens8'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Sstd_ref, ymin = Sstd_sens4_lower, ymax = Sstd_sens4_upper, colour = 'sens8')) +
   # reference versus case 11
@@ -273,7 +276,8 @@ Sstd_robust <- ggplot() +
              aes(x = Sstd_ref, y = Sstd_sens5, colour = 'sens11'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens5, colour = 'sens11')) +
+                 aes(xmin = Sstd_ref_lower, xmax = Sstd_ref_upper, y = Sstd_sens5, colour = 'sens11'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Sstd_ref, ymin = Sstd_sens5_lower, ymax = Sstd_sens5_upper, colour = 'sens11')) +
   # 1:1 line and zero lines
@@ -304,7 +308,8 @@ Nstd_robust <-
              aes(x = Nstd_ref, y = Nstd_sens1, colour = 'sens11'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens1, colour = 'sens1')) +
+                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens1, colour = 'sens1'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Nstd_ref, ymin = Nstd_sens1_lower, ymax = Nstd_sens1_upper, colour = 'sens1')) +
   # reference versus case 3
@@ -315,7 +320,8 @@ Nstd_robust <-
              aes(x = Nstd_ref, y = Nstd_sens3, colour = 'sens3'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens3, colour = 'sens3')) +
+                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens3, colour = 'sens3'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Nstd_ref, ymin = Nstd_sens3_lower, ymax = Nstd_sens3_upper, colour = 'sens3')) +
   # reference versus case 8
@@ -326,7 +332,8 @@ Nstd_robust <-
              aes(x = Nstd_ref, y = Nstd_sens4, colour = 'sens8'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens4, colour = 'sens8')) +
+                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens4, colour = 'sens8'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Nstd_ref, ymin = Nstd_sens4_lower, ymax = Nstd_sens4_upper, colour = 'sens8')) +
   # reference versus case 11
@@ -337,7 +344,8 @@ Nstd_robust <-
              aes(x = Nstd_ref, y = Nstd_sens5, colour = 'sens11'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens5, colour = 'sens11')) +
+                 aes(xmin = Nstd_ref_lower, xmax = Nstd_ref_upper, y = Nstd_sens5, colour = 'sens11'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = Nstd_ref, ymin = Nstd_sens5_lower, ymax = Nstd_sens5_upper, colour = 'sens11')) +
   # 1:1 line and zero lines
@@ -373,7 +381,8 @@ S_PIE_robust <- ggplot() +
              aes(x = S_PIE_ref, y = S_PIE_sens1, colour = 'sens1'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens1, colour = 'sens1')) +
+                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens1, colour = 'sens1'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = S_PIE_ref, ymin = S_PIE_sens1_lower, ymax = S_PIE_sens1_upper, colour = 'sens1')) +
   # reference versus case 3
@@ -384,7 +393,8 @@ S_PIE_robust <- ggplot() +
              aes(x = S_PIE_ref, y = S_PIE_sens3, colour = 'sens3'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens3, colour = 'sens3')) +
+                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens3, colour = 'sens3'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = S_PIE_ref, ymin = S_PIE_sens3_lower, ymax = S_PIE_sens3_upper, colour = 'sens3')) +
   # reference versus case 8
@@ -395,7 +405,8 @@ S_PIE_robust <- ggplot() +
              aes(x = S_PIE_ref, y = S_PIE_sens4, colour = 'sens8'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens4, colour = 'sens8')) +
+                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens4, colour = 'sens8'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = S_PIE_ref, ymin = S_PIE_sens4_lower, ymax = S_PIE_sens4_upper, colour = 'sens8')) +
   # reference versus case 11
@@ -406,7 +417,8 @@ S_PIE_robust <- ggplot() +
              aes(x = S_PIE_ref, y = S_PIE_sens5, colour = 'sens11'),
              size = 2) +
   geom_errorbarh(data = fixed_effects,
-                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens5, colour = 'sens11')) +
+                 aes(xmin = S_PIE_ref_lower, xmax = S_PIE_ref_upper, y = S_PIE_sens5, colour = 'sens11'),
+                 width = 0) +
   geom_linerange(data = fixed_effects,
                  aes(x = S_PIE_ref, ymin = S_PIE_sens5_lower, ymax = S_PIE_sens5_upper, colour = 'sens11')) +
   # 1:1 line and zero lines
@@ -446,7 +458,7 @@ bottom <- cowplot::plot_grid(Nstd_robust,
 cowplot::plot_grid(top1, bottom, nrow = 2)
 # 2 column
 # set local directory
-ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig4.tiff'),
+ggsave(paste0(path2wd, 'extended_data_figs_tabs/Ex_Dat_Fig4.png'),
        width = 183,
        height = 120,
        units = 'mm')
