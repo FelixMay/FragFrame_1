@@ -439,6 +439,32 @@ S_PIE_robust <- ggplot() +
   theme(text = element_text(size = 7))
 
 # include table showing lack of sensitivity to studies with pooled sampling designs
+load(paste0(path2wd, 'main_results/fragSize_ref_pool.Rdata'))
+# these are the values for the table, but table was edited for final figure outside and 
+# saved as table_inset.png for the publication
+table_inset <- tibble(
+  Metric = c('Sstd', 'Nstd', 'S_PIE', 'Sn', 'Scov', 'Schao'),
+  Slope = c(fixef(Sstd_lognorm_fragSize_pool)['c.lfs','Estimate'],
+            fixef(Nstd_lognorm_fragSize_pool)['c.lfs','Estimate'],
+            fixef(S_PIE_lognorm_fragSize_pool)['c.lfs','Estimate'],
+            fixef(Sn_lognorm_fragSize_pool)['c.lfs','Estimate'],
+            fixef(Scov_lognorm_fragSize_pool)['c.lfs','Estimate'],
+            fixef(S_chao_lognorm_fragSize_pool)['c.lfs','Estimate']),
+  Q2.5 = c(fixef(Sstd_lognorm_fragSize_pool)['c.lfs','Q2.5'],
+           fixef(Nstd_lognorm_fragSize_pool)['c.lfs','Q2.5'],
+           fixef(S_PIE_lognorm_fragSize_pool)['c.lfs','Q2.5'],
+           fixef(Sn_lognorm_fragSize_pool)['c.lfs','Q2.5'],
+           fixef(Scov_lognorm_fragSize_pool)['c.lfs','Q2.5'],
+           fixef(S_chao_lognorm_fragSize_pool)['c.lfs','Q2.5']),
+  Q97.5 = c(fixef(Sstd_lognorm_fragSize_pool)['c.lfs','Q97.5'],
+           fixef(Nstd_lognorm_fragSize_pool)['c.lfs','Q97.5'],
+           fixef(S_PIE_lognorm_fragSize_pool)['c.lfs','Q97.5'],
+           fixef(Sn_lognorm_fragSize_pool)['c.lfs','Q97.5'],
+           fixef(Scov_lognorm_fragSize_pool)['c.lfs','Q97.5'],
+           fixef(S_chao_lognorm_fragSize_pool)['c.lfs','Q97.5'])
+  )
+
+# the edited table as a png
 top1 <- cowplot::ggdraw() + 
   cowplot::draw_image(paste0(path2wd, 'extended_data_figs_tabs/table_inset.png'),
                       clip = 'on',
