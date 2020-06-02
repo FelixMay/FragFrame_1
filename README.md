@@ -4,7 +4,8 @@ FragFrame\_1
 ============
 
 <!-- badges: start -->
-<!-- badges: end -->
+[![DOI](https://zenodo.org/badge/73482248.svg)](https://zenodo.org/badge/latestdoi/73482248) <!-- badges: end -->
+
 The FragFrame\_1 repository includes R code and data to reproduce the analyses shown in the article
 
 **Ecosystem decay exacerbates biodiversity loss with habitat loss**

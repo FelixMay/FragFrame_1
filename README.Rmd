@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
 # FragFrame_1
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/73482248.svg)](https://zenodo.org/badge/latestdoi/73482248)
 <!-- badges: end -->
 
 The FragFrame_1 repository includes R code and data to reproduce the analyses shown in the article 
