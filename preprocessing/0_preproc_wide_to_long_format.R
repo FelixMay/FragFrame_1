@@ -61,7 +61,7 @@ read_data_files <- function(filename) {
   ## remove non-numeric entries
   sample_eff <- as.numeric(sample_eff[, 1:n_col])
 
-  if (any(is.na(sample_eff))) {
+  if (anyNA(sample_eff)) {
     print(paste("NA values in sampling effort in", filename, sep = " "))
   }
 
@@ -103,7 +103,7 @@ read_data_files <- function(filename) {
   frag_size_char <- as.character(frag_size[, 1:n_col])
   frag_size_num <- as.numeric(frag_size_char)
 
-  if (any(is.na(frag_size_num))) {
+  if (anyNA(frag_size_num)) {
     print(paste("NA values in fragment sizes in", filename, sep = " "))
   }
 

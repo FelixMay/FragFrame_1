@@ -47,10 +47,10 @@ tail(sample_days)
 dim(sample_days)
 
 str(sample_days)
-any(duplicated(sample_days))
+anyDuplicated(sample_days) > 0
 
-site$sample_eff <- sample_days$SampDays[1:nrow(site)]
-site$Site2 <- sample_days$NewSite[1:nrow(site)]
+site$sample_eff <- sample_days$SampDays[seq_len(nrow(site))]
+site$Site2 <- sample_days$NewSite[seq_len(nrow(site))]
 site <- select(site, Site, Site2, everything())
 head(site)
 tail(site)

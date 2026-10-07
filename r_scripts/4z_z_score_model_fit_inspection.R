@@ -22,7 +22,7 @@ plot_dir <- '~/Dropbox/1current/fragmentation_synthesis/temp/figs/visual_inspect
 # create vector of response variable to loop through
 response <- c('z_Sstd', 'z_S_PIE', 'z_Sn', 'z_S_chao', 'z_Scov')
 
-for (i in 1:length(response)) {
+for (i in seq_along(response)) {
   print(paste('model', i, 'in', length(response)))
   model <- paste0(response[i], '_studT_fragSize') %>% as.name()
   resid <- residuals(eval(model), type = 'pearson', method = 'predict') %>%

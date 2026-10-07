@@ -56,7 +56,7 @@ communities <- array(
   )
 )
 
-for (sigma_i in 1:length(sigma_values)) {
+for (sigma_i in seq_along(sigma_values)) {
   for (i in 1:nrep) {
     communities[,, sigma_i, i] <- unlist(
       mobsim::sim_thomas_community(
@@ -117,7 +117,7 @@ titles <- c('Random', 'Intermediate aggregation', 'High aggregation')
 par(mfrow = c(1, 3), mex = 0.7, mar = c(5, 4, 2, 2), ps = 13)
 
 for (i in 1:nrep) {
-  for (sigma_i in 1:length(sigma_values)) {
+  for (sigma_i in seq_along(sigma_values)) {
     comm <- communities[,, sigma_i, i]
 
     count <- 0
@@ -144,7 +144,7 @@ for (i in 1:nrep) {
     }))
     rownames(patch_ranges) <- patch_areas
 
-    overlap <- any(sapply(1:length(patch_areas), function(patch_area_i) {
+    overlap <- any(sapply(seq_along(patch_areas), function(patch_area_i) {
       patch_ranges[patch_area_i, "xmin"] < patch_ranges[-patch_area_i, "xmax"] &
         patch_ranges[patch_area_i, "xmax"] >
           patch_ranges[-patch_area_i, "xmin"] &
@@ -172,7 +172,7 @@ for (i in 1:nrep) {
       }))
       rownames(patch_ranges) <- patch_areas
 
-      overlap <- any(sapply(1:length(patch_areas), function(patch_area_i) {
+      overlap <- any(sapply(seq_along(patch_areas), function(patch_area_i) {
         patch_ranges[patch_area_i, "xmin"] <
           patch_ranges[-patch_area_i, "xmax"] &
           patch_ranges[patch_area_i, "xmax"] >
@@ -206,7 +206,7 @@ for (i in 1:nrep) {
     quadrat_yrange$ymax <- quadrat_yrange$ymin + quadrat_width
 
     #### sampling inside the quadrat
-    quadrat_comms <- lapply(1:length(patch_widths), function(patch_width_i) {
+    quadrat_comms <- lapply(seq_along(patch_widths), function(patch_width_i) {
       comm[
         comm[, 'x'] >= quadrat_xrange[patch_width_i, 1] &
           comm[, 'x'] <= quadrat_xrange[patch_width_i, 2] &

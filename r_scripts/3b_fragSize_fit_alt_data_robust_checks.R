@@ -12,7 +12,7 @@ files <- list.files(
 # reference case are models already fit to 2_biodiv_frag_fcont_10_mabund_as_is.csv
 files <- files[-which(files == '2_biodiv_frag_fcont_10_mabund_as_is.csv')]
 
-for (i in 1:length(files)) {
+for (i in seq_along(files)) {
   # get the data
   file_2_get <- paste0(path2wd, 'intermediate_results/', files[i])
   frag <- read_csv(file_2_get)

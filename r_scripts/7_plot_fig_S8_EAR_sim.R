@@ -33,7 +33,7 @@ S_ear <- matrix(data = NA, nrow = length(a), ncol = 3)
 # define beta (here, equal to our empirical slope estimate) for decay
 beta <- 0.06
 
-for (i in 1:length(a)) {
+for (i in seq_along(a)) {
   prop_lost <- a[i] / A
   area_remaining <- A - a[i]
   n_i <- df$n_i

@@ -152,7 +152,7 @@ biodiv_subplot <- function(abund_dat, N_std, n_base, cov_base, n_samples = 10) {
 
 # https://stackoverflow.com/questions/23474729/convert-object-of-class-dist-into-data-frame-in-r
 dist_to_dataframe <- function(inDist) {
-  if (class(inDist) != "dist") {
+  if (!inherits(inDist, "dist")) {
     stop("wrong input type")
   }
   A <- attr(inDist, "Size")
@@ -192,7 +192,7 @@ get_beta_part <- function(comat) {
   frag_pairs <- list()
   study_level <- list()
 
-  for (i in 1:nrow(pars)) {
+  for (i in seq_len(nrow(pars))) {
     beta_part <- beta.div.comp(
       select(comat, -(frag_id:frag_size_num)),
       coef = pars$coef[i],
@@ -232,7 +232,7 @@ resample_fragment <- function(dat1, N) {
     select(frag_id, frag_size_num, species, abundance)
 
   dat_sample <- dat1[
-    sample(1:nrow(dat1), size = N, prob = dat1$abundance, replace = T),
+    sample(seq_len(nrow(dat1)), size = N, prob = dat1$abundance, replace = T),
   ]
   dat_sample2 <- dat_sample %>%
     group_by(frag_id, frag_size_num, species) %>%
@@ -397,7 +397,7 @@ get_biodiv <- function(
   # calculate biodiv indices
   biodiv_indices <- mapply(
     biodiv_subplot,
-    split(abund_mat, 1:nrow(abund_mat)),
+    split(abund_mat, seq_len(nrow(abund_mat))),
     N_std = round(dat_biodiv$N_std),
     MoreArgs = list(
       n_base = dat_biodiv$n_base[1],
@@ -598,7 +598,7 @@ parset <- expand.grid(
 )
 parset <- parset[c(1, 2, 3, 8, 11), ]
 
-for (i in 1:nrow(parset)) {
+for (i in seq_len(nrow(parset))) {
   out1 <- dat_all %>%
     split(.$dataset_label) %>%
     map(
